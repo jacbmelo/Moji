@@ -581,6 +581,13 @@ function createWindow(): void {
     icon: existsSync(iconPath) ? iconPath : undefined,
     backgroundColor: getSettings().theme === 'dark' ? '#1e1e1e' : '#ffffff',
     autoHideMenuBar: true,
+    // No native title bar: the top bar fills that area and keeps the OS window controls.
+    // macOS draws its traffic lights over the top-left corner; Windows and Linux get a native
+    // controls overlay on the top-right, painted with the (always dark) chrome colors.
+    titleBarStyle: 'hidden',
+    ...(process.platform === 'darwin'
+      ? { trafficLightPosition: { x: 16, y: 16 } }
+      : { titleBarOverlay: { color: '#202021', symbolColor: '#9aa0a6', height: 38 } }),
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
       nodeIntegration: false,
@@ -601,6 +608,14 @@ function createWindow(): void {
         .catch((error: Error) => { console.error('Benchmark failed:', error); app.exit(1) })
     }
   })
+
+  const sendFullscreen = (): void => {
+    if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(IPC.fullscreenChanged, mainWindow.isFullScreen())
+  }
+  mainWindow.on('enter-full-screen', sendFullscreen)
+  mainWindow.on('leave-full-screen', sendFullscreen)
+  mainWindow.on('enter-html-full-screen', sendFullscreen)
+  mainWindow.on('leave-html-full-screen', sendFullscreen)
 
   // Open external links in the OS browser, never in-app.
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

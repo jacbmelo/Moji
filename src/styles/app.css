@@ -67,12 +67,36 @@ body {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: var(--space-3);
+}
+
+/* The window has no native title bar: empty top bar space drags the window, controls do not. */
+.topbar button,
+.topbar input,
+.filegroup,
+.segment,
+.topbar__search-group,
+.topbar__replace-popover,
+.font-size-popover {
   -webkit-app-region: no-drag;
 }
 
 .topbar__row--tools {
   display: flex;
   justify-content: space-between;
+}
+
+/* Keep the first row clear of the native window controls drawn over it. */
+:root[data-platform='darwin']:not([data-fullscreen]) .topbar__row--tools {
+  padding-left: var(--traffic-lights-w);
+}
+
+/* Windows/Linux controls overlay: its width comes from the Window Controls Overlay env
+   variables; without an overlay (fullscreen) the fallback leaves no inset. */
+:root:not([data-platform='darwin']) .topbar__row--tools {
+  padding-right: max(
+    0px,
+    calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) - var(--space-4) + var(--space-3))
+  );
 }
 
 .topbar__left {

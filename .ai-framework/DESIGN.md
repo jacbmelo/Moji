@@ -60,6 +60,7 @@ Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alt
 | `--space-1..6` | `4, 8, 12, 16, 24, 32px` |
 | `--toolbar-h` | `44px` |
 | `--topbar-h` | `52px` |
+| `--traffic-lights-w` | `68px` |
 | `--statusbar-h` | `34px` |
 | `--sidebar-w` | `260px` |
 | `--shadow` | sombra leve para popover de substituicao e dialogos |
@@ -120,7 +121,7 @@ Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alt
 
 ## Componentes
 
-- **Top bar** (`.topbar`): flex column, `--chrome-bg`, area arrastavel via `-webkit-app-region: drag`; botoes e inputs internos devem usar `no-drag`.
+- **Top bar** (`.topbar`): flex column, `--chrome-bg`, ocupa o topo da janela (sem title bar nativa). Espaco vazio arrasta a janela (`-webkit-app-region: drag`); botoes, inputs, grupos e popovers internos usam `no-drag`. A primeira linha reserva espaco para os controles nativos: `--traffic-lights-w` a esquerda no macOS (removido em fullscreen via `data-fullscreen`) e a largura do overlay (`env(titlebar-area-*)`) a direita no Windows/Linux.
 - **Botoes de arquivo** (`.filegroup`, `.filegroup__btn`): altura 30px, icone + texto, borda `--border`, hover em `--bg-inset`.
 - **Busca/substituicao** (`.topbar__search`, `.topbar__replace-popover`): busca segue altura de 30px, fundo `--bg`, borda `--border` e tipografia de 13px. Ao buscar no preview, popover compacto mostra ocorrencia atual/total e navegacao anterior/proxima. No editor, mesmo popover mostra input de destino e contador; navegacao anterior/proxima ocupa uma linha propria, seguida por linha de substituir uma ocorrencia ou substituir todas. Match ativo usa amarelo com contorno; demais matches permanecem na cor accent.
 - **Segment** (`.segment`, `.segment__btn`): trilho `--segment-track`, botoes de 30px, ativo em `--segment-active-bg`.

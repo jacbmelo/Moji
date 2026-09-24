@@ -279,5 +279,6 @@ export const IPC = {
   exportProgress: 'doc:export-progress',
   openManyProgress: 'file:open-many-progress',
   openManyDone: 'file:open-many-done',
-  updateState: 'update:state'
+  updateState: 'update:state',
+  fullscreenChanged: 'window:fullscreen-changed'
 } as const
