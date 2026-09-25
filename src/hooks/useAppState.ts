@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { PREVIEW_WIDTH_DEFAULT, SPLIT_RATIO_DEFAULT, type DocumentSizeProfile, type ExportFormat, type Settings, type Theme, type UpdateState } from '../../electron/shared'
+import { PREVIEW_WIDTH_DEFAULT, SPLIT_RATIO_DEFAULT, type DocumentSizeProfile, type ExportFormat, type ExternalChangeKind, type Settings, type Theme, type UpdateState } from '../../electron/shared'
 import packageJson from '../../package.json'
 
 export interface WorkspaceDocument {
@@ -14,6 +14,8 @@ export interface WorkspaceDocument {
   draftSavedRevision: number | null
   readOnly: boolean
   sizeProfile?: DocumentSizeProfile
+  /** Set when another application changed or removed the file and the user has not decided yet. */
+  externalChange: ExternalChangeKind | null
 }
 
 export function useSettingsState() {

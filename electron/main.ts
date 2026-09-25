@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 import {
   IPC,
   type AutoSaveDraft,
+  type DocumentChangedEvent,
   type DocumentMetadata,
   type DocumentSizeProfile,
   type DocumentStreamMessage,
@@ -34,6 +35,7 @@ import { mapWithConcurrency } from './openPool'
 import { readFileChunks } from './documentStream'
 import { stripLeadingBom } from './documentDecoder'
 import { AssetCache } from './assetCache'
+import { contentHash, DocumentWatcher } from './documentWatcher'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
 import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 
@@ -51,6 +53,9 @@ let persistWindowBoundsTimer: NodeJS.Timeout | null = null
 let closePending = false
 const capabilities = new FileCapabilities()
 const assetCache = new AssetCache(readFile)
+const documentWatcher = new DocumentWatcher((event: DocumentChangedEvent) => {
+  if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(IPC.documentChanged, event)
+})
 const openManySessions = new Map<string, AbortController>()
 const pendingOpenManySessions = new Map<string, { filePaths: string[]; sender: Electron.WebContents }>()
 
@@ -208,7 +213,7 @@ async function readDocument(filePath: unknown, signal?: AbortSignal, writable = 
 }
 
 /** Validates a document and measures it without reading a single byte of content. */
-type DocumentMetadataResult = { ok: true; metadata: DocumentMetadata } | { ok: false; error: string }
+type DocumentMetadataResult = { ok: true; metadata: DocumentMetadata; mtimeMs: number } | { ok: false; error: string }
 
 /**
  * Validates and measures a document, keeping the reason a lookup failed.
@@ -223,7 +228,11 @@ async function resolveDocumentMetadata(filePath: unknown): Promise<DocumentMetad
   try {
     const fileStat = await stat(filePath)
     if (!fileStat.isFile()) return { ok: false, error: 'unsupported' }
-    return { ok: true, metadata: { path: filePath, sizeBytes: fileStat.size, sizeProfile: documentSizeProfile(fileStat.size) } }
+    return {
+      ok: true,
+      metadata: { path: filePath, sizeBytes: fileStat.size, sizeProfile: documentSizeProfile(fileStat.size) },
+      mtimeMs: fileStat.mtimeMs
+    }
   } catch (err) {
     return { ok: false, error: (err as Error).message }
   }
@@ -272,8 +281,11 @@ async function streamDocumentToPort(filePath: unknown, port: Electron.MessagePor
 
     sizeBytes = metadata.sizeBytes
     port.postMessage({ type: 'meta', ...metadata } satisfies DocumentStreamMessage)
+    // The bytes the renderer now holds become the version external changes are compared against.
+    const hash = contentHash()
     for await (const chunk of readFileChunks(metadata.path)) {
       chunks += 1
+      hash.update(new Uint8Array(chunk.buffer, 0, chunk.byteLength))
       // No transfer list: `MessagePortMain.postMessage` only accepts `MessagePortMain` entries
       // there and rejects anything else with `TypeError: Port at index 0 is not a valid port`,
       // which would abort the read on its very first chunk. The buffer is copied by the
@@ -281,6 +293,7 @@ async function streamDocumentToPort(filePath: unknown, port: Electron.MessagePor
       port.postMessage({ type: 'chunk', buffer: chunk.buffer, byteLength: chunk.byteLength } satisfies DocumentStreamMessage)
     }
     port.postMessage({ type: 'end' } satisfies DocumentStreamMessage)
+    documentWatcher.setBaseline(metadata.path, { size: metadata.sizeBytes, mtimeMs: result.mtimeMs, hash: hash.digest('hex') })
     void captureMainMemory('main:memory:document-open')
   } catch (err) {
     postError((err as Error).message)
@@ -658,6 +671,11 @@ function createWindow(): void {
     requestClose()
   })
 
+  // `fs.watch` can miss changes (network shares, sleep); coming back to the app re-checks.
+  mainWindow.on('focus', () => {
+    void documentWatcher.checkAll()
+  })
+
   mainWindow.on('resize', () => {
     if (mainWindow) schedulePersistWindowBounds(mainWindow)
   })
@@ -673,6 +691,7 @@ function createWindow(): void {
     }
     closePending = false
     pendingOpenManySessions.clear()
+    documentWatcher.close()
     mainWindow = null
   })
 
@@ -747,6 +766,33 @@ function titleBarOverlay(): { color: string; symbolColor: string; height: number
   return nativeTheme.shouldUseDarkColors
     ? { color: '#202021', symbolColor: '#9aa0a6', height: 38 }
     : { color: '#f3f4f6', symbolColor: '#656d76', height: 38 }
+}
+
+/**
+ * Records what this app just wrote as the known version of `filePath`, so the watcher event
+ * the write itself triggers is recognised as ours and a later save does not see a conflict.
+ */
+async function rememberWrittenDocument(filePath: string, content: string): Promise<void> {
+  try {
+    const fileStat = await stat(filePath)
+    documentWatcher.setBaseline(filePath, {
+      size: fileStat.size,
+      mtimeMs: fileStat.mtimeMs,
+      hash: contentHash().update(content, 'utf-8').digest('hex')
+    })
+  } catch {
+    // The write succeeded; without a snapshot the next change is simply compared by content.
+  }
+}
+
+/** True when saving would overwrite a change another application made since the file was read. */
+async function saveWouldOverwriteExternalChange(filePath: string): Promise<boolean> {
+  try {
+    return await documentWatcher.diverged(filePath)
+  } catch {
+    // Unreadable right now: let the write itself report the problem.
+    return false
+  }
 }
 
 function registerIpc(): void {
@@ -849,6 +895,12 @@ function registerIpc(): void {
 
   onFromRenderer(IPC.requestQuit, (): void => requestQuit())
 
+  onFromRenderer(IPC.watchDocuments, (_e, paths: unknown): void => {
+    if (!Array.isArray(paths)) return
+    // Only documents the user opened or saved; packaged guides are never granted, so never watched.
+    documentWatcher.watch(paths.filter((path): path is string => typeof path === 'string' && capabilities.allows(path)))
+  })
+
   handleFromRenderer(IPC.openLocalPath, (_e, fileUrl: unknown): Promise<WriteResult> => openLocalPath(fileUrl))
 
   handleFromRenderer(IPC.readSample, (_e, name: unknown): Promise<OpenResult> => {
@@ -856,14 +908,18 @@ function registerIpc(): void {
     return path ? readDocument(path, undefined, false) : Promise.resolve({ ok: false, error: 'unsupported' })
   })
 
-  handleFromRenderer(IPC.save, async (_e, filePath: unknown, content: unknown): Promise<WriteResult> => {
+  handleFromRenderer(IPC.save, async (_e, filePath: unknown, content: unknown, options: unknown): Promise<WriteResult> => {
     const path = asString(filePath)
     if (!path || !isMarkdown(path) || typeof content !== 'string') return { ok: false, error: 'unsupported' }
     // A Markdown extension is not authorisation. Only a file the user opened or chose in
     // the save dialog can be written to.
     if (!capabilities.allows(path)) return { ok: false, error: 'forbidden' }
+    const overwrite = typeof options === 'object' && options !== null && (options as { overwrite?: unknown }).overwrite === true
+    // Another application changed the file since it was read: never overwrite that silently.
+    if (!overwrite && await saveWouldOverwriteExternalChange(path)) return { ok: false, error: 'conflict' }
     try {
       await writeFile(path, content, 'utf-8')
+      await rememberWrittenDocument(path, content)
       rememberDialogDirectory(path)
       return { ok: true, path }
     } catch (err) {
@@ -886,6 +942,7 @@ function registerIpc(): void {
     grantDocument(filePath)
     try {
       await writeFile(filePath, content, 'utf-8')
+      await rememberWrittenDocument(filePath, content)
       return { ok: true, path: filePath }
     } catch (err) {
       return { ok: false, error: (err as Error).message }

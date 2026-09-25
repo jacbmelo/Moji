@@ -21,5 +21,20 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} 已可在 GitHub Releases 下载。"
+  },
+  "externalChange": {
+    "modifiedTitle": "文件已在其他应用中更改",
+    "modifiedBody": "“{{name}}”已在 Moji Plus 之外被更改，且此处有未保存的更改。重新加载将丢弃你的更改；另存为可保留两个版本。",
+    "deletedTitle": "文件已移除",
+    "deletedBody": "“{{name}}”已在 Moji Plus 之外被删除或移动。保存以重新创建，或以新名称保存。",
+    "conflictTitle": "磁盘上的文件已更改",
+    "conflictBody": "“{{name}}”在你打开后已在其他应用中被更改。替换将丢弃这些更改。",
+    "reload": "重新加载",
+    "save": "保存",
+    "saveAs": "另存为…",
+    "overwrite": "替换",
+    "keep": "保留我的更改",
+    "cancel": "取消",
+    "reloaded": "已使用磁盘上的版本更新“{{name}}”。"
   }
 }

@@ -21,5 +21,20 @@
   },
   "update": {
     "availableBody": "O Moji Plus {{version}} está pronto para ser transferido das versões do GitHub."
+  },
+  "externalChange": {
+    "modifiedTitle": "Ficheiro alterado noutra aplicação",
+    "modifiedBody": "«{{name}}» foi alterado fora do Moji Plus e tem alterações por guardar aqui. Recarregar descarta as suas alterações; Guardar como mantém as duas versões.",
+    "deletedTitle": "Ficheiro removido",
+    "deletedBody": "«{{name}}» foi apagado ou movido fora do Moji Plus. Guarde para o recriar ou guarde-o com outro nome.",
+    "conflictTitle": "Ficheiro alterado no disco",
+    "conflictBody": "«{{name}}» foi alterado noutra aplicação desde que o abriu. Substituir descarta essas alterações.",
+    "reload": "Recarregar",
+    "save": "Guardar",
+    "saveAs": "Guardar como…",
+    "overwrite": "Substituir",
+    "keep": "Manter as minhas",
+    "cancel": "Cancelar",
+    "reloaded": "«{{name}}» foi atualizado com a versão do disco."
   }
 }

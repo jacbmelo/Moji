@@ -8,6 +8,7 @@ import { Welcome } from './components/Welcome'
 import { DocumentTabs, type DocumentTabItem } from './components/DocumentTabs'
 import { SplitView } from './components/SplitView'
 import { ConfirmDialog, type ConfirmChoice } from './components/ConfirmDialog'
+import { ExternalChangeDialog, type ExternalChangeChoice, type ExternalChangeVariant } from './components/ExternalChangeDialog'
 import type { ExportDialogOptions } from './components/ExportDialog'
 import type { EditorDocumentStats, EditorHandle, EditorIdleStats } from './components/Editor'
 import { SettingsDialog } from './components/SettingsDialog'
@@ -43,6 +44,8 @@ import {
   type DraftEditPayload,
   type ExportFormat,
   type ExportProgress as ExportProgressState,
+  type ExternalChangeKind,
+  type SaveOptions,
   type Settings,
 } from '../electron/shared'
 import packageJson from '../package.json'
@@ -295,6 +298,8 @@ export function App(): JSX.Element {
 
   const { dialogOpen, setDialogOpen, exportDialogFormat, setExportDialogFormat, settingsOpen, setSettingsOpen, aboutOpen, setAboutOpen, outlineVisible, setOutlineVisible, searchFocusRequest, setSearchFocusRequest, replaceFocusRequest, setReplaceFocusRequest, topBarDismissRequest, setTopBarDismissRequest } = usePanelState()
   const dialogResolver = useRef<((c: ConfirmChoice) => void) | null>(null)
+  const [externalDialog, setExternalDialog] = useState<{ variant: ExternalChangeVariant; name: string } | null>(null)
+  const externalDialogResolver = useRef<((c: ExternalChangeChoice) => void) | null>(null)
   const nextDocSeq = useRef(1)
   const nextUntitledSeq = useRef(1)
   const noticeTimerRef = useRef<number | null>(null)
@@ -543,7 +548,8 @@ export function App(): JSX.Element {
               revision: 0,
               savedRevision: 0,
               readOnly: existing.readOnly || item.readOnly === true,
-              sizeProfile: item.sizeProfile ?? existing.sizeProfile
+              sizeProfile: item.sizeProfile ?? existing.sizeProfile,
+              externalChange: null
             }
           }
           continue
@@ -563,7 +569,8 @@ export function App(): JSX.Element {
           // in sync with `revision`; a brand-new document has no snapshot yet (`null`).
           draftSavedRevision: item.draftSavedContent === undefined ? null : revision,
           readOnly: item.readOnly === true,
-          sizeProfile: item.sizeProfile
+          sizeProfile: item.sizeProfile,
+          externalChange: null
          }
          nextDocs.push(doc)
          addedDocs.push(doc)
@@ -720,6 +727,68 @@ export function App(): JSX.Element {
     dialogResolver.current = null
   }, [])
 
+  // --- Files changed by other applications ------------------------------
+  const askExternalChange = useCallback(
+    (docId: string, variant: ExternalChangeVariant): Promise<ExternalChangeChoice> => {
+      const doc = stateRef.current.documents.find((item) => item.id === docId)
+      if (!doc) return Promise.resolve(variant === 'conflict' ? 'cancel' : 'keep')
+      setActiveDocId(docId)
+      return new Promise((resolve) => {
+        externalDialogResolver.current = resolve
+        setExternalDialog({ variant, name: documentName(doc, t('app.untitled')) })
+      })
+    },
+    [t]
+  )
+
+  const onExternalDialogChoice = useCallback((choice: ExternalChangeChoice) => {
+    setExternalDialog(null)
+    externalDialogResolver.current?.(choice)
+    externalDialogResolver.current = null
+  }, [])
+
+  /**
+   * Replaces a document with what is on disk now, dropping any edits made here.
+   *
+   * `onlyIfRevision` is for the silent reload of an unedited document: a keystroke that lands
+   * while the file is being read makes it a real conflict, so the reload is withheld and the
+   * user is asked instead.
+   */
+  const reloadDocument = useCallback(
+    async (docId: string, onlyIfRevision?: number): Promise<boolean> => {
+      const doc = stateRef.current.documents.find((item) => item.id === docId)
+      if (!doc?.path) return false
+      const res = await window.api.readPath(doc.path)
+      if (!res.ok) {
+        flash(t('notice.openFailed', { error: friendlyErrorMessage(res.error ?? '', t) }), true)
+        return false
+      }
+      const current = stateRef.current.documents.find((item) => item.id === docId)
+      if (!current) return false
+      if (onlyIfRevision !== undefined && current.revision !== onlyIfRevision) {
+        setDocuments((prev) => prev.map((item) => (item.id === docId ? { ...item, externalChange: 'modified' } : item)))
+        return false
+      }
+      setDocuments((prev) =>
+        prev.map((item) =>
+          item.id === docId
+            ? {
+                ...item,
+                content: res.content,
+                stats: getDocumentStats(res.content),
+                revision: 0,
+                savedRevision: 0,
+                sizeProfile: res.sizeProfile,
+                externalChange: null
+              }
+            : item
+        )
+      )
+      return true
+    },
+    [flash, t]
+  )
+
   const persistDraftDocument = useCallback(
     async (docId: string): Promise<boolean> => {
       if (!stateRef.current.autoSave) return false
@@ -867,6 +936,7 @@ export function App(): JSX.Element {
                   path: res.path,
                   content: savedText,
                   savedRevision,
+                  externalChange: null,
                   draftId: draftRemoved ? null : item.draftId,
                   draftSavedRevision: draftRemoved ? null : item.draftSavedRevision
                 }
@@ -883,7 +953,7 @@ export function App(): JSX.Element {
   )
 
   const saveDocument = useCallback(
-    async (docId: string): Promise<boolean> => {
+    async function saveDocument(docId: string, options?: SaveOptions): Promise<boolean> {
       const doc = stateRef.current.documents.find((item) => item.id === docId)
       if (!doc) {
         flash(t('notice.noDocument'), true)
@@ -899,7 +969,7 @@ export function App(): JSX.Element {
         ? materializeEditorContent() ?? doc.content
         : doc.content
       const savedRevision = doc.revision
-      const res = await window.api.save(doc.path, savedText)
+      const res = await window.api.save(doc.path, savedText, options)
       if (res.ok) {
         const draftRemoved = await removeDocumentDraft(doc)
         setDocuments((prev) =>
@@ -909,6 +979,7 @@ export function App(): JSX.Element {
                   ...item,
                   content: savedText,
                   savedRevision,
+                  externalChange: null,
                   draftId: draftRemoved ? null : item.draftId,
                   draftSavedRevision: draftRemoved ? null : item.draftSavedRevision
                 }
@@ -918,10 +989,19 @@ export function App(): JSX.Element {
         flash(t('notice.saveSuccess'))
         return true
       }
+      if (res.error === 'conflict') {
+        // Another application changed the file since it was read; nothing was written.
+        const choice = await askExternalChange(docId, 'conflict')
+        if (choice === 'overwrite') return saveDocument(docId, { overwrite: true })
+        if (choice === 'saveAs') return saveDocumentAs(docId)
+        // Reloading drops the edits this save was meant to keep, so the save itself did not happen.
+        if (choice === 'reload') await reloadDocument(docId)
+        return false
+      }
       flash(t('notice.saveFailed', { error: friendlyErrorMessage(res.error ?? '', t) }), true)
       return false
     },
-    [flash, removeDocumentDraft, saveDocumentAs, t]
+    [askExternalChange, flash, reloadDocument, removeDocumentDraft, saveDocumentAs, t]
   )
 
   const doSave = useCallback(async (): Promise<boolean> => {
@@ -1772,7 +1852,7 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.isComposing || dialogOpen) return
+      if (event.isComposing || dialogOpen || externalDialog) return
 
       const key = event.key.toLowerCase()
       const primary = event.ctrlKey || event.metaKey
@@ -1911,6 +1991,7 @@ export function App(): JSX.Element {
     closeActivePanel,
     closeDocument,
     dialogOpen,
+    externalDialog,
     doFindNext,
     doFindPrevious,
     doNew,
@@ -1986,6 +2067,48 @@ export function App(): JSX.Element {
       offDone()
     }
   }, [confirmAnyUnsaved, drainOpenManyQueue, finishOpenManySession, openPaths])
+
+  // Main watches exactly the files open here; the guides it refuses on its own.
+  const watchedPathsKey = documents
+    .flatMap((doc) => (doc.path && !doc.readOnly ? [doc.path] : []))
+    .join('\n')
+  useEffect(() => {
+    window.api.watchDocuments(watchedPathsKey ? watchedPathsKey.split('\n') : [])
+  }, [watchedPathsKey])
+
+  useEffect(() => window.api.onDocumentChanged(({ path, kind }) => {
+    const doc = stateRef.current.documents.find((item) => item.path === path)
+    if (!doc || doc.readOnly) return
+    // Nothing to lose: take the new version and just say so.
+    if (kind === 'modified' && doc.revision === doc.savedRevision) {
+      void reloadDocument(doc.id, doc.revision).then((reloaded) => {
+        if (reloaded) flash(t('externalChange.reloaded', { name: documentName(doc, t('app.untitled')) }))
+      })
+      return
+    }
+    setDocuments((prev) => prev.map((item) => (item.id === doc.id ? { ...item, externalChange: kind } : item)))
+  }), [flash, reloadDocument, t])
+
+  const resolveExternalChange = useCallback(
+    async (docId: string, kind: ExternalChangeKind): Promise<void> => {
+      // Cleared up front: the decision below is the answer, whatever it is.
+      setDocuments((prev) => prev.map((item) => (item.id === docId ? { ...item, externalChange: null } : item)))
+      const choice = await askExternalChange(docId, kind)
+      if (choice === 'reload') await reloadDocument(docId)
+      else if (choice === 'save') await saveDocument(docId)
+      else if (choice === 'saveAs') await saveDocumentAs(docId)
+      // `keep` leaves both versions alone; the next save still asks before overwriting.
+    },
+    [askExternalChange, reloadDocument, saveDocument, saveDocumentAs]
+  )
+
+  // Asked only about the tab in front of the user, never by switching tabs on their behalf; a
+  // background tab keeps its mark until it is selected.
+  const pendingExternalChange = activeDoc?.externalChange ?? null
+  useEffect(() => {
+    if (!activeDocId || !pendingExternalChange || dialogOpen || externalDialog) return
+    void resolveExternalChange(activeDocId, pendingExternalChange)
+  }, [activeDocId, dialogOpen, externalDialog, pendingExternalChange, resolveExternalChange])
 
   // --- Drag & drop -------------------------------------------------------
   const onDrop = useCallback(
@@ -2212,6 +2335,9 @@ export function App(): JSX.Element {
       )}
       {notice && <div className={`notice ${notice.error ? 'notice--error' : ''}`}>{notice.text}</div>}
       {dialogOpen && <ConfirmDialog onChoice={onDialogChoice} />}
+      {externalDialog && (
+        <ExternalChangeDialog variant={externalDialog.variant} name={externalDialog.name} onChoice={onExternalDialogChoice} />
+      )}
     </div>
   )
 }

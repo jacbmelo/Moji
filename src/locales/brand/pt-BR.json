@@ -21,5 +21,20 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} já pode ser baixado no GitHub Releases."
+  },
+  "externalChange": {
+    "modifiedTitle": "Arquivo alterado em outro aplicativo",
+    "modifiedBody": "“{{name}}” foi alterado fora do Moji Plus e tem alterações não salvas aqui. Recarregar descarta suas alterações; Salvar como mantém as duas versões.",
+    "deletedTitle": "Arquivo removido",
+    "deletedBody": "“{{name}}” foi excluído ou movido fora do Moji Plus. Salve para recriá-lo ou salve com outro nome.",
+    "conflictTitle": "Arquivo alterado no disco",
+    "conflictBody": "“{{name}}” foi alterado em outro aplicativo desde que você o abriu. Substituir descarta essas alterações.",
+    "reload": "Recarregar",
+    "save": "Salvar",
+    "saveAs": "Salvar como…",
+    "overwrite": "Substituir",
+    "keep": "Manter as minhas",
+    "cancel": "Cancelar",
+    "reloaded": "“{{name}}” foi atualizado com a versão do disco."
   }
 }

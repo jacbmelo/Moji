@@ -71,6 +71,37 @@ The system SHALL save the current document back to its file, and SHALL support s
 - **WHEN** the user invokes Save on a document with no file path yet
 - **THEN** the application prompts for a destination path before writing
 
+### Requirement: External file changes
+The system SHALL detect when the file behind an open document is changed or removed by another application, and SHALL never overwrite such a change without the user's confirmation.
+
+#### Scenario: Reload an unedited document silently
+- **WHEN** another application changes the file of an open document that has no unsaved changes
+- **THEN** the document is reloaded from disk and a brief notice says it was updated
+
+#### Scenario: Conflict with unsaved changes
+- **WHEN** another application changes the file of an open document that has unsaved changes
+- **THEN** the application offers to reload (discarding local edits), save the local version under another name, or keep the local edits
+
+#### Scenario: File removed
+- **WHEN** the file of an open document is deleted or moved away
+- **THEN** the application offers to save it again at the same path, save it under another name, or keep it open unchanged
+
+#### Scenario: Save after an external change
+- **WHEN** the user saves a document whose file changed on disk since it was last read or saved
+- **THEN** nothing is written and the application offers to replace the file, save under another name, reload, or cancel
+
+#### Scenario: Background tabs
+- **WHEN** the changed document is not the active tab
+- **THEN** the application does not switch tabs; the question is asked when the user selects that tab
+
+#### Scenario: Changes that are not real
+- **WHEN** the file is touched without changing its bytes, or Moji itself saves it
+- **THEN** no notice or prompt is shown
+
+#### Scenario: Atomic saves and missed events
+- **WHEN** another editor saves by writing a temporary file and renaming it over the original, or the filesystem does not deliver change events
+- **THEN** the change is still detected, at the latest when the Moji window regains focus
+
 ### Requirement: Recover untitled documents
 The system SHALL persist documents without a filesystem path as internal recovery drafts by default and SHALL restore those documents on the next app launch.
 

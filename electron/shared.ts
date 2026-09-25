@@ -175,7 +175,21 @@ export interface OpenManyDone {
   errors: string[]
 }
 
-/** Result of a write-style operation (save / export). */
+/** How an open document changed on disk behind the app's back. */
+export type ExternalChangeKind = 'modified' | 'deleted'
+
+/** Main -> renderer: an open document was changed or removed by another application. */
+export interface DocumentChangedEvent {
+  path: string
+  kind: ExternalChangeKind
+}
+
+/** Options for saving over an existing file. */
+export interface SaveOptions {
+  /** Write even when the file changed on disk since it was read; otherwise the save fails with `conflict`. */
+  overwrite?: boolean
+}
+
 /** Stages an export passes through, in the order the user sees them. */
 export type ExportPhase = 'render' | 'fonts' | 'capture' | 'compress' | 'write'
 
@@ -186,6 +200,8 @@ export interface ExportProgress {
   slices?: number
 }
 
+/** Result of a write-style operation (save / export). A save refused with `error: 'conflict'`
+ *  means the file changed on disk since it was read; nothing was written. */
 export type WriteResult =
   | { ok: true; path: string }
   | { ok: false; canceled?: boolean; error?: string }
@@ -279,10 +295,13 @@ export const IPC = {
    *  window — `window.close()` alone never quits on macOS, where closing the last window
    *  keeps the app running in the dock. */
   requestQuit: 'app:request-quit',
+  /** Renderer -> main: the full set of open document paths to watch for external changes. */
+  watchDocuments: 'file:watch',
   // main -> renderer push channels
   requestClose: 'app:request-close',
   selectAll: 'app:select-all',
   openDocument: 'doc:open',
+  documentChanged: 'file:changed',
   exportProgress: 'doc:export-progress',
   openManyProgress: 'file:open-many-progress',
   openManyDone: 'file:open-many-done',

@@ -6,6 +6,11 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Open documents are watched for changes made by other applications. A document without unsaved edits reloads automatically with a short notice; one with unsaved edits, or whose file was deleted or moved, asks whether to reload, save under another name, or keep the local version. Background tabs are asked about when selected.
+- Saving a file that changed on disk since it was read no longer overwrites it silently: Moji Plus offers to replace it, save under another name, reload, or cancel. Atomic saves (temp file + rename) are detected, and the check also runs when the window regains focus.
+
 ## [1.0.2] - 2026-10-02 — based on Moji 1.0.7
 
 ### Changed
