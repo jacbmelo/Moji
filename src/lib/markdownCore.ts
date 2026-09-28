@@ -1,4 +1,5 @@
 import MarkdownIt from 'markdown-it'
+import type { StateBlock } from 'markdown-it'
 import anchor from 'markdown-it-anchor'
 import taskLists from 'markdown-it-task-lists'
 import sub from 'markdown-it-sub'
@@ -228,6 +229,41 @@ export function documentAssetBaseUrl(documentPath: string | null | undefined): s
   return `${filePathToFileUrl(normalized.slice(0, lastSlash + 1))}/`.replace(/\/+$/, '/')
 }
 
+const FRONT_MATTER_OPEN = /^---[ \t]*$/
+const FRONT_MATTER_CLOSE = /^(?:---|\.\.\.)[ \t]*$/
+
+function sourceLine(state: StateBlock, line: number): string {
+  return state.src.slice(state.bMarks[line], state.eMarks[line])
+}
+
+/**
+ * YAML front matter: a `---` fence on the very first line, closed by `---` or `...`.
+ *
+ * Runs before `hr`, which would otherwise take the opening fence and turn the block into a
+ * rule plus a setext heading. Without a closing fence nothing matches, so the document
+ * renders exactly as it did before.
+ */
+function frontMatterRule(state: StateBlock, startLine: number, endLine: number, silent: boolean): boolean {
+  if (startLine !== 0 || !FRONT_MATTER_OPEN.test(sourceLine(state, startLine))) return false
+
+  let closeLine = startLine + 1
+  while (closeLine < endLine && !FRONT_MATTER_CLOSE.test(sourceLine(state, closeLine))) closeLine += 1
+  if (closeLine >= endLine) return false
+  if (silent) return true
+
+  const token = state.push('front_matter', '', 0)
+  token.block = true
+  token.map = [startLine, closeLine + 1]
+  token.content = state.src.slice(state.bMarks[startLine + 1], state.bMarks[closeLine])
+  state.line = closeLine + 1
+  return true
+}
+
+/** Shown as YAML source, highlighted like a fenced ```yaml block. */
+function renderFrontMatter(content: string): string {
+  return `<pre class="hljs front-matter"><code>${hljs.highlight(content, { language: 'yaml' }).value}</code></pre>\n`
+}
+
 function createMarkdownRenderer(): MarkdownIt {
   const renderer = new MarkdownIt({
     html: true,
@@ -248,6 +284,11 @@ function createMarkdownRenderer(): MarkdownIt {
       return `<pre class="hljs"><code>${renderer.utils.escapeHtml(str)}</code></pre>`
     }
   })
+
+  renderer.block.ruler.before('hr', 'front_matter', frontMatterRule)
+  renderer.renderer.rules.front_matter = (tokens, index): string => (
+    renderFrontMatter(tokens[index].content)
+  )
 
   renderer.use(anchor, {
     slugify: (value) => safeHeadingId(encodeURIComponent(String(value).trim().toLowerCase().replace(/\s+/g, '-')))
@@ -400,7 +441,7 @@ function plainTextFromTokens(tokens: MarkdownToken[]): string {
         if (child.type === 'softbreak' || child.type === 'hardbreak') return ' '
         return child.content
       }).join(''))
-    } else if (token.type === 'fence' || token.type === 'code_block') {
+    } else if (token.type === 'fence' || token.type === 'code_block' || token.type === 'front_matter') {
       chunks.push(token.content)
     } else if (token.type === 'html_block') {
       chunks.push(token.content.replace(/<[^>]*>/g, ' '))

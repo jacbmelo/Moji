@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- YAML front matter at the top of a document (`---` … `---`) now renders as a syntax-highlighted YAML code block in the preview and in HTML, PDF, and PNG exports, instead of leaking into the page as a rule and a heading.
+
 ## [1.0.7] - 2026-09-09
 
 ### Added
