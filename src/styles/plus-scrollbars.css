@@ -1,0 +1,14 @@
+/* Moji Plus: macOS-like scrollbars on Windows and Linux. Chromium draws classic, always-visible
+   scrollbars there, so they are painted transparent and shown only while a container scrolls or
+   the pointer is over its scrollbar (see src/lib/autoHideScrollbars.ts). macOS keeps its native
+   overlay scrollbars. The standard properties win over the ::-webkit-scrollbar rules in app.css. */
+:root:not([data-platform='darwin']) * {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.3s ease;
+}
+
+:root:not([data-platform='darwin']) .scrollbar-visible {
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+  transition-duration: 0.1s;
+}

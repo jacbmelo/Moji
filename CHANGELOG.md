@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- On Windows and Linux, scrollbars now stay hidden until you scroll or move the pointer over them, and fade out again about a second later, like on macOS. They are also thinner.
+
 ### Fixed
 
 - PDF export no longer frames every page in a dark margin: the export forces the light color scheme, so the page margins print white.

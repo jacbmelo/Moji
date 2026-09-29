@@ -15,6 +15,10 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 - Icone e logotipo do fork: fontes vetoriais em `build/plus/` (`icon.svg`, `icon-small.svg` para 16-32 px, `logo-mark.svg` para o tema escuro, `logo-mark-on-light.svg` para o tema claro, trocado por CSS em `app.css`). Depois de alterar um SVG, correr `npm run icons` para regenerar `build/plus/icon.png`, `build/plus/icons/` e `src/assets/brand/logo-mark*.png`, e fazer commit dos PNG. Os icones do upstream (`build/icon.png`, `build/icons/`, `src/assets/logo-mark-light.png`) ficam sem uso.
 - `build/linux/moji.desktop` e `build/metainfo/com.alexishida.moji.metainfo.xml` pertencem ao upstream e nao sao usados; os do fork sao `moji-plus.desktop` e `com.jacbmelo.mojiplus.metainfo.xml`.
 
+## Comportamento proprio do fork
+
+- Barras de scroll no Windows/Linux: ficam transparentes e so aparecem durante o scroll ou com o rato sobre elas, como no macOS. Vive em ficheiros do fork (`src/styles/plus-scrollbars.css`, `src/lib/autoHideScrollbars.ts`), ligados em `src/main.tsx`; nao alterar as regras de scrollbar do `app.css` do upstream para isto.
+
 ## Creditos (obrigatorio)
 
 - Manter sempre a referencia ao Moji, ao autor Alex Ishida e ao repositorio original: secao "Baseado em" no painel Sobre, bloco no topo do `README.md`, `CREDITS.md`, `LICENSE` (o aviso de copyright original e exigido pela licenca MIT), metainfo e `electron-builder.yml`.
