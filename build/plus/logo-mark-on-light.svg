@@ -1,7 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
-  <!-- Moji Plus app icon (D-P1): the Markdown mark with "M+", on the macOS icon grid (824px tile).
-       The right leg of the M ends in a brush stroke that crosses the frame, after the original Moji logo. -->
-  <rect x="100" y="100" width="824" height="824" rx="186" fill="#f6f4f1" stroke="#e4e0da" stroke-width="4"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="174 310 676 490">
+  <!-- Moji Plus logo mark for the light theme chrome (Welcome, About): same shape as logo-mark.svg in the icon's ink and seal red. -->
   <rect x="196" y="332" width="632" height="360" rx="60" fill="none" stroke="#343436" stroke-width="44"/>
   <path d="M278 612 V412 H334 L384 478 L434 412 H490 V592 C490 652 466 706 414 742 C372 770 310 786 240 792 C300 774 352 752 384 724 C420 690 434 648 434 594 V500 L384 562 L334 500 V612 Z" fill="#343436"/>
   <path d="M648 412 V612 M548 512 H748" fill="none" stroke="#c8322f" stroke-width="56"/>

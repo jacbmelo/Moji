@@ -12,10 +12,17 @@ const ICON_SIZES = [16, 24, 32, 48, 64, 128, 256, 512, 1024]
 const SMALL_ICON_MAX = 32
 const LOGO_WIDTH = 676
 
+/** Altura proporcional ao viewBox do SVG, para o logotipo nunca ficar deformado. */
+function heightFor(svg, width) {
+  const [, , w, h] = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number)
+  return Math.round((width * h) / w)
+}
+
 function outputs() {
   const icon = source('icon.svg')
   const small = source('icon-small.svg')
   const logo = source('logo-mark.svg')
+  const logoOnLight = source('logo-mark-on-light.svg')
   return [
     { file: 'build/plus/icon.png', svg: icon, width: 1024, height: 1024 },
     ...ICON_SIZES.map((size) => ({
@@ -24,8 +31,14 @@ function outputs() {
       width: size,
       height: size
     })),
-    // Mesma proporcao do viewBox do logotipo (676x404).
-    { file: 'src/assets/brand/logo-mark.png', svg: logo, width: LOGO_WIDTH, height: 404 }
+    // Logotipo do Welcome e do Sobre: tema escuro e tema claro.
+    { file: 'src/assets/brand/logo-mark.png', svg: logo, width: LOGO_WIDTH, height: heightFor(logo, LOGO_WIDTH) },
+    {
+      file: 'src/assets/brand/logo-mark-on-light.png',
+      svg: logoOnLight,
+      width: LOGO_WIDTH,
+      height: heightFor(logoOnLight, LOGO_WIDTH)
+    }
   ]
 }
 

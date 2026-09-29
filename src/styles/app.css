@@ -1068,13 +1068,15 @@ body {
   filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.35));
 }
 
-/* The mark is drawn light-on-dark; invert its lightness (hue preserved, so the seal stays red). */
-:root[data-theme='light'] .welcome__logo {
-  filter: invert(1) hue-rotate(180deg) drop-shadow(0 6px 20px rgba(15, 23, 42, 0.12));
+/* The mark is drawn light-on-dark; the light theme swaps in the dark-ink version (Moji Plus),
+   which keeps the exact seal red that an inverted filter would shift to pink. */
+:root[data-theme='light'] .welcome__logo,
+:root[data-theme='light'] .about-dialog__mark-img {
+  content: url('../assets/brand/logo-mark-on-light.png');
 }
 
-:root[data-theme='light'] .about-dialog__mark-img {
-  filter: invert(1) hue-rotate(180deg);
+:root[data-theme='light'] .welcome__logo {
+  filter: drop-shadow(0 6px 20px rgba(15, 23, 42, 0.12));
 }
 
 .welcome__tagline {
