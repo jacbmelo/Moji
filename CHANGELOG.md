@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-09-29 — based on Moji 1.0.7
+
 ### Added
 
 - macOS now checks GitHub Releases for a newer Moji Plus and shows the same notice as Windows and Linux. Installing the update is still manual.

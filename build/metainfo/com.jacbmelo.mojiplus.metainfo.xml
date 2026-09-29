@@ -55,6 +55,16 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.0.1" date="2026-09-29">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>macOS now checks for a newer Moji Plus, like Windows and Linux.</li>
+          <li>On Windows and Linux, scrollbars stay hidden until you scroll or hover over them, like on macOS.</li>
+          <li>PDF export prints white page margins instead of dark ones.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-09-29">
       <description>
         <p>First Moji Plus release, based on Moji 1.0.7.</p>
