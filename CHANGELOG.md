@@ -4,6 +4,12 @@ All notable changes to Moji Plus are documented in this file. Each release names
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Fixed
+
+- PDF export no longer frames every page in a dark margin: the export forces the light color scheme, so the page margins print white.
+
 ## [1.0.0] - 2026-09-29 — based on Moji 1.0.7
 
 ### Added

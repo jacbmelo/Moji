@@ -4,6 +4,9 @@ import katexCss from 'virtual:katex-fonts-css'
 import type { Theme } from '../../electron/shared'
 
 const PRINT_CSS = `
+  /* theme.css gives :root the app's dark color-scheme, and Chromium paints the @page margin
+     with the canvas colour it implies. Exports are always light, so the canvas must be too. */
+  :root { color-scheme: light; }
   html, body { background: var(--bg); }
   .markdown-body { max-width: 820px; margin: 0 auto; padding: 24px; }
   html.export-png pre {
