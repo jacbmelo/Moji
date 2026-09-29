@@ -77,9 +77,14 @@ linux:
   desktop:
     entry:
       Keywords: Markdown;Editor;Viewer;Documents;Notes;
+  # x64 on any build machine (the upstream builds on Linux x64; cross-builds from Apple silicon default to arm64).
   target:
-    - AppImage
-    - deb
+    - target: AppImage
+      arch:
+        - x64
+    - target: deb
+      arch:
+        - x64
   category: Office
   mimeTypes:
     - text/markdown
