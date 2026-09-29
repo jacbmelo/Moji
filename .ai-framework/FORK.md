@@ -18,6 +18,7 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 ## Comportamento proprio do fork
 
 - Barras de scroll no Windows/Linux: ficam transparentes e so aparecem durante o scroll ou com o rato sobre elas, como no macOS. Vive em ficheiros do fork (`src/styles/plus-scrollbars.css`, `src/lib/autoHideScrollbars.ts`), ligados em `src/main.tsx`; nao alterar as regras de scrollbar do `app.css` do upstream para isto.
+- Atualizacoes no macOS: ao contrario do upstream, o macOS tambem verifica as GitHub Releases (`supportsAutomaticUpdates()` em `electron/updater.ts`, rever em cada sync). So verifica: `autoDownload` fica desligado e o aviso abre as Releases, por isso a app nao precisa de ser assinada. Exige o `latest-mac.yml` em cada release.
 
 ## Creditos (obrigatorio)
 
@@ -51,4 +52,4 @@ As tags `vX.Y.Z` sao do Moji Plus. O remote `upstream` usa `tagOpt --no-tags` (a
 
 ## Publicar release
 
-Nao ha CI. Em cada plataforma: `GH_TOKEN=<token com acesso a jacbmelo/Moji> npm run dist:<win|linux|mac> -- --publish always`. O electron-builder cria/atualiza um draft em `jacbmelo/Moji`; criar a tag `vX.Y.Z` e publicar o draft quando Windows e Linux (incluindo `latest.yml`/`latest-linux.yml`) estiverem carregados. O updater dos builds Moji Plus le apenas as releases de `jacbmelo/Moji`.
+Nao ha CI. Em cada plataforma: `GH_TOKEN=<token com acesso a jacbmelo/Moji> npm run dist:<win|linux|mac> -- --publish always`. O electron-builder cria/atualiza um draft em `jacbmelo/Moji`; criar a tag `vX.Y.Z` e publicar o draft quando Windows, Linux e macOS (incluindo `latest.yml`, `latest-linux.yml` e `latest-mac.yml`) estiverem carregados. Sem o `latest-mac.yml`, a verificacao de atualizacoes no macOS falha. O updater dos builds Moji Plus le apenas as releases de `jacbmelo/Moji`.

@@ -12,7 +12,9 @@ export interface UpdateController {
 
 function supportsAutomaticUpdates(): boolean {
   if (!app.isPackaged) return false
-  if (process.platform === 'win32') return true
+  // macOS only checks: autoDownload is off and the notice opens GitHub Releases, so
+  // Squirrel.Mac (which needs a signed app) never runs.
+  if (process.platform === 'win32' || process.platform === 'darwin') return true
   return process.platform === 'linux' && typeof process.env['APPIMAGE'] === 'string'
 }
 

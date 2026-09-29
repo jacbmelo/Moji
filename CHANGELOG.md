@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- macOS now checks GitHub Releases for a newer Moji Plus and shows the same notice as Windows and Linux. Installing the update is still manual.
+
 ### Changed
 
 - On Windows and Linux, scrollbars now stay hidden until you scroll or move the pointer over them, and fade out again about a second later, like on macOS. They are also thinner.

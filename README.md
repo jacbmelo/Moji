@@ -94,8 +94,10 @@ The deb package installs the app to `/opt/Moji Plus`, the `moji-plus` command, a
 
 ## Updating
 
-- **Windows** and **Linux AppImage**: Moji Plus checks GitHub Releases. When a newer version exists, it shows a notice with a link to the release page, where you download the new file.
-- **macOS** and **Linux deb**: there is no update check. Download the new DMG or deb from GitHub Releases and install it over the current version; your settings are kept.
+- **Windows**, **macOS**, and **Linux AppImage**: Moji Plus checks GitHub Releases. When a newer version exists, it shows a notice with a link to the release page, where you download the new file. On macOS, drag the new app into **Applications** to replace the old one; because the app is not signed, macOS asks you to allow it again (see [macOS](#macos)).
+- **Linux deb**: there is no update check. Download the new deb from GitHub Releases and install it over the current version.
+
+Your settings are kept.
 
 ## Uninstalling
 
