@@ -4,6 +4,17 @@ All notable changes to Moji Plus are documented in this file. Each release names
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- Light and dark themes now apply to the whole app — top bar, tabs, outline, status bar, source editor, settings/export/about panels, and dialogs — not only the Markdown preview. The app follows the OS theme by default, the top-bar toggle switches between light and dark, and Settings > General has a Theme option (System / Light / Dark). Exports still always use the light theme.
+- YAML front matter at the top of a document (`---` … `---`) now renders as a syntax-highlighted YAML code block in the preview and in HTML, PDF, and PNG exports, instead of leaking into the page as a rule and a heading.
+
+### Changed
+
+- The native title bar is gone: the top bar now fills the top of the window and keeps the native window controls — the traffic lights on macOS and the system controls overlay on Windows and Linux, painted in the colors of the active theme. Empty top bar space drags the window.
+
 ## [1.0.0] - 2026-09-29 — based on Moji 1.0.7
 
 ### Added

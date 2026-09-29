@@ -146,7 +146,7 @@
     "fontSize": "字型大小",
     "lineHeight": "行高",
     "width": "閱讀寬度",
-    "autoSave": "重新啟動後恢復未命名文件",
+    "autoSave": "重新啟動後恢復未命名文件", "theme": "主題", "themeOptions": { "system": "跟隨系統", "light": "淺色", "dark": "深色" },
     "shortcutSections": {
       "file": "檔案",
       "search": "搜尋",

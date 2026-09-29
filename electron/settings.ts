@@ -7,6 +7,7 @@ import {
   PREVIEW_WIDTH_DEFAULT,
   SPLIT_RATIO_DEFAULT,
   SUPPORTED_LANGUAGES,
+  isThemePreference,
   normalizePreviewWidth,
   normalizeSplitRatio,
   type Language,
@@ -61,8 +62,7 @@ export function resolveLanguage(locale: string): Language {
 
 function defaults(): Settings {
   return {
-    theme: 'dark' as const,
-    previewTheme: 'dark' as const,
+    appearance: 'system' as const,
     language: resolveLanguage(app.getLocale()),
     previewFontFamily: 'Inter',
     previewFontSize: 16,
@@ -128,8 +128,7 @@ export function getSettings(): Settings {
     const raw = JSON.parse(readFileSync(settingsFile(), 'utf-8')) as Partial<Settings>
     const base = defaults()
     cache = {
-      theme: 'dark' as const,
-      previewTheme: raw.previewTheme === 'light' || raw.previewTheme === 'dark' ? raw.previewTheme : base.previewTheme,
+      appearance: isThemePreference(raw.appearance) ? raw.appearance : base.appearance,
       language: raw.language && SUPPORTED_LANGUAGES.includes(raw.language) ? raw.language : base.language,
       previewFontFamily: typeof raw.previewFontFamily === 'string' ? raw.previewFontFamily : base.previewFontFamily,
       previewFontSize: boundedNumber(raw.previewFontSize, base.previewFontSize, 12, 24),
@@ -151,11 +150,11 @@ export function getSettings(): Settings {
 }
 
 export function updateSettings(patch: Partial<Settings>): Settings {
-  const merged = { ...getSettings(), ...patch, theme: 'dark' as const }
+  const merged = { ...getSettings(), ...patch }
   const next: Settings = {
     ...merged,
     language: SUPPORTED_LANGUAGES.includes(merged.language) ? merged.language : getSettings().language,
-    previewTheme: merged.previewTheme === 'light' || merged.previewTheme === 'dark' ? merged.previewTheme : 'dark',
+    appearance: isThemePreference(merged.appearance) ? merged.appearance : 'system',
     previewFontFamily: typeof merged.previewFontFamily === 'string' ? merged.previewFontFamily : 'Inter',
     previewFontSize: boundedNumber(merged.previewFontSize, 16, 12, 24),
     editorFontSize: boundedNumber(merged.editorFontSize, 14, 12, 24),

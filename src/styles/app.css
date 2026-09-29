@@ -1068,6 +1068,15 @@ body {
   filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.35));
 }
 
+/* The mark is drawn light-on-dark; invert its lightness (hue preserved, so the seal stays red). */
+:root[data-theme='light'] .welcome__logo {
+  filter: invert(1) hue-rotate(180deg) drop-shadow(0 6px 20px rgba(15, 23, 42, 0.12));
+}
+
+:root[data-theme='light'] .about-dialog__mark-img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
 .welcome__tagline {
   font-size: 12px;
   font-weight: 600;
@@ -2235,10 +2244,15 @@ body {
   border-radius: 2px;
 }
 
+:root[data-theme='light'] .cm-external-searchMatch {
+  background: color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--text);
+}
+
 .cm-external-searchMatch--active {
   background: #ffd866;
   color: #111;
-  outline: 2px solid #ffffff;
+  outline: 2px solid color-mix(in srgb, var(--text) 72%, transparent);
   outline-offset: 1px;
 }
 

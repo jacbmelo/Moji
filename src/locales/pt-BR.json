@@ -146,7 +146,7 @@
     "fontSize": "Tamanho da fonte",
     "lineHeight": "Altura da linha",
     "width": "Largura de leitura",
-    "autoSave": "Restaurar documentos sem arquivo ao reiniciar",
+    "autoSave": "Restaurar documentos sem arquivo ao reiniciar", "theme": "Tema", "themeOptions": { "system": "Sistema", "light": "Claro", "dark": "Escuro" },
     "shortcutSections": {
       "file": "Arquivo",
       "search": "Busca",

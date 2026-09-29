@@ -6,9 +6,9 @@ Fonte de verdade dos tokens: [`src/styles/theme.css`](../src/styles/theme.css). 
 
 ## Principios
 
-- Leitura primeiro: preview limpo, coluna centralizada e cromo escuro discreto.
+- Leitura primeiro: preview limpo, coluna centralizada e cromo discreto.
 - Consistencia por tokens CSS; evitar valores soltos em componentes.
-- App chrome sempre escuro; tema claro/escuro se aplica ao conteudo Markdown renderizado e aos arquivos exportados.
+- Tema claro/escuro unico para toda a aplicacao (chrome, editor, modais e preview), seguindo o sistema por padrao; arquivos exportados sempre claros.
 - Controles compactos, previsiveis e feitos para uso repetido.
 - Reutilizar componentes/classes existentes antes de criar novas variacoes.
 
@@ -26,9 +26,14 @@ O app Electron usa um shell em camadas:
 
 ## Temas
 
-O chrome do aplicativo usa o tema escuro definido em `:root`.
+A preferencia `settings.appearance` aceita `system` (padrao), `light` ou `dark`. O main aplica-a em `nativeTheme.themeSource`, o que tambem ajusta controles nativos; o renderer le o tema resolvido via `prefers-color-scheme` e grava `data-theme="light|dark"` no `<html>` antes do primeiro render.
 
-O preview/export usa `data-md-theme="light|dark"` no container do Markdown. O tema claro sobrescreve apenas tokens de leitura:
+- `:root` define a paleta escura completa (chrome + leitura).
+- `:root[data-theme='light']` redefine todos os tokens de cor para a paleta clara, incluindo `--modal-*`, `--nav-*`, `--segment-*`, scrollbars, `--shadow` e `color-scheme`.
+- O botao sol/lua da top bar alterna a aplicacao inteira gravando a escolha explicita; Configuracoes > Geral > Tema oferece Sistema / Claro / Escuro.
+- O logo (`logo-mark-light.png`) recebe `filter: invert(1) hue-rotate(180deg)` no tema claro.
+
+O preview usa `data-md-theme` igual ao tema resolvido; a exportacao usa sempre `data-md-theme="light"`, que sobrescreve apenas tokens de leitura sobre a raiz escura:
 
 - `--bg`
 - `--bg-elevated`
@@ -44,7 +49,6 @@ O preview/export usa `data-md-theme="light|dark"` no container do Markdown. O te
 - `--table-stripe-bg`
 - `--hl-*`
 
-Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alterna apenas a leitura/exportacao.
 
 ## Tokens
 
@@ -67,7 +71,7 @@ Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alt
 
 ## Cores
 
-### Chrome escuro / Markdown escuro
+### Tema escuro (`:root`)
 
 | Token | Valor |
 |-------|-------|
@@ -99,7 +103,29 @@ Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alt
 | `--scrollbar-thumb` | `#4c9aff` |
 | `--scrollbar-thumb-hover` | `#63a9ff` |
 
-### Markdown claro
+### Tema claro (`:root[data-theme='light']`)
+
+Tokens de leitura iguais aos da tabela `data-md-theme='light'` abaixo, mais:
+
+| Token | Valor |
+|-------|-------|
+| `--bg-inset` | `#eceff3` |
+| `--accent-hover` | `#1f5dd6` |
+| `--accent-contrast` | `#ffffff` |
+| `--danger` | `#cf222e` |
+| `--brand` | `#2f6fed` |
+| `--sidebar-bg` | `#f6f7f9` |
+| `--chrome-bg` | `#f3f4f6` |
+| `--nav-hover-bg` | `#e8ebef` |
+| `--nav-active-bg` | `#dde8fc` |
+| `--nav-active-text` | `#1f5dd6` |
+| `--segment-track` | `#e8ebef` |
+| `--segment-active-bg` | `#ffffff` |
+| `--scrollbar-track` | `#f3f4f6` |
+| `--modal-bg` / `--modal-surface` / `--modal-inset` | `#ffffff` / `#f6f7f9` / `#eceff3` |
+| `--modal-text` / `--modal-text-muted` / `--modal-border` | `#1f2328` / `#656d76` / `#d5dae0` |
+
+### Markdown claro (`[data-md-theme='light']`, usado na exportacao)
 
 | Token | Valor |
 |-------|-------|
@@ -131,11 +157,11 @@ Nao usar `data-theme` no `<html>` para alternar a UI inteira; o estado atual alt
 - **Document tabs** (`.document-tabs`, `.document-tab`): altura 35px; aba ativa usa `--bg` e filete superior `--accent`; marcador de dirty usa `--accent`; menu da aba ativa usa popover em `--bg-elevated`, borda `--border`, sombra `--shadow` e acoes compactas de 30px.
 - **Sidebar / outline** (`.sidebar`, `.outline-tree`, `.outline-item`): outline aparece nos modos preview e editor como arvore aninhada por nivel de heading. Cada grupo (`.outline-tree__children`) tem linha-guia vertical `--border`. Headings com filhos sao colapsaveis por chevron; botao no topo do painel (`.outline-head__toggle`) expande/colapsa tudo. Prefixos `Requirement:`/`Scenario:` viram icones (`IconBlock`/`IconFlow`) e saem do texto; Requirement usa peso maior e `--text`, Scenario recua com `--text-muted`. Titulos longos quebram em ate 2 linhas com `title` completo no hover. Item ativo usa `--nav-active-text`, fundo tenue `--nav-active-bg` e barra `inset 2px --accent`. No preview, item ativo acompanha rolagem via scroll-spy (`getActivePreviewHeadingId` em `src/lib/previewScroll.ts`); clicar rola suavemente ate heading. No editor, clicar move cursor e rolagem para linha Markdown do heading.
 - **Preview** (`.markdown-body`): largura `--reading-width` (porcentagem configurada no painel, padrao 60%), com piso responsivo `--reading-width-min`, ou `--reading-width-fluid` quando o alternador da top bar esta ativo; padding `--space-6 --space-5`, tipografia configuravel pelo painel de configuracoes (padrao 16px, linha 1.7), headings com hierarquia clara e codigo em `--code-bg`. Blocos de codigo usam `.code-block` e exibem `.code-copy-button` no hover/foco; botao some durante selecao de texto.
-- **Modais e dialogos**: todos usam chrome escuro com `--modal-bg`/`--modal-surface`, borda `--modal-border`, raio `--radius` e sombra `--shadow`. Cabecalho compacto tem titulo claro, icone neutro e fechar separado das acoes; botoes iconicos mantem cor neutra e usam hover/foco previsivel. Alcas invisiveis e cursores permitem redimensionar por quatro bordas e quatro cantos; tamanho minimo e limites da janela evitam perda de conteudo, e alcas de esquerda/cima preservam borda oposta. Backdrop, quando existir, escurece fundo e fecha somente em fluxos seguros.
+- **Modais e dialogos**: todos usam o chrome do tema ativo com `--modal-bg`/`--modal-surface`, borda `--modal-border`, raio `--radius` e sombra `--shadow`. Cabecalho compacto tem titulo claro, icone neutro e fechar separado das acoes; botoes iconicos mantem cor neutra e usam hover/foco previsivel. Alcas invisiveis e cursores permitem redimensionar por quatro bordas e quatro cantos; tamanho minimo e limites da janela evitam perda de conteudo, e alcas de esquerda/cima preservam borda oposta. Backdrop, quando existir, escurece fundo e fecha somente em fluxos seguros.
 - **Visualizador Mermaid** (`.diagram-modal`): especializacao do padrao de modal. Clique no diagrama abre area de trabalho pontilhada no tema atual do preview e SVG Mermaid na paleta clara/escura correspondente. Cabecalho: nome do diagrama a esquerda; navegacao central compacta `< atual/total >`, com setas neutras e grossas; acoes a direita. Controles de zoom sao `−`, seletor com niveis fixos de 10% a 1000%, `+` e *Fit to view*. Download PNG fica separado por espaco pequeno e fechar por espaco maior. Pan e livre por arraste; `Escape` ou clique no backdrop fecham o modal. O minimapa aparece somente acima de 100%, representa diagrama + viewport + margem de canvas, e aceita clique/arraste horizontal e vertical. Download sugere `arquivo-nome-do-diagrama-n.png`.
-- **Editor** (`.editor-pane`, `.cm-editor`): ocupa toda a area principal, fonte mono 14px, line wrapping e tema escuro CodeMirror no estado atual. Keymap inclui acoes de Markdown para negrito, italico, link, lista, checklist e bloco de codigo.
+- **Editor** (`.editor-pane`, `.cm-editor`): ocupa toda a area principal, fonte mono 14px, line wrapping e tema CodeMirror do tema ativo (One Dark Pro no escuro, GitHub light no claro). Keymap inclui acoes de Markdown para negrito, italico, link, lista, checklist e bloco de codigo.
 - **Export dialog** (`.export-dialog`): dialogo inline centralizado, largura `min(760px, calc(100vw - 32px))`, lista de formatos PDF/HTML/PNG, configuracoes de pagina para PDF.
-- **Settings dialog** (`.settings-dialog`): painel inline centralizado no mesmo padrao do export, largura maxima 680px. Abas (`.settings-tabs`) separam Geral, Preview e Atalhos. Cada grupo (`.settings-section`) e um cartao em `--bg-elevated` com cabecalho (`.settings-section__heading`) em `--bg-inset`; Geral e Preview usam campos empilhados (`.settings-field`) separados por filete `--border`, rotulo a esquerda e controle de 36px a direita. Atalhos usam grade de duas colunas (`.settings-shortcuts`), reduzida a uma em telas estreitas, com teclas em `.settings-shortcut__key`. Idiomas embarcados atuais: English, Portugues (Brasil), Espanol, Japones, Chines e Russo.
+- **Settings dialog** (`.settings-dialog`): painel inline centralizado no mesmo padrao do export, largura maxima 680px. Abas (`.settings-tabs`) separam Geral (idioma, tema Sistema/Claro/Escuro, recuperacao de rascunhos), Preview, Editor e Atalhos. Cada grupo (`.settings-section`) e um cartao em `--bg-elevated` com cabecalho (`.settings-section__heading`) em `--bg-inset`; Geral e Preview usam campos empilhados (`.settings-field`) separados por filete `--border`, rotulo a esquerda e controle de 36px a direita. Atalhos usam grade de duas colunas (`.settings-shortcuts`), reduzida a uma em telas estreitas, com teclas em `.settings-shortcut__key`. Idiomas embarcados atuais: English, Portugues (Brasil), Espanol, Japones, Chines e Russo.
 - **About dialog** (`.about-dialog`): painel inline centralizado que reutiliza a estrutura de `.export-dialog`; mostra nome do app, versao (de `package.json`), autor, e-mail, link do repositorio e a explicacao do nome. Rodape (`.about-dialog__update`) exibe estado do updater e botao com icone para procurar atualizacoes. Aberto pelo botao de informacao na top bar.
 - **Confirm dialog** (`.dialog`): modal com backdrop, largura `min(420px, 90vw)`, usado para alteracoes nao salvas.
 - **Notice** (`.notice`): toast inferior sobre a status bar; erro usa `--danger`.

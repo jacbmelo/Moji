@@ -6,6 +6,7 @@ import './styles/app.css'
 import './styles/markdown.css'
 import './i18n'
 import { App } from './App'
+import { applyDocumentTheme } from './hooks/useAppState'
 import { getRendererPerformanceReport } from './lib/performanceMetrics'
 
 declare global {
@@ -31,6 +32,9 @@ document.documentElement.dataset.platform = window.api.platform
 window.api.onFullscreenChange((fullscreen) => {
   document.documentElement.toggleAttribute('data-fullscreen', fullscreen)
 })
+
+// Before the first render, so a light start never flashes the dark chrome.
+applyDocumentTheme()
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element not found')

@@ -231,7 +231,7 @@ const EMPTY_MARKDOWN_RESULT: MarkdownRenderResult = { html: '', outline: [], hea
 export function App(): JSX.Element {
   const { t, i18n } = useTranslation()
 
-  const { settings, setSettings, mdTheme, setMdTheme } = useSettingsState()
+  const { settings, setSettings, mdTheme } = useSettingsState()
   const { documents, setDocuments, activeDocId, setActiveDocId, mode, setMode, activeDoc } = useDocumentState()
   // `documents` gets a new array reference on every keystroke (content/revision changes), but
   // the *set* of open ids rarely does. Editor's cache-eviction effect keys off this array, so
@@ -637,7 +637,6 @@ export function App(): JSX.Element {
     void Promise.all([window.api.getSettings(), window.api.getDrafts()])
       .then(([s, drafts]) => {
         setSettings(s)
-        setMdTheme(s.previewTheme)
         void i18n.changeLanguage(s.language)
         if (drafts.length > 0) {
           // `doNew` numbers new untitled documents from `nextUntitledSeq`; a restored draft
@@ -1401,7 +1400,7 @@ export function App(): JSX.Element {
     splitAnchorsRef.current = null
   }, [])
 
-  const canToggleMdTheme = useCallback(() => {
+  const canTogglePreviewWidth = useCallback(() => {
     const s = stateRef.current
     return s.hasDoc && (s.mode === 'view' || s.splitActive) && !s.exportDialogOpen && !s.settingsOpen && !s.aboutOpen
   }, [])
@@ -1421,20 +1420,16 @@ export function App(): JSX.Element {
     setOutlineVisible((prev) => !prev)
   }, [canToggleOutline])
 
-  const toggleMdTheme = useCallback(() => {
-    if (!canToggleMdTheme()) return
-    const next = mdTheme === 'dark' ? 'light' : 'dark'
-    setMdTheme(next)
-    setSettings((current) => ({ ...current, previewTheme: next }))
-    void window.api.setSettings({ previewTheme: next }).then((saved) => {
-      setSettings(saved)
-      setMdTheme(saved.previewTheme)
-    })
-  }, [canToggleMdTheme, mdTheme])
+  // An explicit choice from the toolbar leaves `system` mode; Settings can switch back to it.
+  const toggleTheme = useCallback(() => {
+    const next = stateRef.current.mdTheme === 'dark' ? 'light' : 'dark'
+    setSettings((current) => ({ ...current, appearance: next }))
+    void window.api.setSettings({ appearance: next }).then(setSettings)
+  }, [])
 
   const changeSettings = useCallback(
     (patch: Partial<Settings>) => {
-      setSettings((prev) => ({ ...prev, ...patch, theme: 'dark' }))
+      setSettings((prev) => ({ ...prev, ...patch }))
       if (patch.language) {
         void i18n.changeLanguage(patch.language)
       }
@@ -2029,7 +2024,6 @@ export function App(): JSX.Element {
         onReplace={doReplace}
         searchMatchCount={searchMatchCount}
         activeSearchIndex={activeSearchIndex}
-        canToggleTheme={canToggleMdTheme()}
         fontSize={activeFontSize}
         minFontSize={fontTarget === 'editor' ? MIN_EDITOR_FONT_SIZE : MIN_PREVIEW_FONT_SIZE}
         maxFontSize={fontTarget === 'editor' ? MAX_EDITOR_FONT_SIZE : MAX_PREVIEW_FONT_SIZE}
@@ -2037,7 +2031,7 @@ export function App(): JSX.Element {
         canAdjustFontSize={canAdjustFontSize()}
         onFontSizeChange={changeFontSize}
         previewFluidWidth={settings.previewFluidWidth}
-        canTogglePreviewWidth={canToggleMdTheme()}
+        canTogglePreviewWidth={canTogglePreviewWidth()}
         onTogglePreviewWidth={togglePreviewFluidWidth}
         outlineVisible={outlineVisible}
         canToggleOutline={canToggleOutline()}
@@ -2046,7 +2040,7 @@ export function App(): JSX.Element {
         canToggleSplit={canToggleSplit}
         splitFits={splitFits}
         onToggleSplit={toggleSplitView}
-        onToggleTheme={toggleMdTheme}
+        onToggleTheme={toggleTheme}
         onExport={openExportDialog}
         onOpenSettings={toggleSettings}
         onOpenAbout={toggleAbout}
@@ -2132,7 +2126,7 @@ export function App(): JSX.Element {
                       documentIds={documentIds}
                       value={content}
                       readOnly={activeDoc.readOnly}
-                      theme={'dark'}
+                      theme={mdTheme}
                       fontSize={settings.editorFontSize}
                       searchTerm={debouncedSearchTerm}
                       activeSearchIndex={activeSearchIndex}

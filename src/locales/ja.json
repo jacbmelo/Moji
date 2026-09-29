@@ -146,7 +146,7 @@
     "fontSize": "フォントサイズ",
     "lineHeight": "行の高さ",
     "width": "閲覧幅",
-    "autoSave": "再起動後に未保存ドキュメントを復元",
+    "autoSave": "再起動後に未保存ドキュメントを復元", "theme": "テーマ", "themeOptions": { "system": "システム", "light": "ライト", "dark": "ダーク" },
     "shortcutSections": {
       "file": "ファイル",
       "search": "検索",

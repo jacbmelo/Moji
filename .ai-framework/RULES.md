@@ -106,7 +106,7 @@ Projeto atual: Moji, aplicativo desktop Electron + React + TypeScript para abrir
 
 ## Modais e Dialogos
 
-- Todo modal, incluindo os atuais e futuros, segue o mesmo chrome escuro, superficie `--modal-surface`, borda `--modal-border`, sombra `--shadow` e controles compactos neutros. O tema de leitura so altera conteudo que representa o preview, nunca o chrome do modal.
+- Todo modal, incluindo os atuais e futuros, segue o chrome do tema ativo (claro ou escuro), superficie `--modal-surface`, borda `--modal-border`, sombra `--shadow` e controles compactos neutros.
 - Cabecalhos de modal usam titulo claro, icone sem cor de destaque, acao de fechar separada das demais acoes e espacos definidos por tokens. Controles de navegacao ou acoes auxiliares permanecem neutros ate hover/foco.
 - Todo modal deve aceitar arraste pelas quatro bordas e quatro cantos, respeitar tamanho minimo e limites da janela e manter a borda oposta fixa ao redimensionar por esquerda ou topo.
 - Quando houver backdrop, `Escape` e clique fora do conteudo fecham/cancelam somente quando isto for seguro para o fluxo; interacoes internas nao podem propagar para o backdrop.
@@ -135,10 +135,11 @@ Projeto atual: Moji, aplicativo desktop Electron + React + TypeScript para abrir
 O padrao visual esta documentado em `.ai-framework/DESIGN.md`.
 
 - Usar `src/styles/theme.css` como fonte de tokens.
-- Manter chrome do app escuro; alternancia de tema vale para o preview Markdown. Exportacao (HTML/PDF/PNG) sempre usa o tema claro.
+- O tema vale para a aplicacao inteira (chrome, editor, modais e preview). A preferencia `settings.appearance` (`system`/`light`/`dark`, padrao `system`) e aplicada em `nativeTheme.themeSource` no main; o renderer le o tema resolvido por `prefers-color-scheme` e grava `data-theme` no `<html>`. O botao sol/lua da top bar grava a escolha explicita oposta ao tema atual; Configuracoes > Geral permite voltar a `Sistema`. Exportacao (HTML/PDF/PNG) sempre usa o tema claro.
+- Todo token de cor do chrome precisa de valor nas duas paletas de `theme.css` (`:root` escuro e `:root[data-theme='light']`).
 - A fonte padrao de exibicao e `Inter`; nao alterar o valor padrao, remove-la das configuracoes ou troca-la por stack de sistema sem pedido explicito do usuario.
 - Reutilizar classes/componentes existentes antes de criar variacoes.
-- A janela nao tem title bar nativa; a top bar ocupa o topo e deve manter livre a area dos controles nativos (`data-platform`/`data-fullscreen` em `<html>`). Todo elemento interativo novo na top bar precisa de `-webkit-app-region: no-drag`.
+- A janela nao tem title bar nativa; a top bar ocupa o topo e deve manter livre a area dos controles nativos (`data-platform`/`data-fullscreen` em `<html>`). Todo elemento interativo novo na top bar precisa de `-webkit-app-region: no-drag`. No Windows/Linux as cores do overlay dos controles (`titleBarOverlay()` em `electron/main.ts`) espelham `--chrome-bg` e `--text-muted` do tema resolvido e sao atualizadas em `nativeTheme` `updated`; manter em sincronia ao mudar esses tokens.
 - Manter layout compacto: top bar, abas de documentos, sidebar/outline, workspace (editor, preview ou split view) e status bar.
 - Priorizar leitura, contraste, truncamento de textos longos e estados visuais previsiveis.
 - Nao usar cores, sombras, raios ou espacamentos soltos quando houver token existente.

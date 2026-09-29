@@ -146,7 +146,7 @@
     "fontSize": "Font Size",
     "lineHeight": "Line Height",
     "width": "Reading Width",
-    "autoSave": "Restore untitled documents after restart",
+    "autoSave": "Restore untitled documents after restart", "theme": "Theme", "themeOptions": { "system": "System", "light": "Light", "dark": "Dark" },
     "shortcutSections": {
       "file": "File",
       "search": "Search",

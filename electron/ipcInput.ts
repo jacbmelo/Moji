@@ -3,6 +3,7 @@ import { isDraft } from './draftStore'
 import {
   MARKDOWN_EXTENSIONS,
   SUPPORTED_LANGUAGES,
+  isThemePreference,
   type AutoSaveDraft,
   type Language,
   type Settings,
@@ -39,7 +40,7 @@ export function sanitizeSettingsPatch(value: unknown): Partial<Settings> {
   const patch: Partial<Settings> = {}
 
   if (isLanguage(raw['language'])) patch.language = raw['language']
-  if (raw['previewTheme'] === 'light' || raw['previewTheme'] === 'dark') patch.previewTheme = raw['previewTheme']
+  if (isThemePreference(raw['appearance'])) patch.appearance = raw['appearance']
   if (typeof raw['previewFontFamily'] === 'string') patch.previewFontFamily = raw['previewFontFamily']
   if (typeof raw['previewFontSize'] === 'number') patch.previewFontSize = raw['previewFontSize']
   if (typeof raw['editorFontSize'] === 'number') patch.editorFontSize = raw['editorFontSize']
