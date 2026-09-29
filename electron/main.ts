@@ -35,6 +35,7 @@ import { readFileChunks } from './documentStream'
 import { stripLeadingBom } from './documentDecoder'
 import { AssetCache } from './assetCache'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
+import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 
 let mainWindow: BrowserWindow | null = null
 /** Files an open reached main before the renderer's `onOpenDocument` listener was confirmed
@@ -63,7 +64,7 @@ protocol.registerSchemesAsPrivileged([{
 }])
 
 if (process.platform === 'linux') {
-  app.setDesktopName('moji.desktop')
+  app.setDesktopName(DESKTOP_NAME)
 }
 
 /**
@@ -73,10 +74,10 @@ if (process.platform === 'linux') {
  * `app.name` also decides where `userData` lives, so renaming the app would move the
  * settings directory and orphan the preferences of everyone already running Moji, on every
  * platform. The name is corrected for display and the settings directory is pinned to the
- * one shipped builds already use.
+ * one shipped builds already use. Moji Plus pins its own directory (see `brand.ts`) so it
+ * can be installed next to the original Moji without sharing settings or drafts.
  */
-const SETTINGS_DIRECTORY = 'moji'
-app.setName('Moji')
+app.setName(APP_NAME)
 // `--user-data-dir` is Chromium's own switch for pointing an instance at a different
 // profile, and pinning the path unconditionally silently overrode it. Honouring it costs
 // nothing in normal use, where the switch is absent, and it is what lets a test run
@@ -572,7 +573,7 @@ function createWindow(): void {
     if (isMarkdown(filePath)) grantDocument(filePath)
   }
 
-  const iconPath = app.isPackaged ? join(process.resourcesPath, 'icon.png') : join(app.getAppPath(), 'build', 'icon.png')
+  const iconPath = app.isPackaged ? join(process.resourcesPath, 'icon.png') : join(app.getAppPath(), 'build', 'plus', 'icon.png')
   mainWindow = new BrowserWindow({
     ...windowOptionsFromSettings(),
     minWidth: 640,
@@ -662,7 +663,7 @@ function createWindow(): void {
     // after a reload, so this is the one place a reload loop is worse than stopping.
     if (details.reason === 'launch-failed' || details.reason === 'integrity-failure') {
       dialog.showErrorBox(
-        'Moji could not start',
+        `${APP_NAME} could not start`,
         `The window failed to load (${details.reason}). The app will quit.`
       )
       app.exit(1)
@@ -676,7 +677,7 @@ function createWindow(): void {
     mainWindow.reload()
     void dialog.showMessageBox(mainWindow, {
       type: 'warning',
-      message: 'Moji recovered after a crash.',
+      message: `${APP_NAME} recovered after a crash.`,
       detail: 'The window was reloaded. Untitled documents were recovered, but any changes you had not saved to files on disk were lost.'
     })
   })

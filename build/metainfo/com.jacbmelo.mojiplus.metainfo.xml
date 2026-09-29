@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.jacbmelo.mojiplus</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Moji Plus</name>
+  <summary>Clean Markdown viewer and editor, based on Moji</summary>
+  <description>
+    <p>
+      Moji Plus opens, previews, edits, and exports Markdown files in a compact desktop workspace.
+    </p>
+    <p>
+      It is a derivative of Moji by Alex Ishida (https://github.com/alexishida/Moji), distributed
+      under the MIT License, and keeps receiving the changes made to the original project.
+    </p>
+    <p>
+      It supports split preview and editing, outline navigation, search and replace, localized UI,
+      and export to PDF, HTML, and PNG.
+    </p>
+  </description>
+  <developer id="com.jacbmelo">
+    <name>João Melo</name>
+  </developer>
+  <url type="homepage">https://github.com/jacbmelo/Moji</url>
+  <url type="bugtracker">https://github.com/jacbmelo/Moji/issues</url>
+  <url type="vcs-browser">https://github.com/jacbmelo/Moji</url>
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main preview workspace</caption>
+      <image type="source">https://raw.githubusercontent.com/jacbmelo/Moji/main/docs/scr-main.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Markdown editor</caption>
+      <image type="source">https://raw.githubusercontent.com/jacbmelo/Moji/main/docs/scr-edit.jpg</image>
+    </screenshot>
+    <screenshot>
+      <caption>Document export panel</caption>
+      <image type="source">https://raw.githubusercontent.com/jacbmelo/Moji/main/docs/scr-export.jpg</image>
+    </screenshot>
+  </screenshots>
+  <launchable type="desktop-id">moji-plus.desktop</launchable>
+  <provides>
+    <binary>moji-plus</binary>
+    <mediatype>text/markdown</mediatype>
+  </provides>
+  <categories>
+    <category>Office</category>
+  </categories>
+  <keywords>
+    <keyword>Markdown</keyword>
+    <keyword>Editor</keyword>
+    <keyword>Viewer</keyword>
+    <keyword>Documents</keyword>
+    <keyword>Notes</keyword>
+  </keywords>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release version="1.0.0" date="2026-09-29">
+      <description>
+        <p>First Moji Plus release, based on Moji 1.0.7.</p>
+      </description>
+    </release>
+  </releases>
+</component>

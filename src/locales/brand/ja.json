@@ -1,0 +1,23 @@
+{
+  "app": {
+    "name": "Moji Plus v{{version}}"
+  },
+  "statusbar": {
+    "brand": "Moji Plus v{{version}}"
+  },
+  "welcome": {
+    "title": "Moji Plus v{{version}}"
+  },
+  "aboutDialog": {
+    "updateCurrent": "Moji Plus {{version}} は最新です。",
+    "updateAvailable": "Moji Plus {{version}} を利用できます。",
+    "whyNameTitle": "なぜ Moji Plus？",
+    "whyNameBody": "Moji Plus は、短く覚えやすく、文字や書くことを連想させるオリジナルの Moji の名前を受け継ぎ、その上に加えた変更を表す「Plus」を付けています。",
+    "upstreamTitle": "ベース",
+    "upstreamBody": "Moji Plus は Alex Ishida による Moji の派生版で、MIT ライセンスで配布されています。オリジナルのプロジェクトの変更を引き続き取り込みつつ、独自に管理する変更を加えています。",
+    "profileLabel": "GitHub"
+  },
+  "update": {
+    "availableBody": "Moji Plus {{version}} を GitHub Releases からダウンロードできます。"
+  }
+}

@@ -1,8 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { UpdateState } from '../../electron/shared'
+import { RELEASES_URL } from '../../electron/brand'
 import { IconDownload, IconRefresh, IconX } from './icons'
-
-const RELEASES_URL = 'https://github.com/alexishida/Moji/releases'
 
 interface UpdateNoticeProps {
   state: UpdateState

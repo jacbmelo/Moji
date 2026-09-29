@@ -1,0 +1,23 @@
+{
+  "app": {
+    "name": "Moji Plus v{{version}}"
+  },
+  "statusbar": {
+    "brand": "Moji Plus v{{version}}"
+  },
+  "welcome": {
+    "title": "Moji Plus v{{version}}"
+  },
+  "aboutDialog": {
+    "updateCurrent": "Moji Plus {{version}} is bijgewerkt.",
+    "updateAvailable": "Moji Plus {{version}} is beschikbaar.",
+    "whyNameTitle": "Waarom Moji Plus?",
+    "whyNameBody": "Moji Plus behoudt de naam van de oorspronkelijke Moji — kort, gemakkelijk te onthouden en verwijzend naar tekens en schrijven — en voegt “Plus” toe voor de wijzigingen die het daarbovenop onderhoudt.",
+    "upstreamTitle": "Gebaseerd op",
+    "upstreamBody": "Moji Plus is een afgeleide versie van Moji van Alex Ishida, verspreid onder de MIT-licentie. Het blijft de wijzigingen van het oorspronkelijke project ontvangen en voegt eigen wijzigingen toe, die onafhankelijk worden onderhouden.",
+    "profileLabel": "GitHub"
+  },
+  "update": {
+    "availableBody": "Moji Plus {{version}} is klaar om te downloaden via GitHub Releases."
+  }
+}

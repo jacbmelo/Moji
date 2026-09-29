@@ -1,15 +1,16 @@
 {
-  "name": "moji",
-  "version": "1.0.7",
-  "desktopName": "moji.desktop",
-  "description": "Clean cross-platform Markdown viewer and editor (React + Electron)",
-  "homepage": "https://github.com/alexishida/Moji",
+  "name": "moji-plus",
+  "version": "1.0.0",
+  "upstreamVersion": "1.0.7",
+  "desktopName": "moji-plus.desktop",
+  "description": "Moji Plus: a derivative of Moji, the clean cross-platform Markdown viewer and editor (React + Electron)",
+  "homepage": "https://github.com/jacbmelo/Moji",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alexishida/Moji.git"
+    "url": "git+https://github.com/jacbmelo/Moji.git"
   },
   "bugs": {
-    "url": "https://github.com/alexishida/Moji/issues"
+    "url": "https://github.com/jacbmelo/Moji/issues"
   },
   "keywords": [
     "markdown",
@@ -19,9 +20,15 @@
     "desktop"
   ],
   "author": {
-    "name": "Alex Ishida",
-    "email": "alexishida@gmail.com"
+    "name": "João Melo",
+    "url": "https://github.com/jacbmelo"
   },
+  "contributors": [
+    {
+      "name": "Alex Ishida",
+      "url": "https://github.com/alexishida"
+    }
+  ],
   "license": "MIT",
   "main": "out/main/main.js",
   "engines": {
@@ -42,7 +49,8 @@
     "dist:win": "npm run verify && electron-vite build && electron-builder --win",
     "dist:linux": "npm run verify && electron-vite build && electron-builder --linux",
     "dist:mac": "npm run verify && electron-vite build && electron-builder --mac",
-    "verify": "npm run typecheck"
+    "icons": "node scripts/render-icons.cjs",
+    "verify": "npm run typecheck && node scripts/check-branding.cjs"
   },
   "dependencies": {
     "@codemirror/commands": "^6.7.1",

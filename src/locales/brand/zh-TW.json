@@ -1,0 +1,23 @@
+{
+  "app": {
+    "name": "Moji Plus v{{version}}"
+  },
+  "statusbar": {
+    "brand": "Moji Plus v{{version}}"
+  },
+  "welcome": {
+    "title": "Moji Plus v{{version}}"
+  },
+  "aboutDialog": {
+    "updateCurrent": "Moji Plus {{version}} 已是最新版本。",
+    "updateAvailable": "Moji Plus {{version}} 有更新版本可用。",
+    "whyNameTitle": "為什麼叫 Moji Plus？",
+    "whyNameBody": "Moji Plus 沿用原版 Moji 的名稱——簡短、容易記住，讓人聯想到文字與書寫——並以「Plus」表示在其基礎上維護的變更。",
+    "upstreamTitle": "基於",
+    "upstreamBody": "Moji Plus 是 Alex Ishida 開發的 Moji 的衍生版本，依據 MIT 授權條款散布。它會持續同步原專案的變更，並加入獨立維護的自有變更。",
+    "profileLabel": "GitHub"
+  },
+  "update": {
+    "availableBody": "Moji Plus {{version}} 可從 GitHub Releases 下載。"
+  }
+}

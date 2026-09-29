@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next'
 import type { UpdateState } from '../../electron/shared'
+import { APP_NAME, AUTHOR, RELEASES_URL, REPOSITORY_URL, UPSTREAM } from '../../electron/brand'
 import { IconRefresh, IconX } from './icons'
-import logoMark from '../assets/logo-mark-light.png'
-
-const RELEASES_URL = 'https://github.com/alexishida/Moji/releases'
+import logoMark from '../assets/brand/logo-mark.png'
 
 interface AboutDialogProps {
   version: string
@@ -46,7 +45,7 @@ export function AboutDialog({ version, updateState, onClose, onCheckForUpdates }
           </div>
           <div className="about-dialog__hero-content">
             <p className="about-dialog__eyebrow">{t('aboutDialog.application')}</p>
-            <h3 className="about-dialog__name">Moji</h3>
+            <h3 className="about-dialog__name">{APP_NAME}</h3>
             <span className="about-dialog__badge">{t('aboutDialog.version', { version })}</span>
           </div>
         </section>
@@ -59,26 +58,47 @@ export function AboutDialog({ version, updateState, onClose, onCheckForUpdates }
           <div className="about-dialog__meta">
             <div className="about-dialog__row">
               <span className="about-dialog__label">{t('aboutDialog.authorLabel')}</span>
-              <span>Alex Ishida</span>
+              <span>{AUTHOR.name}</span>
             </div>
             <div className="about-dialog__row">
-              <span className="about-dialog__label">{t('aboutDialog.emailLabel')}</span>
-              <a className="about-dialog__link" href="mailto:alexishida@gmail.com">
-                alexishida@gmail.com
+              <span className="about-dialog__label">{t('aboutDialog.profileLabel')}</span>
+              <a className="about-dialog__link" href={AUTHOR.profileUrl} target="_blank" rel="noreferrer">
+                {AUTHOR.profileUrl}
               </a>
             </div>
             <div className="about-dialog__row">
               <span className="about-dialog__label">{t('aboutDialog.repositoryLabel')}</span>
-              <a
-                className="about-dialog__link"
-                href="https://github.com/alexishida/moji"
-                target="_blank"
-                rel="noreferrer"
-              >
-                https://github.com/alexishida/moji
+              <a className="about-dialog__link" href={REPOSITORY_URL} target="_blank" rel="noreferrer">
+                {REPOSITORY_URL}
               </a>
             </div>
           </div>
+        </section>
+
+        <section className="settings-section" aria-labelledby="about-upstream-heading">
+          <h3 className="settings-section__heading" id="about-upstream-heading">
+            {t('aboutDialog.upstreamTitle')}
+          </h3>
+
+          <div className="about-dialog__meta">
+            <div className="about-dialog__row">
+              <span className="about-dialog__label">{t('aboutDialog.application')}</span>
+              <span>{UPSTREAM.name} {UPSTREAM.baseVersion}</span>
+            </div>
+            <div className="about-dialog__row">
+              <span className="about-dialog__label">{t('aboutDialog.authorTitle')}</span>
+              <a className="about-dialog__link" href={UPSTREAM.profileUrl} target="_blank" rel="noreferrer">
+                {UPSTREAM.author}
+              </a>
+            </div>
+            <div className="about-dialog__row">
+              <span className="about-dialog__label">{t('aboutDialog.repositoryLabel')}</span>
+              <a className="about-dialog__link" href={UPSTREAM.repositoryUrl} target="_blank" rel="noreferrer">
+                {UPSTREAM.repositoryUrl}
+              </a>
+            </div>
+          </div>
+          <p className="about-dialog__text">{t('aboutDialog.upstreamBody')}</p>
         </section>
 
         <section className="settings-section" aria-labelledby="about-name-heading">

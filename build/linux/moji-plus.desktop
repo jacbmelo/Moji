@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Moji Plus
+Exec=AppRun --no-sandbox %U
+Terminal=false
+Type=Application
+Icon=moji-plus
+StartupWMClass=moji-plus
+Keywords=Markdown;Editor;Viewer;Documents;Notes;
+Comment=Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
+MimeType=text/markdown;
+Categories=Office;

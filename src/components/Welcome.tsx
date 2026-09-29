@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { IconFilePlus, IconFileText, IconOpen, IconX } from './icons'
-import logoMark from '../assets/logo-mark-light.png'
+import logoMark from '../assets/brand/logo-mark.png'
+import { APP_NAME } from '../../electron/brand'
 
 interface WelcomeProps {
   onOpen: () => void
@@ -23,7 +24,7 @@ export function Welcome({ onOpen, onNew, recentFiles, onOpenRecent, onForgetRece
   return (
     <div className="pane">
       <div className="welcome">
-        <img className="welcome__logo" src={logoMark} alt="Moji" draggable={false} />
+        <img className="welcome__logo" src={logoMark} alt={APP_NAME} draggable={false} />
         <h1 className="welcome__title">{t('welcome.title')}</h1>
         <p className="welcome__tagline">{t('welcome.tagline')}</p>
         <div className="welcome__actions">

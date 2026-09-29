@@ -1,12 +1,13 @@
-appId: com.alexishida.moji
-productName: Moji
-copyright: Copyright © 2026 Alex Ishida
+appId: com.jacbmelo.mojiplus
+productName: Moji Plus
+# Moji Plus is a derivative of Moji (https://github.com/alexishida/Moji) by Alex Ishida, MIT.
+copyright: Copyright © 2026 João Melo. Based on Moji, Copyright © 2026 Alex Ishida
 directories:
   output: release
   buildResources: build
 publish:
   provider: github
-  owner: alexishida
+  owner: jacbmelo
   repo: Moji
   # CI keeps release hidden until every platform artifact is uploaded.
   releaseType: draft
@@ -15,7 +16,7 @@ files:
   - package.json
   - samples/**/*
 extraResources:
-  - from: build/icon.png
+  - from: build/plus/icon.png
     to: icon.png
 fileAssociations:
   - ext: md
@@ -29,6 +30,7 @@ fileAssociations:
     role: Editor
     mimeType: text/markdown
 mac:
+  icon: build/plus/icon.png
   category: public.app-category.productivity
   darkModeSupport: true
   artifactName: ${productName}-${version}-${arch}.${ext}
@@ -48,6 +50,7 @@ mac:
 dmg:
   artifactName: ${productName}-${version}-${arch}.${ext}
 win:
+  icon: build/plus/icon.png
   artifactName: ${productName}.Setup.${version}.${ext}
   target:
     - target: nsis
@@ -60,14 +63,15 @@ nsis:
   createDesktopShortcut: true
   createStartMenuShortcut: true
 linux:
-  maintainer: Alex Ishida <alexishida@gmail.com>
+  # No email on purpose: the maintainer is identified by the GitHub profile.
+  maintainer: João Melo (https://github.com/jacbmelo)
   synopsis: Clean Markdown viewer and editor
-  description: Moji is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
-  icon: build/icons
+  description: Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
+  icon: build/plus/icons
   syncDesktopName: true
   extraFiles:
-    - from: build/linux/moji.desktop
-      to: usr/share/applications/moji.desktop
+    - from: build/linux/moji-plus.desktop
+      to: usr/share/applications/moji-plus.desktop
   desktop:
     entry:
       Keywords: Markdown;Editor;Viewer;Documents;Notes;
@@ -81,20 +85,20 @@ appImage:
   artifactName: ${productName}-${version}-${arch}.${ext}
   desktop:
     entry:
-      X-AppImage-Repository: https://github.com/alexishida/Moji
-      X-AppImage-Author: Alex Ishida
-      X-AppImage-Homepage: https://github.com/alexishida/Moji
-      X-AppImage-Description: Moji is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
+      X-AppImage-Repository: https://github.com/jacbmelo/Moji
+      X-AppImage-Author: João Melo
+      X-AppImage-Homepage: https://github.com/jacbmelo/Moji
+      X-AppImage-Description: Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
 deb:
   artifactName: ${productName}-${version}-${arch}.${ext}
   packageCategory: editors
   fpm:
     - --deb-field
-    - "Repository: https://github.com/alexishida/Moji"
+    - "Repository: https://github.com/jacbmelo/Moji"
     - --deb-field
-    - "Author: Alex Ishida"
+    - "Author: João Melo"
     - --deb-field
-    - "Vcs-Browser: https://github.com/alexishida/Moji"
+    - "Vcs-Browser: https://github.com/jacbmelo/Moji"
     - --deb-field
-    - "Vcs-Git: https://github.com/alexishida/Moji.git"
-    - "build/metainfo/com.alexishida.moji.metainfo.xml=/usr/share/metainfo/com.alexishida.moji.metainfo.xml"
+    - "Vcs-Git: https://github.com/jacbmelo/Moji.git"
+    - "build/metainfo/com.jacbmelo.mojiplus.metainfo.xml=/usr/share/metainfo/com.jacbmelo.mojiplus.metainfo.xml"

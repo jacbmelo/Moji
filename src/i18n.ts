@@ -62,3 +62,11 @@ void i18n.use(initReactI18next).init({
   interpolation: { escapeValue: false, defaultVariables: { version: packageJson.version } },
   returnEmptyString: false
 })
+
+// Moji Plus: textos que nomeiam a app vivem em `locales/brand/` e sobrepoem os do upstream,
+// para que os JSON originais nao precisem ser editados (e nao gerem conflitos nos merges).
+const brandLocales = import.meta.glob<{ default: Record<string, unknown> }>('./locales/brand/*.json', { eager: true })
+for (const [path, bundle] of Object.entries(brandLocales)) {
+  const code = path.slice(path.lastIndexOf('/') + 1, -'.json'.length)
+  i18n.addResourceBundle(code, 'translation', bundle.default, true, true)
+}

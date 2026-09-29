@@ -1,0 +1,5 @@
+# Moji Plus: README.md e CHANGELOG.md sao proprios do fork. Nos merges do upstream mantem-se
+# a nossa versao; as do Moji original ficam em docs/upstream/ (scripts/sync-upstream.sh).
+# Requer: git config merge.ours.driver true (o script de sincronizacao ativa-o).
+README.md merge=ours
+CHANGELOG.md merge=ours
