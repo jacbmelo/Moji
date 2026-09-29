@@ -152,6 +152,7 @@ O preview deve manter suporte visual para:
 - links
 - listas e task lists
 - tabelas com overflow horizontal
+- front matter YAML no topo do documento como bloco de codigo `pre.hljs.front-matter` com highlight YAML
 - blockquotes
 - codigo inline e blocos com highlight.js
 - botao de copiar em blocos de codigo, oculto durante selecao do bloco

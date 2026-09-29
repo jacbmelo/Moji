@@ -14,6 +14,17 @@ The system SHALL parse Markdown content and render it as clean, styled HTML in a
 - **WHEN** the document contains a GFM table and a task list
 - **THEN** the table renders with aligned columns and the task list renders with checkbox markers reflecting checked/unchecked state
 
+### Requirement: Render YAML front matter
+The system SHALL recognize a YAML front matter block that starts on the first line of the document with `---` and closes with `---` or `...`, and SHALL render it at the top of the preview and exports as a YAML code block with syntax highlighting instead of as Markdown.
+
+#### Scenario: Render front matter as a YAML code block
+- **WHEN** a document starts with `---`, `title: untitled.md`, `date: 2026-09-25`, `---` followed by Markdown
+- **THEN** the preview shows the front matter as a highlighted YAML code block followed by the rendered Markdown, and the front matter does not appear in the outline
+
+#### Scenario: Unclosed or misplaced fence
+- **WHEN** the opening `---` has no closing fence, or a `---` block appears after the first line
+- **THEN** the content renders as regular Markdown (horizontal rule and text)
+
 ### Requirement: Syntax highlighting for code blocks
 The system SHALL apply syntax highlighting to fenced code blocks based on the declared language.
 
