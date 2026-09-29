@@ -41,6 +41,10 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 - Features para propor ao Moji original: branch a partir de `upstream/main` e PR para `alexishida/moji`. Nunca incluir commits de identidade do fork nesses branches.
 - Features exclusivas do Moji Plus: branch a partir do `main` e merge no `main`.
 
+## Tags
+
+As tags `vX.Y.Z` sao do Moji Plus. O remote `upstream` usa `tagOpt --no-tags` (ativado por `scripts/sync-upstream.sh`), para as tags do Moji original nao colidirem com as do fork. Os nomes dos ficheiros das releases usam `Moji-Plus` sem espaco, porque o GitHub altera nomes com espacos e o updater deixaria de os encontrar.
+
 ## Publicar release
 
 Nao ha CI. Em cada plataforma: `GH_TOKEN=<token com acesso a jacbmelo/Moji> npm run dist:<win|linux|mac> -- --publish always`. O electron-builder cria/atualiza um draft em `jacbmelo/Moji`; criar a tag `vX.Y.Z` e publicar o draft quando Windows e Linux (incluindo `latest.yml`/`latest-linux.yml`) estiverem carregados. O updater dos builds Moji Plus le apenas as releases de `jacbmelo/Moji`.

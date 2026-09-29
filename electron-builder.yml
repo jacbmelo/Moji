@@ -29,11 +29,13 @@ fileAssociations:
     description: Markdown Document
     role: Editor
     mimeType: text/markdown
+# Artifact names avoid the space in productName: GitHub renames release assets with spaces,
+# which would break the file names electron-updater reads from latest*.yml.
 mac:
   icon: build/plus/icon.png
   category: public.app-category.productivity
   darkModeSupport: true
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Moji-Plus-${version}-${arch}.${ext}
   # Signing is driven by electron-builder's CSC_* environment variables. Unsigned
   # local builds still run; Gatekeeper only blocks copies downloaded from the web.
   hardenedRuntime: true
@@ -48,10 +50,10 @@ mac:
       arch:
         - universal
 dmg:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Moji-Plus-${version}-${arch}.${ext}
 win:
   icon: build/plus/icon.png
-  artifactName: ${productName}.Setup.${version}.${ext}
+  artifactName: Moji-Plus.Setup.${version}.${ext}
   target:
     - target: nsis
       arch:
@@ -82,7 +84,7 @@ linux:
   mimeTypes:
     - text/markdown
 appImage:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Moji-Plus-${version}-${arch}.${ext}
   desktop:
     entry:
       X-AppImage-Repository: https://github.com/jacbmelo/Moji
@@ -90,7 +92,7 @@ appImage:
       X-AppImage-Homepage: https://github.com/jacbmelo/Moji
       X-AppImage-Description: Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
 deb:
-  artifactName: ${productName}-${version}-${arch}.${ext}
+  artifactName: Moji-Plus-${version}-${arch}.${ext}
   packageCategory: editors
   fpm:
     - --deb-field

@@ -58,6 +58,12 @@
     <release version="1.0.0" date="2026-09-29">
       <description>
         <p>First Moji Plus release, based on Moji 1.0.7.</p>
+        <ul>
+          <li>Light and dark themes for the whole app, following the OS theme by default.</li>
+          <li>YAML front matter rendered as a highlighted code block in the preview and exports.</li>
+          <li>No native title bar: the top bar fills the top of the window with the native window controls.</li>
+          <li>Own name, icon, settings directory, and releases, so it installs next to the original Moji.</li>
+        </ul>
       </description>
     </release>
   </releases>

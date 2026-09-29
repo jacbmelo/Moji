@@ -81,6 +81,8 @@ fi
 require_clean_tree
 # README.md e CHANGELOG.md sao do Moji Plus (.gitattributes merge=ours); este driver mantem a nossa versao.
 git config merge.ours.driver true
+# As tags v* sao do Moji Plus; as do Moji original nao sao trazidas para evitar colisoes.
+git config remote.upstream.tagOpt --no-tags
 git fetch upstream
 
 branch="sync/upstream-$(date +%Y-%m-%d)"
