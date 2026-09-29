@@ -6,6 +6,7 @@ import './styles/app.css'
 import './styles/markdown.css'
 import './i18n'
 import { App } from './App'
+import { applyDocumentTheme } from './hooks/useAppState'
 import { getRendererPerformanceReport } from './lib/performanceMetrics'
 
 declare global {
@@ -25,6 +26,9 @@ window.__mojiPerformance = {
   getRendererReport: getRendererPerformanceReport,
   getReport: async () => ({ renderer: getRendererPerformanceReport(), main: await window.api.getPerformanceReport() })
 }
+
+// Before the first render, so a light start never flashes the dark chrome.
+applyDocumentTheme()
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element not found')

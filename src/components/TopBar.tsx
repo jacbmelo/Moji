@@ -28,7 +28,6 @@ interface TopBarProps {
   onReplace: (search: string, replacement: string, all: boolean) => void
   searchMatchCount: number
   activeSearchIndex: number | null
-  canToggleTheme: boolean
   /** Font size of the active mode: preview in view mode, source editor in edit mode. */
   fontSize: number
   minFontSize: number
@@ -363,7 +362,6 @@ export const TopBar = memo(function TopBar(props: TopBarProps): JSX.Element {
           <button
             className="iconbtn"
             onClick={props.onToggleTheme}
-            disabled={!props.canToggleTheme}
             title={props.theme === 'dark' ? t('toolbar.themeLight') : t('toolbar.themeDark')}
             aria-label={t('toolbar.theme')}
           >

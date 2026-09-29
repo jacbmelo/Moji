@@ -1,6 +1,12 @@
 // Types and constants shared between the main process, preload, and renderer.
 
 export type Theme = 'light' | 'dark'
+/** App-wide appearance: follow the OS or force one theme. */
+export type ThemePreference = 'system' | Theme
+
+export function isThemePreference(value: unknown): value is ThemePreference {
+  return value === 'system' || value === 'light' || value === 'dark'
+}
 
 export const SUPPORTED_LANGUAGES = ['en', 'en-GB', 'pt-BR', 'pt-PT', 'es', 'fr', 'de', 'it', 'nl', 'ar', 'hi', 'ja', 'zh', 'zh-TW', 'ru'] as const
 export type Language = (typeof SUPPORTED_LANGUAGES)[number]
@@ -44,8 +50,8 @@ export function normalizeSplitRatio(value: unknown, fallback = SPLIT_RATIO_DEFAU
 }
 
 export interface Settings {
-  theme: Theme
-  previewTheme: Theme
+  /** Theme of the whole app (chrome, editor and preview); exports are always light. */
+  appearance: ThemePreference
   language: Language
   previewFontFamily: string
   previewFontSize: number

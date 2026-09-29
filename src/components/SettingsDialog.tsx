@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { LANGUAGES } from '../i18n'
 import { IconSettings, IconX } from './icons'
-import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN, PREVIEW_WIDTH_STEP, type Language, type Settings } from '../../electron/shared'
+import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN, PREVIEW_WIDTH_STEP, isThemePreference, type Language, type Settings, type ThemePreference } from '../../electron/shared'
 
 interface SettingsDialogProps {
   settings: Settings
   onClose: () => void
   onChange: (patch: Partial<Settings>) => void
 }
+
+const THEME_PREFERENCES: ThemePreference[] = ['system', 'light', 'dark']
 
 const FONT_FAMILIES = [
   { value: 'Inter', label: 'Inter' },
@@ -157,6 +159,24 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                   {LANGUAGES.map((language) => (
                     <option key={language.code} value={language.code}>
                       {language.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="settings-field">
+                <span className="settings-field__label">{t('settingsDialog.theme')}</span>
+                <select
+                  className="select settings-field__control"
+                  value={settings.appearance}
+                  onChange={(e) => {
+                    const appearance = e.target.value
+                    if (isThemePreference(appearance)) onChange({ appearance })
+                  }}
+                >
+                  {THEME_PREFERENCES.map((appearance) => (
+                    <option key={appearance} value={appearance}>
+                      {t(`settingsDialog.themeOptions.${appearance}`)}
                     </option>
                   ))}
                 </select>

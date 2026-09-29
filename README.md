@@ -52,9 +52,9 @@
 - **About view**: in-workspace panel showing app name, version (from `package.json`), author, repository link, and the story behind the name.
 - **Markdown guide**: bundled localized reference documents (`samples/markdown-guide.<locale>.md`) opened from the status bar in Editor mode with split view enabled, showing the read-only Markdown source beside its rendered preview. You can select and copy examples; narrow workspaces show the source until there is room for both panes.
 - **Recent files**: Welcome screen shows recently opened Markdown files and lets you reopen or remove entries.
-- **Remembered app state**: window size/position, recent files, last used folder, language, preview typography, editor and preview font sizes, reading width, Markdown preview theme, live preview split and pane ratio, and untitled-document recovery preference are persisted in user settings.
+- **Remembered app state**: window size/position, recent files, last used folder, language, preview typography, editor and preview font sizes, reading width, app theme (System/Light/Dark), live preview split and pane ratio, and untitled-document recovery preference are persisted in user settings.
 - **Update checks**: installed Windows NSIS and Linux AppImage builds check GitHub Releases and link to the release page when a newer version is available, so you can choose the correct artifact.
-- **Markdown themes**: dark/light toggle for rendered Markdown. App chrome remains dark; exports always use the light theme.
+- **Light and dark themes**: the whole app (chrome, editor, dialogs, and preview) follows the OS theme by default. The top-bar toggle switches between light and dark, and Settings > General lets you go back to System. Exports always use the light theme.
 - **Internationalization**: English (United States and United Kingdom), Portuguese (Brazil and Portugal), Spanish, French, German, Italian, Dutch, Arabic, Hindi, Japanese, Chinese (Simplified and Traditional, Taiwan), and Russian. Initial language follows the OS when possible and user choice is persisted.
 - **Security**: sandboxed renderer, context isolation, `nodeIntegration: false`, DOMPurify sanitization, and external links opened in the OS browser.
 - **Keyboard shortcuts**: common file, search (Ctrl+G / Ctrl+Shift+G for next and previous match), replace, tab, preview, split view, export, fullscreen, and font-size (Ctrl+Plus / Ctrl+Minus / Ctrl+0, in Editor mode too) actions, plus Ctrl+M to leave editor focus and Ctrl+Q to quit through the unsaved-changes guard; Settings lists every available shortcut.
@@ -186,7 +186,7 @@ electron/
   assetCache.ts       Bounded in-memory LRU cache for served images
   documentStream.ts   Chunked file reads, paired with documentDecoder.ts for streaming UTF-8 decoding
   openPool.ts         Bounded-concurrency map used by the multi-file open session
-  settings.ts         User settings persistence, window bounds, recent files, preview theme, and last dialog directory
+  settings.ts         User settings persistence, window bounds, recent files, app theme, and last dialog directory
   drafts.ts           Recovery storage for untitled documents (draftStore/draftJournal/draftCapacity)
   export.ts           HTML/PDF/PNG export implementation with progress, cancellation, and remembered output directory
   png.ts              Streaming PNG encoder (pngWorker/pngScanlines) that keeps tall-document exports within memory

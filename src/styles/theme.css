@@ -1,7 +1,10 @@
 /* Design tokens — single source of truth for color, type, spacing.
    Mirrored in .ai-framework/DESIGN.md.
-   App chrome is always dark. [data-md-theme] scopes the markdown preview. */
+   :root holds the dark palette; <html data-theme="light"> swaps the whole app to light.
+   [data-md-theme] scopes the markdown preview (and exports, which are always light). */
 :root {
+  color-scheme: dark;
+
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif;
   --font-mono: 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 
@@ -24,7 +27,7 @@
   --sidebar-w: 260px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
 
-  /* dark theme — app chrome + markdown default */
+  /* dark theme — app chrome + markdown */
   --bg: #1e1e1e;
   --bg-elevated: #252526;
   --bg-inset: #2b2b2b;
@@ -42,7 +45,7 @@
   --table-stripe-bg: #252526;
   --danger: #ff6b6b;
 
-  /* app chrome (dark) */
+  /* app chrome */
   --brand: #6ea8ff;
   --sidebar-bg: #1a1a1b;
   --chrome-bg: #202021;
@@ -55,7 +58,7 @@
   --scrollbar-thumb: #4c9aff;
   --scrollbar-thumb-hover: #63a9ff;
 
-  /* modal chrome stays dark even while Markdown preview is light */
+  /* modal chrome — follows the app theme */
   --modal-bg: #202021;
   --modal-surface: #252526;
   --modal-inset: #2b2b2b;
@@ -73,7 +76,57 @@
   --hl-symbol: #56b6c2;
 }
 
-/* Light markdown preview overrides — only affects descendants */
+/* Light app theme — chrome, editor, modals and preview */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.08), 0 4px 16px rgba(15, 23, 42, 0.08);
+
+  --bg: #ffffff;
+  --bg-elevated: #f6f7f9;
+  --bg-inset: #eceff3;
+  --text: #1f2328;
+  --text-muted: #656d76;
+  --border: #d5dae0;
+  --border-strong: #c2c9d1;
+  --accent: #2f6fed;
+  --accent-hover: #1f5dd6;
+  --accent-contrast: #ffffff;
+  --code-bg: #f4f6f8;
+  --code-text: #24292f;
+  --code-border: #d8dee4;
+  --table-header-bg: #f8fafc;
+  --table-stripe-bg: #f5f7fa;
+  --danger: #cf222e;
+
+  --brand: #2f6fed;
+  --sidebar-bg: #f6f7f9;
+  --chrome-bg: #f3f4f6;
+  --nav-hover-bg: #e8ebef;
+  --nav-active-bg: #dde8fc;
+  --nav-active-text: #1f5dd6;
+  --segment-track: #e8ebef;
+  --segment-active-bg: #ffffff;
+  --scrollbar-track: #f3f4f6;
+  --scrollbar-thumb: #2f6fed;
+  --scrollbar-thumb-hover: #1f5dd6;
+
+  --modal-bg: #ffffff;
+  --modal-surface: #f6f7f9;
+  --modal-inset: #eceff3;
+  --modal-text: #1f2328;
+  --modal-text-muted: #656d76;
+  --modal-border: #d5dae0;
+
+  --hl-comment: #6a737d;
+  --hl-keyword: #d73a49;
+  --hl-string: #032f62;
+  --hl-number: #005cc5;
+  --hl-title: #6f42c1;
+  --hl-attr: #e36209;
+  --hl-symbol: #22863a;
+}
+
+/* Light markdown overrides — only affects descendants (used by exports on the dark root) */
 [data-md-theme='light'] {
   --bg: #ffffff;
   --bg-elevated: #f6f7f9;

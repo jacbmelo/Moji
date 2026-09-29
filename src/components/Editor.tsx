@@ -111,6 +111,58 @@ const oneDarkProHighlightStyle = HighlightStyle.define([
 
 const oneDarkProExtensions = [oneDarkProEditorTheme, syntaxHighlighting(oneDarkProHighlightStyle)]
 
+// Light palette mirrors the light `--code-*` / `--hl-*` tokens in theme.css (GitHub light).
+const githubLightEditorTheme = EditorView.theme({
+  '&': {
+    color: '#24292f',
+    backgroundColor: '#ffffff'
+  },
+  '.cm-content': {
+    caretColor: '#24292f'
+  },
+  '.cm-cursor, .cm-dropCursor': {
+    borderLeftColor: '#2f6fed'
+  },
+  '.cm-selectionBackground, ::selection': {
+    backgroundColor: '#cfe0fc'
+  },
+  '&.cm-focused .cm-selectionBackground': {
+    backgroundColor: '#bcd3fb'
+  },
+  '.cm-panels': {
+    color: '#24292f',
+    backgroundColor: '#f6f7f9'
+  },
+  '.cm-gutters': {
+    color: '#8c959f',
+    backgroundColor: '#ffffff',
+    border: 'none'
+  },
+  '.cm-activeLine, .cm-activeLineGutter': {
+    backgroundColor: '#f4f6f8'
+  }
+}, { dark: false })
+
+const githubLightHighlightStyle = HighlightStyle.define([
+  { tag: [tags.heading, tags.keyword, tags.modifier], color: '#d73a49' },
+  { tag: [tags.atom, tags.number, tags.bool], color: '#005cc5' },
+  { tag: [tags.string, tags.special(tags.string)], color: '#032f62' },
+  { tag: [tags.comment, tags.quote], color: '#6a737d', fontStyle: 'italic' },
+  { tag: [tags.variableName, tags.propertyName], color: '#24292f' },
+  { tag: [tags.typeName, tags.className, tags.labelName], color: '#e36209' },
+  { tag: [tags.definition(tags.name), tags.function(tags.variableName)], color: '#6f42c1' },
+  { tag: [tags.operator, tags.punctuation, tags.separator], color: '#22863a' },
+  { tag: [tags.link, tags.url, tags.escape], color: '#005cc5' },
+  { tag: [tags.emphasis], fontStyle: 'italic' },
+  { tag: [tags.strong], fontWeight: '700' }
+])
+
+const githubLightExtensions = [githubLightEditorTheme, syntaxHighlighting(githubLightHighlightStyle)]
+
+function editorThemeExtensions(theme: Theme) {
+  return theme === 'dark' ? oneDarkProExtensions : githubLightExtensions
+}
+
 function wrapMarkdown(before: string, after = before, placeholder = ''): Command {
   return (view) => {
     if (view.state.readOnly) return false
@@ -445,7 +497,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor({ do
         EditorView.domEventHandlers({
           blur: () => onBlurRef.current()
         }),
-        themeCompartment.current.of(theme === 'dark' ? oneDarkProExtensions : []),
+        themeCompartment.current.of(editorThemeExtensions(theme)),
         EditorView.updateListener.of((update) => {
           const externalSync = update.transactions.some((transaction) => transaction.annotation(externalContentSync))
           if (update.docChanged || update.viewportChanged) notifyVisibleLine()
@@ -561,7 +613,7 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor({ do
   // Reconfigure only the theme when it changes.
   useEffect(() => {
     viewRef.current?.dispatch({
-      effects: themeCompartment.current.reconfigure(theme === 'dark' ? oneDarkProExtensions : [])
+      effects: themeCompartment.current.reconfigure(editorThemeExtensions(theme))
     })
   }, [theme])
 

@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, protocol, shell } from 'electron'
+import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, protocol, shell } from 'electron'
 import { readFile, stat, writeFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import { randomUUID } from 'node:crypto'
@@ -572,6 +572,10 @@ function createWindow(): void {
     if (isMarkdown(filePath)) grantDocument(filePath)
   }
 
+  // `themeSource` drives `prefers-color-scheme` in the renderer and native controls, so the
+  // first paint already uses the persisted appearance.
+  nativeTheme.themeSource = getSettings().appearance
+
   const iconPath = app.isPackaged ? join(process.resourcesPath, 'icon.png') : join(app.getAppPath(), 'build', 'icon.png')
   mainWindow = new BrowserWindow({
     ...windowOptionsFromSettings(),
@@ -579,7 +583,7 @@ function createWindow(): void {
     minHeight: 480,
     show: false,
     icon: existsSync(iconPath) ? iconPath : undefined,
-    backgroundColor: getSettings().theme === 'dark' ? '#1e1e1e' : '#ffffff',
+    backgroundColor: windowBackgroundColor(),
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
@@ -701,13 +705,20 @@ function draftFailure(err: unknown): { error: string; problem?: DraftPersistProb
   return isDraftPersistError(err) ? { error, problem: err.problem } : { error }
 }
 
+/** Matches `--bg` of the resolved theme so resizes and reloads never flash the other palette. */
+function windowBackgroundColor(): string {
+  return nativeTheme.shouldUseDarkColors ? '#1e1e1e' : '#ffffff'
+}
+
 function registerIpc(): void {
   handleFromRenderer(IPC.getSettings, (): Settings => getSettings())
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)
     if (patch.recentFiles) patch.recentFiles = patch.recentFiles.filter((filePath) => capabilities.allows(filePath))
-    return updateSettings(patch)
+    const next = updateSettings(patch)
+    if (nativeTheme.themeSource !== next.appearance) nativeTheme.themeSource = next.appearance
+    return next
   })
 
   handleFromRenderer(IPC.getDrafts, (): Promise<AutoSaveDraft[]> => getDrafts())
@@ -913,6 +924,10 @@ if (!gotLock) {
     installApplicationMenu()
     createWindow()
     initializeUpdater()
+
+    nativeTheme.on('updated', () => {
+      mainWindow?.setBackgroundColor(windowBackgroundColor())
+    })
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()

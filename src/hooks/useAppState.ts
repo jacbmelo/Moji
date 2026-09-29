@@ -18,11 +18,38 @@ export interface WorkspaceDocument {
 
 export function useSettingsState() {
   const [settings, setSettings] = useState<Settings>({
-    theme: 'dark', previewTheme: 'dark', language: 'en', previewFontFamily: 'Inter', previewFontSize: 16, editorFontSize: 14,
+    appearance: 'system', language: 'en', previewFontFamily: 'Inter', previewFontSize: 16, editorFontSize: 14,
     previewLineHeight: 1.7, previewFluidWidth: false, splitView: false, splitRatio: SPLIT_RATIO_DEFAULT, previewWidth: PREVIEW_WIDTH_DEFAULT, autoSave: true, recentFiles: []
   })
-  const [mdTheme, setMdTheme] = useState<Theme>('dark')
-  return { settings, setSettings, mdTheme, setMdTheme }
+  const mdTheme = useResolvedTheme()
+  return { settings, setSettings, mdTheme }
+}
+
+const darkSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+/**
+ * Theme currently in effect for the whole app. The main process maps `settings.appearance` onto
+ * `nativeTheme.themeSource`, which Chromium reports back through `prefers-color-scheme`, so this
+ * also follows the OS while the preference is `system`.
+ */
+export function resolvedTheme(): Theme {
+  return darkSchemeQuery.matches ? 'dark' : 'light'
+}
+
+/** Stamps the resolved theme on `<html data-theme>`, which scopes the chrome tokens in theme.css. */
+export function applyDocumentTheme(theme: Theme = resolvedTheme()): void {
+  document.documentElement.dataset.theme = theme
+}
+
+function useResolvedTheme(): Theme {
+  const [theme, setTheme] = useState<Theme>(resolvedTheme)
+  useEffect(() => {
+    const onChange = (): void => setTheme(resolvedTheme())
+    darkSchemeQuery.addEventListener('change', onChange)
+    return () => darkSchemeQuery.removeEventListener('change', onChange)
+  }, [])
+  useEffect(() => applyDocumentTheme(theme), [theme])
+  return theme
 }
 
 export function useDocumentState() {

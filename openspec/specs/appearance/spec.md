@@ -53,7 +53,7 @@ The system SHALL let the user increase, decrease, and reset the font size in bot
 - **THEN** both the preview and the editor start at the sizes last configured
 
 ### Requirement: Light and dark theme
-The system SHALL provide both a light and a dark theme and let the user toggle between them at any time. Both preview content and application chrome SHALL adapt to the active theme with adequate contrast.
+The system SHALL provide both a light and a dark theme and let the user toggle between them at any time from the top bar. The whole application — chrome, source editor, modals, and preview content — SHALL adapt to the active theme with adequate contrast. Exports SHALL always use the light theme.
 
 #### Scenario: Toggle to dark theme
 - **WHEN** the user toggles the theme to dark
@@ -71,8 +71,16 @@ The system SHALL remember the last selected theme and apply it on the next launc
 - **THEN** the previously selected theme is applied on startup
 
 ### Requirement: Follow system theme by default
-On first run, the system SHALL default to the operating system's color scheme preference.
+On first run, the system SHALL default to the operating system's color scheme preference. Settings SHALL offer System, Light, and Dark; while System is selected, the app SHALL follow OS changes live.
 
 #### Scenario: First run matches OS
 - **WHEN** the user launches the app for the first time with the OS set to dark mode
 - **THEN** the app starts in the dark theme
+
+#### Scenario: Follow OS changes
+- **WHEN** the theme preference is System and the user switches the OS between light and dark
+- **THEN** the app switches theme without a restart
+
+#### Scenario: Toolbar toggle leaves System mode
+- **WHEN** the theme preference is System and the user presses the top-bar theme button
+- **THEN** the app switches to the opposite theme and stores it as an explicit Light or Dark preference

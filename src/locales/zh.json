@@ -146,7 +146,7 @@
     "fontSize": "字号",
     "lineHeight": "行高",
     "width": "阅读宽度",
-    "autoSave": "重启后恢复未保存文档",
+    "autoSave": "重启后恢复未保存文档", "theme": "主题", "themeOptions": { "system": "跟随系统", "light": "浅色", "dark": "深色" },
     "shortcutSections": {
       "file": "文件",
       "search": "搜索",
