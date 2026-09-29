@@ -13,7 +13,7 @@
 > All credit for the original application goes to its author. See [CREDITS.md](CREDITS.md).
 
 <p align="center">
-  <img src="docs/repository-open-graph.png" alt="repository-open-graph" width="100%" />
+  <img src="docs/plus/screenshot-main.png" alt="Moji Plus showing the Markdown guide in preview mode" width="100%" />
 </p>
 
 <p align="center">
