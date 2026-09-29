@@ -26,6 +26,12 @@ window.__mojiPerformance = {
   getReport: async () => ({ renderer: getRendererPerformanceReport(), main: await window.api.getPerformanceReport() })
 }
 
+// Window controls are drawn by the OS over the top bar; CSS reserves room for them per platform.
+document.documentElement.dataset.platform = window.api.platform
+window.api.onFullscreenChange((fullscreen) => {
+  document.documentElement.toggleAttribute('data-fullscreen', fullscreen)
+})
+
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element not found')
 

@@ -20,6 +20,8 @@
 
   --toolbar-h: 44px;
   --topbar-h: 52px;
+  /* room the macOS traffic lights take on the top bar's first row (see trafficLightPosition) */
+  --traffic-lights-w: 68px;
   --statusbar-h: 34px;
   --sidebar-w: 260px;
   --shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);

@@ -157,6 +157,14 @@ const api = {
     const listener = (_e: unknown, state: UpdateState): void => cb(state)
     ipcRenderer.on(IPC.updateState, listener)
     return () => ipcRenderer.removeListener(IPC.updateState, listener)
+  },
+  /** Native window controls sit over the top bar; the renderer reserves room for them per OS. */
+  platform: process.platform,
+  /** macOS hides the traffic lights in fullscreen, so the room reserved for them must go too. */
+  onFullscreenChange: (cb: (fullscreen: boolean) => void): (() => void) => {
+    const listener = (_e: unknown, fullscreen: boolean): void => cb(fullscreen)
+    ipcRenderer.on(IPC.fullscreenChanged, listener)
+    return () => ipcRenderer.removeListener(IPC.fullscreenChanged, listener)
   }
 }
 

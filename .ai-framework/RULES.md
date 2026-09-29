@@ -17,7 +17,7 @@ Projeto atual: Moji, aplicativo desktop Electron + React + TypeScript para abrir
 
 ### Main Process (`electron/`)
 
-- `main.ts`: janela (`BrowserWindow` 1000x760, min 640x480), single-instance lock com forward de argumentos de arquivo, handlers IPC (via wrapper que so aceita eventos vindos da janela do app), abertura via dialogo nativo, CLI (`process.argv`), evento `open-file` (macOS/Linux), drag-drop (via `webUtils.getPathForFile`) e menu de aplicacao (apenas no macOS; Windows e Linux ficam sem menu).
+- `main.ts`: janela (`BrowserWindow` 1000x760, min 640x480, sem title bar nativa: `titleBarStyle: 'hidden'` com semaforos via `trafficLightPosition` no macOS e `titleBarOverlay` no Windows/Linux; estado de fullscreen enviado ao renderer por `IPC.fullscreenChanged`), single-instance lock com forward de argumentos de arquivo, handlers IPC (via wrapper que so aceita eventos vindos da janela do app), abertura via dialogo nativo, CLI (`process.argv`), evento `open-file` (macOS/Linux), drag-drop (via `webUtils.getPathForFile`) e menu de aplicacao (apenas no macOS; Windows e Linux ficam sem menu).
 - `preload.ts`: expoe API segura ao renderer via `contextBridge` com tipagem completa (`RendererApi`).
 - `shared.ts`: tipos e constantes compartilhados entre main, preload e renderer (`Settings`, `ExportFormat`, `SUPPORTED_LANGUAGES`, canais `IPC`, formatos/tamanhos de exportacao, tipos de progresso de abertura/exportacao/atualizacao, tipos de draft e metricas de performance).
 - `ipcInput.ts`: normaliza valores vindos do renderer por IPC (`sanitizeSettingsPatch`, `sanitizeDraft`, `suggestedMarkdownName`, `isMarkdown`). Todo payload do renderer passa por aqui antes de ser persistido ou usado em dialogo nativo.
@@ -138,6 +138,7 @@ O padrao visual esta documentado em `.ai-framework/DESIGN.md`.
 - Manter chrome do app escuro; alternancia de tema vale para o preview Markdown. Exportacao (HTML/PDF/PNG) sempre usa o tema claro.
 - A fonte padrao de exibicao e `Inter`; nao alterar o valor padrao, remove-la das configuracoes ou troca-la por stack de sistema sem pedido explicito do usuario.
 - Reutilizar classes/componentes existentes antes de criar variacoes.
+- A janela nao tem title bar nativa; a top bar ocupa o topo e deve manter livre a area dos controles nativos (`data-platform`/`data-fullscreen` em `<html>`). Todo elemento interativo novo na top bar precisa de `-webkit-app-region: no-drag`.
 - Manter layout compacto: top bar, abas de documentos, sidebar/outline, workspace (editor, preview ou split view) e status bar.
 - Priorizar leitura, contraste, truncamento de textos longos e estados visuais previsiveis.
 - Nao usar cores, sombras, raios ou espacamentos soltos quando houver token existente.
