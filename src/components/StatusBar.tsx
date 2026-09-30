@@ -27,7 +27,7 @@ function StatusBarView(props: StatusBarProps): JSX.Element {
           {t('statusbar.guide')}
         </button>
         <span className="statusbar__count">{t('statusbar.lineCount', { count: props.stats.lines })}</span>
-        <span className="statusbar__count">{t('statusbar.tokenCount', { count: props.stats.tokens })}</span>
+        <span className="statusbar__count" title={t('statusbar.tokenEstimate')}>{t('statusbar.tokenCount', { count: props.stats.tokens })}</span>
         <span className="statusbar__count">{t('statusbar.wordCount', { count: props.stats.words })}</span>
       </div>
     </footer>

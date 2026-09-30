@@ -3,7 +3,9 @@
     "name": "Moji Plus v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}"
+    "brand": "Moji Plus v{{version}}",
+    "tokenCount": "Tokens: ~{{count}}",
+    "tokenEstimate": "Estimate: about 4 characters per token. The actual count depends on the model and language."
   },
   "welcome": {
     "title": "Moji Plus v{{version}}"

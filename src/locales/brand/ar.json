@@ -3,7 +3,9 @@
     "name": "Moji Plus v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}"
+    "brand": "Moji Plus v{{version}}",
+    "tokenCount": "الرموز: ~{{count}}",
+    "tokenEstimate": "تقدير: نحو 4 أحرف لكل رمز. يعتمد العدد الفعلي على النموذج واللغة."
   },
   "welcome": {
     "title": "Moji Plus v{{version}}"

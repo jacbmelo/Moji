@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The status bar token count is now shown as an estimate (~N), with a tooltip explaining it assumes about 4 characters per token.
+
 ## [1.0.1] - 2026-09-29 — based on Moji 1.0.7
 
 ### Added

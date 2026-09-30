@@ -3,7 +3,9 @@
     "name": "Moji Plus v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}"
+    "brand": "Moji Plus v{{version}}",
+    "tokenCount": "टोकन: ~{{count}}",
+    "tokenEstimate": "अनुमान: लगभग 4 वर्ण प्रति टोकन। वास्तविक संख्या मॉडल और भाषा पर निर्भर करती है।"
   },
   "welcome": {
     "title": "Moji Plus v{{version}}"

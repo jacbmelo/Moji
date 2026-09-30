@@ -3,7 +3,9 @@
     "name": "Moji Plus v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}"
+    "brand": "Moji Plus v{{version}}",
+    "tokenCount": "Tokens：~{{count}}",
+    "tokenEstimate": "估算值：约每 4 个字符计 1 个 token。实际数量取决于模型和语言。"
   },
   "welcome": {
     "title": "Moji Plus v{{version}}"

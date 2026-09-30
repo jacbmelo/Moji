@@ -3,7 +3,9 @@
     "name": "Moji Plus v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}"
+    "brand": "Moji Plus v{{version}}",
+    "tokenCount": "Токенов: ~{{count}}",
+    "tokenEstimate": "Оценка: примерно 4 символа на токен. Точное число зависит от модели и языка."
   },
   "welcome": {
     "title": "Moji Plus v{{version}}"

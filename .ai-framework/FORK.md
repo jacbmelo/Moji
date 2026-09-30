@@ -18,6 +18,7 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 ## Comportamento proprio do fork
 
 - Barras de scroll no Windows/Linux: ficam transparentes e so aparecem durante o scroll ou com o rato sobre elas, como no macOS. Vive em ficheiros do fork (`src/styles/plus-scrollbars.css`, `src/lib/autoHideScrollbars.ts`), ligados em `src/main.tsx`; nao alterar as regras de scrollbar do `app.css` do upstream para isto.
+- Contagem de tokens na status bar: e uma estimativa (caracteres / 4), por isso aparece como `~N` com tooltip. Os textos sobrepoem `statusbar.tokenCount` e acrescentam `statusbar.tokenEstimate` em `src/locales/brand/`; o `title` fica no `StatusBar.tsx` do upstream (rever em cada sync).
 - Atualizacoes no macOS: ao contrario do upstream, o macOS tambem verifica as GitHub Releases (`supportsAutomaticUpdates()` em `electron/updater.ts`, rever em cada sync). So verifica: `autoDownload` fica desligado e o aviso abre as Releases, por isso a app nao precisa de ser assinada. Exige o `latest-mac.yml` em cada release.
 
 ## Creditos (obrigatorio)
