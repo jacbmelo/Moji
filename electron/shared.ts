@@ -281,6 +281,7 @@ export const IPC = {
   requestQuit: 'app:request-quit',
   // main -> renderer push channels
   requestClose: 'app:request-close',
+  selectAll: 'app:select-all',
   openDocument: 'doc:open',
   exportProgress: 'doc:export-progress',
   openManyProgress: 'file:open-many-progress',

@@ -128,6 +128,31 @@ interface OpenManySessionState {
 // `draftSavedRevision === null` means no draft snapshot exists on disk yet; that is only
 // dirty once the document has actually been edited (revision > 0). A freshly created or
 // just-restored draft with revision 0 has nothing to flush.
+function focusAcceptsText(): boolean {
+  const element = document.activeElement
+  if (!(element instanceof HTMLElement)) return false
+  return (
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement ||
+    element instanceof HTMLSelectElement ||
+    element.isContentEditable
+  )
+}
+
+/**
+ * Select All scoped to the document. Outside a text field the browser would select the whole
+ * window (top bar, tabs, status bar), so the preview's rendered Markdown is selected instead.
+ * Text fields, the editor and dialogs keep the native command, the same one the macOS menu ran.
+ */
+function selectAllInDocument(previewPane: HTMLElement | null): void {
+  const body = previewPane?.querySelector('.markdown-body')
+  if (!body || focusAcceptsText() || document.activeElement?.closest('[role="dialog"]')) {
+    document.execCommand('selectAll')
+    return
+  }
+  document.getSelection()?.selectAllChildren(body)
+}
+
 function draftIsDirty(doc: Pick<DocumentState, 'draftSavedRevision' | 'revision'>): boolean {
   if (doc.draftSavedRevision === doc.revision) return false
   return !(doc.draftSavedRevision === null && doc.revision === 0)
@@ -1777,6 +1802,13 @@ export function App(): JSX.Element {
 
       if (!onlyPrimary) return
 
+      if (key === 'a' && !event.shiftKey) {
+        // Text fields and the editor answer their own Select All.
+        if (focusAcceptsText()) return
+        event.preventDefault()
+        selectAllInDocument(previewPaneRef.current)
+        return
+      }
       if (key === 'n') {
         event.preventDefault()
         doNew()
@@ -1900,6 +1932,8 @@ export function App(): JSX.Element {
 
   // --- Wire main-process requests + pushed documents --------------------
   useEffect(() => {
+    // macOS Edit > Select All (menu item or its Command+A when nothing above claimed it).
+    const offSelectAll = window.api.onSelectAll(() => selectAllInDocument(previewPaneRef.current))
     const offClose = window.api.onCloseRequest(() => {
       void confirmAnyUnsaved().then((result) => window.api.confirmClose(result === 'proceed'))
     })
@@ -1945,6 +1979,7 @@ export function App(): JSX.Element {
     })
     return () => {
       offExport()
+      offSelectAll()
       offClose()
       offDoc()
       offProgress()

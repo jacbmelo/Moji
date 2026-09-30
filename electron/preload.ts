@@ -153,6 +153,11 @@ const api = {
     ipcRenderer.on(IPC.requestClose, listener)
     return () => ipcRenderer.removeListener(IPC.requestClose, listener)
   },
+  onSelectAll: (cb: () => void): (() => void) => {
+    const listener = (): void => cb()
+    ipcRenderer.on(IPC.selectAll, listener)
+    return () => ipcRenderer.removeListener(IPC.selectAll, listener)
+  },
   onUpdateState: (cb: (state: UpdateState) => void): (() => void) => {
     const listener = (_e: unknown, state: UpdateState): void => cb(state)
     ipcRenderer.on(IPC.updateState, listener)

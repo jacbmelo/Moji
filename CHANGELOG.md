@@ -9,6 +9,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - The status bar token count is now shown as an estimate (~N), with a tooltip explaining it assumes about 4 characters per token.
+- Select All (Cmd/Ctrl+A, and Edit > Select All on macOS) in the preview now selects only the rendered document instead of the whole window.
 
 ## [1.0.1] - 2026-09-29 — based on Moji 1.0.7
 

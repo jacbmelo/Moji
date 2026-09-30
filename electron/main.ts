@@ -466,7 +466,23 @@ function installApplicationMenu(): void {
           { label: `Quit ${app.name}`, accelerator: 'Command+Q', click: () => requestQuit() }
         ]
       },
-      { role: 'editMenu' },
+      {
+        label: 'Edit',
+        submenu: [
+          { role: 'undo' },
+          { role: 'redo' },
+          { type: 'separator' },
+          { role: 'cut' },
+          { role: 'copy' },
+          { role: 'paste' },
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          // The renderer scopes Select All to the document instead of the whole window.
+          { label: 'Select All', accelerator: 'Command+A', click: () => mainWindow?.webContents.send(IPC.selectAll) },
+          { type: 'separator' },
+          { label: 'Speech', submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }] }
+        ]
+      },
       // No default Miniaturize here: its Command+M would fight the editor's own "exit editor
       // focus" binding (`Mod-m` in Editor.tsx), which the settings screen advertises. The
       // window's yellow traffic light still minimizes without a menu item for it.
