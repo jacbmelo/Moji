@@ -55,6 +55,17 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.0.2" date="2026-10-02">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>The status bar token count is shown as an estimate.</li>
+          <li>Select All in the preview selects only the document.</li>
+          <li>Local images in HTML img tags load in the preview and in exports.</li>
+          <li>The About panel scrolls in small windows.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.1" date="2026-09-29">
       <description>
         <p>Based on Moji 1.0.7.</p>

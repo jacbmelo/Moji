@@ -6,10 +6,17 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-10-02 — based on Moji 1.0.7
+
 ### Changed
 
 - The status bar token count is now shown as an estimate (~N), with a tooltip explaining it assumes about 4 characters per token.
 - Select All (Cmd/Ctrl+A, and Edit > Select All on macOS) in the preview now selects only the rendered document instead of the whole window.
+
+### Fixed
+
+- Local images in raw HTML `<img>` tags with a relative path now load in the preview and in exports, like Markdown `![](...)` images.
+- The About panel scrolls when the window is too small to show all of it.
 
 ## [1.0.1] - 2026-09-29 — based on Moji 1.0.7
 
