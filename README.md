@@ -124,11 +124,11 @@ Moji Plus keeps all its data in one folder per user, `moji-plus`:
 
 The folder contains:
 
-- `settings.json`: preferences, window size and position, theme, language, recent files, and the last folder used.
-- `drafts/`: recovery copies of untitled documents that were never saved to a file.
+- `settings.json`: preferences, window size, position and maximized state, theme, language, recent files, the last folder used, the view mode and outline, and the tabs of the last session with each one's reading position.
+- `drafts/`: recovery copies of untitled documents that were never saved to a file, and of unsaved changes to files.
 - Electron and Chromium caches (`Cache`, `GPUCache`, `Local Storage`, and others).
 
-> **Deleting the folder permanently removes the recovered drafts.** Save any untitled document you want to keep before you delete it. The folder of the original Moji is `moji`, not `moji-plus`: leave it alone unless you also want to reset the original app.
+> **Deleting the folder permanently removes the recovered drafts.** Save any untitled document, and any file with unsaved changes, that you want to keep before you delete it. The folder of the original Moji is `moji`, not `moji-plus`: leave it alone unless you also want to reset the original app.
 
 Quit Moji Plus first, then:
 
