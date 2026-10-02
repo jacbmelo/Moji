@@ -6,7 +6,7 @@
 
 <p align="center">A lightweight, clean desktop app for opening, reading, editing, and exporting Markdown files.</p>
 
-<p align="center"><strong>Current version:</strong> v1.0.2 · based on Moji v1.0.7</p>
+<p align="center"><strong>Current version:</strong> v1.1.0 · based on Moji v1.0.7</p>
 
 > **Moji Plus is a derivative of [Moji](https://github.com/alexishida/Moji), created by [Alex Ishida](https://github.com/alexishida) and distributed under the MIT License.**
 > It keeps receiving the changes made to the original project and adds its own changes, maintained independently.

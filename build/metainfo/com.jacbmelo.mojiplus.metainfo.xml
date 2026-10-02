@@ -55,6 +55,17 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.1.0" date="2026-10-02">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>Open documents changed or removed by other applications are detected, and saving never overwrites such a change without asking.</li>
+          <li>The last session reopens: tabs in order, unsaved changes to files, view mode, outline, full width, maximized window and each document's reading position.</li>
+          <li>Undoing every edit clears the unsaved-changes mark.</li>
+          <li>Closing an untitled document with content asks whether to save it.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.0.2" date="2026-10-02">
       <description>
         <p>Based on Moji 1.0.7.</p>

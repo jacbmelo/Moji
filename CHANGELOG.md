@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-02 — based on Moji 1.0.7
+
 ### Added
 
 - Open documents are watched for changes made by other applications. A document without unsaved edits reloads automatically with a short notice; one with unsaved edits, or whose file was deleted or moved, asks whether to reload, save under another name, or keep the local version. Background tabs are asked about when selected.
