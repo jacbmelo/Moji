@@ -221,6 +221,55 @@ function resolveLocalUrl(source: string, documentPath: string | null | undefined
   }
 }
 
+/** Attributes that point a local image at its file, or `null` when `source` is not local. */
+function localImageAttrs(source: string, context: MarkdownRenderEnvironment): Array<[string, string]> | null {
+  if (source.startsWith('#')) return null
+  const resolved = resolveLocalUrl(source, context.documentPath)
+  if (!resolved?.startsWith('file:')) return null
+  if (context.assetMode !== 'app') return [['src', resolved]]
+  return [
+    ['data-local-asset', localAssetUrl(resolved)],
+    ['src', EMPTY_IMAGE],
+    ['loading', 'lazy'],
+    ['decoding', 'async']
+  ]
+}
+
+const HTML_IMG_TAG = /<img\b[^>]*>/gi
+const HTML_SRC_ATTR = /(\ssrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i
+const HTML_LAZY_ATTRS = /\s(?:loading|decoding)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+)/gi
+
+function decodeHtmlAttr(value: string): string {
+  return value
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
+function resolveRawHtmlImages(html: string, context: MarkdownRenderEnvironment): string {
+  if (!/<img\b/i.test(html)) return html
+  return html.replace(HTML_IMG_TAG, (tag) => {
+    const match = HTML_SRC_ATTR.exec(tag)
+    if (!match) return tag
+    const source = decodeHtmlAttr(match[2] ?? match[3] ?? match[4] ?? '').trim()
+    const attrs = source ? localImageAttrs(source, context) : null
+    if (!attrs) return tag
+
+    const rendered = attrs
+      .map(([name, value]) => ` ${name}="${escapeHtmlAttr(value)}"`)
+      .join('')
+    let rewritten = tag.slice(0, match.index) + tag.slice(match.index + match[0].length)
+    if (context.assetMode === 'app') rewritten = rewritten.replace(HTML_LAZY_ATTRS, '')
+    return rewritten.replace(/^<img\b/i, `<img${rendered}`)
+  })
+}
+
+function escapeHtmlAttr(value: string): string {
+  return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
 export function documentAssetBaseUrl(documentPath: string | null | undefined): string | null {
   if (!documentPath) return null
   const normalized = documentPath.replace(/\\/g, '/')
@@ -307,22 +356,21 @@ function createMarkdownRenderer(): MarkdownIt {
   renderer.renderer.rules.image = (tokens, index, options, env, self): string => {
     const token = tokens[index]
     const source = token.attrGet('src')?.trim()
-    const context = env as MarkdownRenderEnvironment
-    if (source && !source.startsWith('#')) {
-      const resolved = resolveLocalUrl(source, context.documentPath)
-      if (resolved?.startsWith('file:')) {
-        if (context.assetMode === 'app') {
-          token.attrSet('data-local-asset', localAssetUrl(resolved))
-          token.attrSet('src', EMPTY_IMAGE)
-          token.attrSet('loading', 'lazy')
-          token.attrSet('decoding', 'async')
-        } else {
-          token.attrSet('src', resolved)
-        }
-      }
+    const attrs = source ? localImageAttrs(source, env as MarkdownRenderEnvironment) : null
+    if (attrs) {
+      for (const [name, value] of attrs) token.attrSet(name, value)
     }
     return defaultImageRenderer?.(tokens, index, options, env, self) ?? self.renderToken(tokens, index, options)
   }
+
+  // Raw `<img>` tags in HTML need the same local resolution as `![](...)`, otherwise a
+  // relative `src` is resolved against the app page instead of the document's folder.
+  renderer.renderer.rules.html_block = (tokens, index, _options, env): string => (
+    resolveRawHtmlImages(tokens[index].content, env as MarkdownRenderEnvironment)
+  )
+  renderer.renderer.rules.html_inline = (tokens, index, _options, env): string => (
+    resolveRawHtmlImages(tokens[index].content, env as MarkdownRenderEnvironment)
+  )
 
   const defaultLinkRenderer = renderer.renderer.rules.link_open
   renderer.renderer.rules.link_open = (tokens, index, options, env, self): string => {
