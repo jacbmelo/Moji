@@ -17,6 +17,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - The app reopens in the mode it was left in (preview or editor), with the outline shown or hidden, full width on or off, and the window maximized if it was. Full width used to reset on every launch.
 - Each document keeps its reading position: switching tabs, or quitting and reopening, returns to the place it was read, in the preview and in the editor. A tab no longer opens at the scroll offset of the tab shown before it.
+- Closing the tab of an untitled document with content now asks whether to save it, like a file with unsaved changes. With recovery drafts on it used to close without asking and discard the text.
 - Undoing every edit (or retyping the original text) clears the unsaved-changes mark instead of leaving the document marked as changed.
 - The recovery option is now labelled "Keep new documents and unsaved changes between sessions", since it also covers files.
 

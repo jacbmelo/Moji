@@ -129,6 +129,10 @@ The system SHALL persist documents without a filesystem path as internal recover
 - **WHEN** a recovered or untitled document is saved to a filesystem path
 - **THEN** the application removes its internal recovery draft
 
+#### Scenario: Closing an untitled document asks
+- **WHEN** the user closes the tab of an untitled document with content, even one already kept as a recovery draft
+- **THEN** the application asks to save, discard, or cancel before closing it
+
 #### Scenario: Remove recovery after closing tab
 - **WHEN** the user closes or discards an untitled document
 - **THEN** the application removes its internal recovery draft so it is not restored later

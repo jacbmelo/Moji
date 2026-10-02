@@ -187,13 +187,12 @@ function wantsDraft(doc: DocumentState): boolean {
 }
 
 /**
- * `quit` ends the session, so with autosave a file whose edits already sit in a recovery draft
- * reopens with them and needs no question. Closing a tab ends that file's draft, so a file with
- * unsaved edits still asks.
+ * `quit` ends the session, so with autosave a document whose work already sits in a recovery
+ * draft reopens with it and needs no question. Closing a tab throws that draft away, so any
+ * document with unsaved changes asks first, untitled or not.
  */
 function needsUnsavedConfirmation(doc: DocumentState, autoSave: boolean, context: 'close' | 'quit'): boolean {
-  if (autoSave && !doc.path && doc.draftId) return draftIsDirty(doc)
-  if (autoSave && context === 'quit' && doc.path && wantsDraft(doc)) return draftIsDirty(doc)
+  if (autoSave && context === 'quit' && wantsDraft(doc)) return draftIsDirty(doc)
   return doc.savedRevision !== doc.revision
 }
 
