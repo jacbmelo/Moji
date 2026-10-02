@@ -21,5 +21,24 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} peut être téléchargé depuis les versions GitHub."
+  },
+  "externalChange": {
+    "modifiedTitle": "Fichier modifié dans une autre application",
+    "modifiedBody": "« {{name}} » a été modifié en dehors de Moji Plus et contient ici des modifications non enregistrées. Recharger abandonne vos modifications ; Enregistrer sous conserve les deux versions.",
+    "deletedTitle": "Fichier supprimé",
+    "deletedBody": "« {{name}} » a été supprimé ou déplacé en dehors de Moji Plus. Enregistrez-le pour le recréer ou enregistrez-le sous un autre nom.",
+    "conflictTitle": "Fichier modifié sur le disque",
+    "conflictBody": "« {{name}} » a été modifié dans une autre application depuis son ouverture. Le remplacer supprime ces modifications.",
+    "reload": "Recharger",
+    "save": "Enregistrer",
+    "saveAs": "Enregistrer sous…",
+    "overwrite": "Remplacer",
+    "keep": "Garder les miennes",
+    "cancel": "Annuler",
+    "reloaded": "« {{name}} » a été mis à jour avec la version du disque."
+  },
+  "settingsDialog": {
+    "autoSave": "Conserver les nouveaux documents et les modifications non enregistrées entre les sessions",
+    "reopenFiles": "Rouvrir les fichiers ouverts au démarrage"
   }
 }

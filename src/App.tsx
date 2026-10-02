@@ -8,6 +8,7 @@ import { Welcome } from './components/Welcome'
 import { DocumentTabs, type DocumentTabItem } from './components/DocumentTabs'
 import { SplitView } from './components/SplitView'
 import { ConfirmDialog, type ConfirmChoice } from './components/ConfirmDialog'
+import { ExternalChangeDialog, type ExternalChangeChoice, type ExternalChangeVariant } from './components/ExternalChangeDialog'
 import type { ExportDialogOptions } from './components/ExportDialog'
 import type { EditorDocumentStats, EditorHandle, EditorIdleStats } from './components/Editor'
 import { SettingsDialog } from './components/SettingsDialog'
@@ -43,6 +44,10 @@ import {
   type DraftEditPayload,
   type ExportFormat,
   type ExportProgress as ExportProgressState,
+  type ExternalChangeKind,
+  type RestoredDraft,
+  type SaveOptions,
+  type SessionEntry,
   type Settings,
 } from '../electron/shared'
 import packageJson from '../package.json'
@@ -84,6 +89,15 @@ const MAX_EDITOR_FONT_SIZE = 24
 /** Matches the `.cm-editor` base size, so an untouched editor looks unchanged. */
 const DEFAULT_EDITOR_FONT_SIZE = 14
 
+/** Longest wait for a tab's preview before its saved reading position is given up on. */
+const SCROLL_RESTORE_TIMEOUT_MS = 3000
+
+/** Pause after scrolling stops before the reading position is written to the session. */
+const SESSION_SCROLL_WRITE_DELAY_MS = 1000
+
+/** Pause after an edit before checking whether the text is back to the saved version. */
+const UNDO_TO_SAVED_CHECK_DELAY_MS = 300
+
 /** Below this file count, an open-dialog selection resolves fast enough that a progress banner would only flicker. */
 const LARGE_OPEN_SELECTION_THRESHOLD = 4
 type DocumentState = WorkspaceDocument
@@ -92,7 +106,12 @@ interface DocumentInput {
   path: string | null
   title?: string | null
   content: string
-  savedContent?: string
+  /** The last saved text; omitted when `content` is it. `null` when it is not known. */
+  savedContent?: string | null
+  /** Starts with unsaved changes even though `savedContent` is not known (a restored file draft). */
+  dirty?: boolean
+  /** Reading position restored from the last session. */
+  scrollLine?: number
   draftId?: string | null
   draftSavedContent?: string | null
   readOnly?: boolean
@@ -158,8 +177,23 @@ function draftIsDirty(doc: Pick<DocumentState, 'draftSavedRevision' | 'revision'
   return !(doc.draftSavedRevision === null && doc.revision === 0)
 }
 
-function needsUnsavedConfirmation(doc: DocumentState, autoSave: boolean): boolean {
+/**
+ * Whether a document's unsaved work should be kept as a recovery draft: every untitled document,
+ * and a file only while it differs from what is saved on disk.
+ */
+function wantsDraft(doc: DocumentState): boolean {
+  if (doc.readOnly || !doc.draftId) return false
+  return !doc.path || doc.revision !== doc.savedRevision
+}
+
+/**
+ * `quit` ends the session, so with autosave a file whose edits already sit in a recovery draft
+ * reopens with them and needs no question. Closing a tab ends that file's draft, so a file with
+ * unsaved edits still asks.
+ */
+function needsUnsavedConfirmation(doc: DocumentState, autoSave: boolean, context: 'close' | 'quit'): boolean {
   if (autoSave && !doc.path && doc.draftId) return draftIsDirty(doc)
+  if (autoSave && context === 'quit' && doc.path && wantsDraft(doc)) return draftIsDirty(doc)
   return doc.savedRevision !== doc.revision
 }
 
@@ -196,6 +230,15 @@ function getDocumentStats(text: string): DocumentStats {
     tokens: Math.ceil(characters / 4),
     words
   }
+}
+
+/**
+ * Text as the editor holds it: CodeMirror splits lines on `\r\n`, `\r` and `\n` and joins them
+ * with `\n`. The saved version is compared in that form, or a CRLF file could never read as
+ * unchanged. A string without `\r` is returned as is, so LF files keep no second copy.
+ */
+function editorLineEndings(text: string): string {
+  return text.includes('\r') ? text.replace(/\r\n?/g, '\n') : text
 }
 
 function baseName(path: string | null): string | null {
@@ -295,10 +338,22 @@ export function App(): JSX.Element {
 
   const { dialogOpen, setDialogOpen, exportDialogFormat, setExportDialogFormat, settingsOpen, setSettingsOpen, aboutOpen, setAboutOpen, outlineVisible, setOutlineVisible, searchFocusRequest, setSearchFocusRequest, replaceFocusRequest, setReplaceFocusRequest, topBarDismissRequest, setTopBarDismissRequest } = usePanelState()
   const dialogResolver = useRef<((c: ConfirmChoice) => void) | null>(null)
+  const [externalDialog, setExternalDialog] = useState<{ variant: ExternalChangeVariant; name: string } | null>(null)
+  const externalDialogResolver = useRef<((c: ExternalChangeChoice) => void) | null>(null)
   const nextDocSeq = useRef(1)
   const nextUntitledSeq = useRef(1)
   const noticeTimerRef = useRef<number | null>(null)
   const draftsLoaded = useRef(false)
+  /** Set once the previous session is back on screen; until then the empty startup workspace must
+   *  not overwrite the session it is about to restore. */
+  const sessionRestored = useRef(false)
+  /**
+   * Where each open document was last read, as the (fractional) source line at the top of the
+   * view. One coordinate for editor and preview alike, the same one split view syncs on, so a
+   * position survives font, width and theme changes between sessions.
+   */
+  const docScrollRef = useRef(new Map<string, number>())
+  const sessionWriteTimerRef = useRef<number | null>(null)
   const draftSavesInFlight = useRef(new Map<string, Promise<boolean>>())
   /** Editor transactions awaiting autosave, per draft, kept as ordered batches. */
   const pendingDraftEdits = useRef(new Map<string, DraftEditPayload[][]>())
@@ -326,7 +381,7 @@ export function App(): JSX.Element {
   const hasDoc = activeDoc !== null
   const content = activeDoc?.content ?? ''
   const dirty = hasDoc && activeDoc.revision !== activeDoc.savedRevision
-  const hasDirtyDocs = documents.some((doc) => needsUnsavedConfirmation(doc, settings.autoSave))
+  const hasDirtyDocs = documents.some((doc) => needsUnsavedConfirmation(doc, settings.autoSave, 'quit'))
   const previewSchedule = getPreviewSchedule(activeDoc?.stats.length ?? 0)
   const virtualizedPreview = activeDoc?.sizeProfile === 'very-large'
   const workspaceWidth = useElementWidth(mainRef)
@@ -514,7 +569,7 @@ export function App(): JSX.Element {
   }, [])
 
   const addDocuments = useCallback(
-    (items: DocumentInput[], nextMode: 'view' | 'edit' = 'view') => {
+    (items: DocumentInput[], nextMode: 'view' | 'edit' = 'view', activeIndex = 0) => {
       if (items.length === 0) return
 
        const editorContent = stateRef.current.mode === 'edit' ? editorRef.current?.getContent() : undefined
@@ -528,46 +583,54 @@ export function App(): JSX.Element {
        const nextDocs = [...currentDocs]
        const addedDocs: DocumentState[] = []
        let nextActiveId: string | null = null
+       const activateIndex = Math.min(Math.max(0, activeIndex), items.length - 1)
 
-      for (const item of items) {
+      for (const [itemIndex, item] of items.entries()) {
         const existingIndex = item.path ? nextDocs.findIndex((doc) => doc.path === item.path) : -1
 
         if (existingIndex >= 0) {
           const existing = nextDocs[existingIndex]
-          nextActiveId ??= existing.id
+          if (itemIndex === activateIndex) nextActiveId = existing.id
           if (existing.revision === existing.savedRevision) {
             nextDocs[existingIndex] = {
               ...existing,
               content: item.content,
+              savedContent: editorLineEndings(item.content),
               stats: getDocumentStats(item.content),
               revision: 0,
               savedRevision: 0,
               readOnly: existing.readOnly || item.readOnly === true,
-              sizeProfile: item.sizeProfile ?? existing.sizeProfile
+              sizeProfile: item.sizeProfile ?? existing.sizeProfile,
+              externalChange: null
             }
           }
           continue
         }
 
-        const revision = item.savedContent === undefined || item.savedContent === item.content ? 0 : 1
+        const revision = item.dirty || (item.savedContent !== undefined && item.savedContent !== item.content) ? 1 : 0
         const doc: DocumentState = {
           id: newDocumentId(),
           path: item.path,
           title: item.title ?? null,
           content: item.content,
+          savedContent: item.savedContent === null ? null : editorLineEndings(item.savedContent ?? item.content),
           stats: getDocumentStats(item.content),
           revision,
           savedRevision: 0,
-          draftId: item.draftId ?? (item.path ? null : `draft-${newDocumentId()}`),
+          // Files get one too: their unsaved edits are kept as a recovery draft, like an untitled
+          // document's. Bundled guides can never be edited, so they never need one.
+          draftId: item.draftId ?? (item.readOnly ? null : `draft-${newDocumentId()}`),
           // A restored draft already has an on-disk snapshot matching `content`, so it starts
           // in sync with `revision`; a brand-new document has no snapshot yet (`null`).
           draftSavedRevision: item.draftSavedContent === undefined ? null : revision,
           readOnly: item.readOnly === true,
-          sizeProfile: item.sizeProfile
+          sizeProfile: item.sizeProfile,
+          externalChange: null
          }
          nextDocs.push(doc)
          addedDocs.push(doc)
-         nextActiveId ??= doc.id
+         if (item.scrollLine !== undefined) docScrollRef.current.set(doc.id, item.scrollLine)
+         if (itemIndex === activateIndex) nextActiveId = doc.id
       }
 
       setDocuments(nextDocs)
@@ -622,7 +685,7 @@ export function App(): JSX.Element {
    */
   const recordEditorEdits = useCallback((documentId: string, edits: DraftEditPayload[]) => {
     const doc = stateRef.current.documents.find((item) => item.id === documentId)
-    if (!doc?.draftId || doc.path || doc.readOnly || !stateRef.current.autoSave) return
+    if (!doc?.draftId || doc.readOnly || !stateRef.current.autoSave) return
     const queued = pendingDraftEdits.current.get(doc.draftId)
     if (queued) queued.push(edits)
     else pendingDraftEdits.current.set(doc.draftId, [edits])
@@ -654,14 +717,36 @@ export function App(): JSX.Element {
     setActiveSearchIndex((index) => (index === null ? 0 : Math.min(index, searchMatchCount - 1)))
   }, [debouncedSearchTerm, searchMatchCount])
 
-  // --- Initial settings and recovered untitled documents ----------------
+  // --- Initial settings and the previous session -----------------------
   useEffect(() => {
     if (draftsLoaded.current) return
     draftsLoaded.current = true
 
+    /** A recovery draft as a document: untitled work, or a file's unsaved edits. */
+    const draftDocument = (draft: RestoredDraft): DocumentInput => {
+      if (!draft.path) {
+        return { path: null, title: draft.title, content: draft.content, savedContent: '', draftId: draft.id, draftSavedContent: draft.content }
+      }
+      const saved = draft.savedContent ?? null
+      if (saved !== null && editorLineEndings(saved) === editorLineEndings(draft.content)) {
+        // The edits were undone or saved elsewhere: the file on disk already is this text.
+        void window.api.removeDraft(draft.id)
+        return { path: draft.path, content: saved }
+      }
+      return {
+        path: draft.path,
+        content: draft.content,
+        savedContent: saved,
+        dirty: true,
+        draftId: draft.id,
+        draftSavedContent: draft.content
+      }
+    }
+
     void Promise.all([window.api.getSettings(), window.api.getDrafts()])
-      .then(([s, drafts]) => {
+      .then(async ([s, drafts]) => {
         setSettings(s)
+        setOutlineVisible(s.outlineVisible)
         void i18n.changeLanguage(s.language)
         if (drafts.length > 0) {
           // `doNew` numbers new untitled documents from `nextUntitledSeq`; a restored draft
@@ -672,6 +757,7 @@ export function App(): JSX.Element {
           const untitledBase = i18n.getFixedT(s.language)('app.untitled')
           let maxRestoredSeq = 0
           for (const draft of drafts) {
+            if (draft.path) continue
             let seq = 0
             if (draft.title === untitledBase) seq = 1
             else if (draft.title.startsWith(`${untitledBase} `)) {
@@ -683,21 +769,94 @@ export function App(): JSX.Element {
           if (maxRestoredSeq > 0) {
             nextUntitledSeq.current = Math.max(nextUntitledSeq.current, maxRestoredSeq + 1)
           }
-
-          addDocuments(
-            drafts.map((draft) => ({
-              path: null,
-              title: draft.title,
-              content: draft.content,
-              savedContent: '',
-              draftId: draft.id,
-              draftSavedContent: draft.content
-            }))
-          )
         }
+
+        // Tabs come back in the order they had. Anything with a draft always returns, since it
+        // holds work found nowhere else; a file without one only when `reopenFiles` is on.
+        const remainingDrafts = new Map(drafts.map((draft) => [draft.id, draft]))
+        const items: DocumentInput[] = []
+        const missing: string[] = []
+        let activeIndex = 0
+        const session = s.session
+        for (const [index, entry] of (session?.documents ?? []).entries()) {
+          // A tab that does not come back hands the focus to the one after it.
+          if (index === session?.activeIndex) activeIndex = items.length
+          const draft = entry.draftId ? remainingDrafts.get(entry.draftId) : undefined
+          if (draft) {
+            remainingDrafts.delete(draft.id)
+            items.push({ ...draftDocument(draft), scrollLine: entry.scrollLine })
+            continue
+          }
+          if (!entry.path || !s.reopenFiles) continue
+          const res = await window.api.readPath(entry.path)
+          if (res.ok) items.push({ path: res.path, content: res.content, sizeProfile: res.sizeProfile, scrollLine: entry.scrollLine })
+          else if (isMissingDocumentError(res.error)) missing.push(entry.path)
+        }
+        // Drafts the session does not list (kept by an older version) still come back, last.
+        for (const draft of remainingDrafts.values()) items.push(draftDocument(draft))
+
+        // A file the OS asked to open while this was loading is what the user is looking for, so it
+        // keeps the focus; the restored tabs join it.
+        const openedMeanwhile = stateRef.current.activeDocId
+        // Raised before the tabs render, so the very render that shows them records the session.
+        sessionRestored.current = true
+        // The restored tabs open in the mode the app was left in.
+        addDocuments(items, s.viewMode, activeIndex)
+        if (openedMeanwhile && items.length > 0) setActiveDocId(openedMeanwhile)
+        forgetRecent(missing)
       })
-      .catch((err: Error) => flash(t('notice.draftRestoreFailed', { error: friendlyErrorMessage(err.message, t) }), true))
-  }, [addDocuments, flash, i18n, t])
+      .catch((err: Error) => {
+        sessionRestored.current = true
+        flash(t('notice.draftRestoreFailed', { error: friendlyErrorMessage(err.message, t) }), true)
+      })
+  }, [addDocuments, flash, forgetRecent, i18n, t])
+
+  // Remembers the open tabs for the next launch. Keyed on what identifies each tab, so typing
+  // never writes settings; bundled guides are not part of a session.
+  const sessionKey = documents
+    .filter((doc) => !doc.readOnly)
+    .map((doc) => `${doc.path ?? ''}\u0000${doc.draftId ?? ''}${doc.id === activeDocId ? '\u0000*' : ''}`)
+    .join('\n')
+  const writeSession = useCallback((): void => {
+    if (!sessionRestored.current) return
+    if (sessionWriteTimerRef.current !== null) {
+      window.clearTimeout(sessionWriteTimerRef.current)
+      sessionWriteTimerRef.current = null
+    }
+    const open = stateRef.current.documents.filter((doc) => !doc.readOnly)
+    const entries: SessionEntry[] = open.map((doc) => {
+      const scrollLine = docScrollRef.current.get(doc.id)
+      return {
+        ...(doc.path ? { path: doc.path } : {}),
+        ...(doc.draftId ? { draftId: doc.draftId } : {}),
+        ...(scrollLine ? { scrollLine } : {})
+      }
+    })
+    const activeIndex = Math.max(0, open.findIndex((doc) => doc.id === stateRef.current.activeDocId))
+    void window.api.setSettings({ session: { documents: entries, activeIndex } })
+  }, [])
+
+  /** Scrolling changes the session constantly; it is written once the reading settles. */
+  const scheduleSessionWrite = useCallback((): void => {
+    if (sessionWriteTimerRef.current !== null) window.clearTimeout(sessionWriteTimerRef.current)
+    sessionWriteTimerRef.current = window.setTimeout(writeSession, SESSION_SCROLL_WRITE_DELAY_MS)
+  }, [writeSession])
+
+  useEffect(() => () => {
+    if (sessionWriteTimerRef.current !== null) window.clearTimeout(sessionWriteTimerRef.current)
+  }, [])
+
+  useEffect(() => {
+    writeSession()
+  }, [sessionKey, writeSession])
+
+  // A closed tab's position has nowhere to go.
+  useEffect(() => {
+    const open = new Set(documentIds)
+    for (const id of docScrollRef.current.keys()) {
+      if (!open.has(id)) docScrollRef.current.delete(id)
+    }
+  }, [documentIds])
 
   // --- Document title ----------------------------------------------------
   useEffect(() => {
@@ -720,12 +879,32 @@ export function App(): JSX.Element {
     dialogResolver.current = null
   }, [])
 
+  // --- Files changed by other applications ------------------------------
+  const askExternalChange = useCallback(
+    (docId: string, variant: ExternalChangeVariant): Promise<ExternalChangeChoice> => {
+      const doc = stateRef.current.documents.find((item) => item.id === docId)
+      if (!doc) return Promise.resolve(variant === 'conflict' ? 'cancel' : 'keep')
+      setActiveDocId(docId)
+      return new Promise((resolve) => {
+        externalDialogResolver.current = resolve
+        setExternalDialog({ variant, name: documentName(doc, t('app.untitled')) })
+      })
+    },
+    [t]
+  )
+
+  const onExternalDialogChoice = useCallback((choice: ExternalChangeChoice) => {
+    setExternalDialog(null)
+    externalDialogResolver.current?.(choice)
+    externalDialogResolver.current = null
+  }, [])
+
   const persistDraftDocument = useCallback(
     async (docId: string): Promise<boolean> => {
       if (!stateRef.current.autoSave) return false
 
       const doc = stateRef.current.documents.find((item) => item.id === docId)
-      if (!doc || doc.path || doc.readOnly || !doc.draftId || !draftIsDirty(doc)) {
+      if (!doc || !wantsDraft(doc) || !doc.draftId || !draftIsDirty(doc)) {
         return false
       }
 
@@ -768,7 +947,7 @@ export function App(): JSX.Element {
           const content = doc.id === stateRef.current.activeDocId
             ? materializeEditorContent() ?? doc.content
             : doc.content
-          const result = await window.api.saveDraft({ id: draftId, title, content })
+          const result = await window.api.saveDraft({ id: draftId, title, content, ...(doc.path ? { path: doc.path } : {}) })
           if (!result.ok) {
             const notice = draftFailureNotice(result)
             flash(t(notice.key, notice.params), true)
@@ -800,9 +979,7 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     if (!settings.autoSave) return
-    const pending = documents.filter(
-      (doc) => !doc.path && !doc.readOnly && doc.draftId && draftIsDirty(doc)
-    )
+    const pending = documents.filter((doc) => wantsDraft(doc) && draftIsDirty(doc))
     if (pending.length === 0) return
 
     const timer = window.setTimeout(() => {
@@ -819,15 +996,15 @@ export function App(): JSX.Element {
    */
   const flushPendingDrafts = useCallback(async (): Promise<void> => {
     if (!stateRef.current.autoSave) return
-    const pending = stateRef.current.documents.filter(
-      (doc) => !doc.path && !doc.readOnly && doc.draftId && draftIsDirty(doc)
-    )
+    const pending = stateRef.current.documents.filter((doc) => wantsDraft(doc) && draftIsDirty(doc))
     await Promise.all(pending.map((doc) => persistDraftDocument(doc.id)))
   }, [persistDraftDocument])
 
   const removeDocumentDraft = useCallback(
     async (doc: Pick<DocumentState, 'draftId'>): Promise<boolean> => {
       if (!doc.draftId) return true
+      // Edits queued for a draft that is going away would otherwise wait forever for a snapshot.
+      pendingDraftEdits.current.delete(doc.draftId)
       await draftSavesInFlight.current.get(doc.draftId)
       try {
         const result = await window.api.removeDraft(doc.draftId)
@@ -841,6 +1018,103 @@ export function App(): JSX.Element {
     },
     [flash, t]
   )
+
+  /**
+   * A file that matches what is on disk again has nothing to recover: its draft goes, and it gets
+   * a fresh id for its next edit, because the store never reuses a removed one.
+   */
+  const retireFileDraft = useCallback(
+    async (docId: string): Promise<void> => {
+      const doc = stateRef.current.documents.find((item) => item.id === docId)
+      if (!doc?.path || !doc.draftId) return
+      const draftId = doc.draftId
+      if (!(await removeDocumentDraft(doc))) return
+      setDocuments((prev) =>
+        prev.map((item) =>
+          item.id === docId && item.draftId === draftId
+            ? { ...item, draftId: `draft-${newDocumentId()}`, draftSavedRevision: null }
+            : item
+        )
+      )
+    },
+    [newDocumentId, removeDocumentDraft]
+  )
+
+  /**
+   * Replaces a document with what is on disk now, dropping any edits made here.
+   *
+   * `onlyIfRevision` is for the silent reload of an unedited document: a keystroke that lands
+   * while the file is being read makes it a real conflict, so the reload is withheld and the
+   * user is asked instead.
+   */
+  const reloadDocument = useCallback(
+    async (docId: string, onlyIfRevision?: number): Promise<boolean> => {
+      const doc = stateRef.current.documents.find((item) => item.id === docId)
+      if (!doc?.path) return false
+      const res = await window.api.readPath(doc.path)
+      if (!res.ok) {
+        flash(t('notice.openFailed', { error: friendlyErrorMessage(res.error ?? '', t) }), true)
+        return false
+      }
+      const current = stateRef.current.documents.find((item) => item.id === docId)
+      if (!current) return false
+      if (onlyIfRevision !== undefined && current.revision !== onlyIfRevision) {
+        setDocuments((prev) => prev.map((item) => (item.id === docId ? { ...item, externalChange: 'modified' } : item)))
+        return false
+      }
+      setDocuments((prev) =>
+        prev.map((item) =>
+          item.id === docId
+            ? {
+                ...item,
+                content: res.content,
+                savedContent: editorLineEndings(res.content),
+                stats: getDocumentStats(res.content),
+                revision: 0,
+                savedRevision: 0,
+                sizeProfile: res.sizeProfile,
+                externalChange: null
+              }
+            : item
+        )
+      )
+      void retireFileDraft(docId)
+      return true
+    },
+    [flash, retireFileDraft, t]
+  )
+
+  /**
+   * Clears the unsaved-changes mark once the text is back to the saved version, e.g. after undoing
+   * every edit. Every transaction bumps `revision`, undo included, so the revision alone can never
+   * tell. The text is only compared when its length matches the saved one, which keeps typing in a
+   * large document from paying for a full comparison on each pause.
+   */
+  const activeRevision = activeDoc?.revision
+  const activeSavedRevision = activeDoc?.savedRevision
+  const activeLength = activeDoc?.stats.length
+  useEffect(() => {
+    const doc = stateRef.current.activeDoc
+    if (!doc || doc.readOnly || doc.savedContent === null) return
+    if (doc.revision === doc.savedRevision || doc.stats.length !== doc.savedContent.length) return
+    const docId = doc.id
+    const timer = window.setTimeout(() => {
+      const current = stateRef.current.documents.find((item) => item.id === docId)
+      if (!current || current.savedContent === null || stateRef.current.activeDocId !== docId) return
+      const text = editorRef.current?.getContent() ?? current.content
+      if (text !== current.savedContent) return
+      const revision = current.revision
+      setDocuments((prev) =>
+        prev.map((item) =>
+          item.id === docId && item.revision === revision
+            ? { ...item, savedRevision: revision }
+            : item
+        )
+      )
+      void retireFileDraft(docId)
+    }, UNDO_TO_SAVED_CHECK_DELAY_MS)
+    return () => window.clearTimeout(timer)
+  }, [activeDocId, activeLength, activeRevision, activeSavedRevision, retireFileDraft])
 
   const saveDocumentAs = useCallback(
     async (docId: string): Promise<boolean> => {
@@ -866,8 +1140,10 @@ export function App(): JSX.Element {
                   ...item,
                   path: res.path,
                   content: savedText,
+                  savedContent: savedText,
                   savedRevision,
-                  draftId: draftRemoved ? null : item.draftId,
+                  externalChange: null,
+                  draftId: draftRemoved ? `draft-${newDocumentId()}` : item.draftId,
                   draftSavedRevision: draftRemoved ? null : item.draftSavedRevision
                 }
               : item
@@ -879,11 +1155,11 @@ export function App(): JSX.Element {
       if (!res.canceled) flash(t('notice.saveFailed', { error: friendlyErrorMessage(res.error ?? '', t) }), true)
       return false
     },
-    [flash, removeDocumentDraft, t]
+    [flash, newDocumentId, removeDocumentDraft, t]
   )
 
   const saveDocument = useCallback(
-    async (docId: string): Promise<boolean> => {
+    async function saveDocument(docId: string, options?: SaveOptions): Promise<boolean> {
       const doc = stateRef.current.documents.find((item) => item.id === docId)
       if (!doc) {
         flash(t('notice.noDocument'), true)
@@ -899,7 +1175,7 @@ export function App(): JSX.Element {
         ? materializeEditorContent() ?? doc.content
         : doc.content
       const savedRevision = doc.revision
-      const res = await window.api.save(doc.path, savedText)
+      const res = await window.api.save(doc.path, savedText, options)
       if (res.ok) {
         const draftRemoved = await removeDocumentDraft(doc)
         setDocuments((prev) =>
@@ -908,8 +1184,10 @@ export function App(): JSX.Element {
               ? {
                   ...item,
                   content: savedText,
+                  savedContent: savedText,
                   savedRevision,
-                  draftId: draftRemoved ? null : item.draftId,
+                  externalChange: null,
+                  draftId: draftRemoved ? `draft-${newDocumentId()}` : item.draftId,
                   draftSavedRevision: draftRemoved ? null : item.draftSavedRevision
                 }
               : item
@@ -918,10 +1196,19 @@ export function App(): JSX.Element {
         flash(t('notice.saveSuccess'))
         return true
       }
+      if (res.error === 'conflict') {
+        // Another application changed the file since it was read; nothing was written.
+        const choice = await askExternalChange(docId, 'conflict')
+        if (choice === 'overwrite') return saveDocument(docId, { overwrite: true })
+        if (choice === 'saveAs') return saveDocumentAs(docId)
+        // Reloading drops the edits this save was meant to keep, so the save itself did not happen.
+        if (choice === 'reload') await reloadDocument(docId)
+        return false
+      }
       flash(t('notice.saveFailed', { error: friendlyErrorMessage(res.error ?? '', t) }), true)
       return false
     },
-    [flash, removeDocumentDraft, saveDocumentAs, t]
+    [askExternalChange, flash, newDocumentId, reloadDocument, removeDocumentDraft, saveDocumentAs, t]
   )
 
   const doSave = useCallback(async (): Promise<boolean> => {
@@ -936,7 +1223,7 @@ export function App(): JSX.Element {
   const confirmUnsavedDocument = useCallback(
     async (docId: string): Promise<'proceed' | 'cancel'> => {
       const doc = stateRef.current.documents.find((item) => item.id === docId)
-      if (!doc || doc.readOnly || !needsUnsavedConfirmation(doc, stateRef.current.autoSave)) return 'proceed'
+      if (!doc || doc.readOnly || !needsUnsavedConfirmation(doc, stateRef.current.autoSave, 'close')) return 'proceed'
 
       setActiveDocId(docId)
       const choice = await askUnsaved()
@@ -951,7 +1238,7 @@ export function App(): JSX.Element {
     // Persist debounced draft edits first, so quitting never asks about work autosave already owns.
     await flushPendingDrafts()
     const dirtyDocs = stateRef.current.documents.filter((doc) =>
-      needsUnsavedConfirmation(doc, stateRef.current.autoSave)
+      needsUnsavedConfirmation(doc, stateRef.current.autoSave, 'quit')
     )
     if (dirtyDocs.length === 0) return 'proceed'
 
@@ -1306,7 +1593,7 @@ export function App(): JSX.Element {
 
       // Confirm each dirty document in the set; abort all if the user cancels.
       const dirtyDocs = stateRef.current.documents.filter(
-        (doc) => idSet.has(doc.id) && needsUnsavedConfirmation(doc, stateRef.current.autoSave)
+        (doc) => idSet.has(doc.id) && needsUnsavedConfirmation(doc, stateRef.current.autoSave, 'close')
       )
       for (const doc of dirtyDocs) {
         if ((await confirmUnsavedDocument(doc.id)) === 'cancel') return
@@ -1466,6 +1753,19 @@ export function App(): JSX.Element {
     [i18n]
   )
 
+  // Preview or editor, and whether the outline shows, come back as they were left. The mode is only
+  // recorded while documents are open: closing the last tab drops back to the preview, which says
+  // nothing about how the user was working.
+  useEffect(() => {
+    if (!sessionRestored.current || !hasDoc || mode === settings.viewMode) return
+    changeSettings({ viewMode: mode })
+  }, [changeSettings, hasDoc, mode, settings.viewMode])
+
+  useEffect(() => {
+    if (!sessionRestored.current || outlineVisible === settings.outlineVisible) return
+    changeSettings({ outlineVisible })
+  }, [changeSettings, outlineVisible, settings.outlineVisible])
+
   const togglePreviewFluidWidth = useCallback(
     () => changeSettings({ previewFluidWidth: !settings.previewFluidWidth }),
     [changeSettings, settings.previewFluidWidth]
@@ -1616,12 +1916,113 @@ export function App(): JSX.Element {
 
   useEffect(() => () => window.cancelAnimationFrame(scrollIntentFrameRef.current), [])
 
+  // --- Reading position per document -----------------------------------
+  /**
+   * The tab whose saved position is being applied. Until it lands, its panes report positions
+   * from before the jump (the previous tab's scroll, or the top), which must not overwrite it.
+   */
+  const [scrollRestore, setScrollRestore] = useState<{ docId: string; line: number } | null>(null)
+  const scrollRestoreRef = useRef(scrollRestore)
+  scrollRestoreRef.current = scrollRestore
+
+  const recordScrollLine = useCallback((line: number) => {
+    const docId = stateRef.current.activeDocId
+    if (!docId || scrollRestoreRef.current?.docId === docId) return
+    if (docScrollRef.current.get(docId) === line) return
+    docScrollRef.current.set(docId, line)
+    scheduleSessionWrite()
+  }, [scheduleSessionWrite])
+
+  /** Preview geometry for the active document, shared by recording and restoring its position. */
+  const previewGeometry = useCallback((pane: HTMLDivElement) => {
+    const { virtualized, headingLines, totalLines } = splitSyncRef.current
+    // A virtualized preview only mounts the visible headings, so their offsets cannot anchor the
+    // whole document; it falls back to the proportional mapping.
+    const anchors = virtualized ? [] : splitAnchorsFor(pane, headingLines)
+    return {
+      anchors,
+      geometry: { contentHeight: pane.scrollHeight, maxScrollTop: Math.max(0, pane.scrollHeight - pane.clientHeight), totalLines }
+    }
+  }, [splitAnchorsFor])
+
   // A scroll of the editor both follows along in the split preview (when on) and, without a
   // preview to spy from, drives the outline's active entry.
   const onEditorVisibleLineChange = useCallback((line: number) => {
     updateActiveHeadingFromEditorLine(line)
     syncPreviewToEditorLine(line)
-  }, [syncPreviewToEditorLine, updateActiveHeadingFromEditorLine])
+    // The editor stays mounted behind the preview, where its viewport says nothing about reading.
+    if (stateRef.current.mode === 'edit') recordScrollLine(line)
+  }, [recordScrollLine, syncPreviewToEditorLine, updateActiveHeadingFromEditorLine])
+
+  // In the preview alone, the reading position comes from the preview itself.
+  const previewDocumentId = previewState.documentId
+  useEffect(() => {
+    if (mode !== 'view' || !previewPaneElement) return
+    let frame = 0
+    const onScroll = (): void => {
+      if (frame !== 0) return
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        if (previewDocumentId !== stateRef.current.activeDocId) return
+        const { anchors, geometry } = previewGeometry(previewPaneElement)
+        recordScrollLine(editorLineForPreviewTop(previewPaneElement.scrollTop, anchors, geometry))
+      })
+    }
+    previewPaneElement.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      if (frame !== 0) window.cancelAnimationFrame(frame)
+      previewPaneElement.removeEventListener('scroll', onScroll)
+    }
+  }, [mode, previewDocumentId, previewGeometry, previewPaneElement, recordScrollLine])
+
+  // Every tab opens where it was last read: on a tab switch, and at launch for restored tabs. A
+  // document never scrolled starts at the top instead of inheriting the previous tab's offset.
+  useEffect(() => {
+    setScrollRestore(activeDocId ? { docId: activeDocId, line: docScrollRef.current.get(activeDocId) ?? 0 } : null)
+  }, [activeDocId])
+
+  useEffect(() => {
+    if (!scrollRestore || scrollRestore.docId !== activeDocId) return
+    const { docId, line } = scrollRestore
+    const finish = (): void => setScrollRestore((current) => (current?.docId === docId ? null : current))
+    let frame = 0
+    // A preview that never renders (a failed render, say) must not hold the position hostage.
+    const fallback = window.setTimeout(finish, SCROLL_RESTORE_TIMEOUT_MS)
+    const cleanup = (): void => {
+      window.cancelAnimationFrame(frame)
+      window.clearTimeout(fallback)
+    }
+
+    if (mode === 'edit') {
+      // The editor chunk loads lazily; wait for it rather than give up on the first frame.
+      const attempt = (): void => {
+        const editor = editorRef.current
+        if (!editor) {
+          frame = window.requestAnimationFrame(attempt)
+          return
+        }
+        editor.scrollToLine(line)
+        // `scrollToLine` settles over the next frames; split view follows through the usual sync.
+        frame = window.requestAnimationFrame(() => {
+          frame = window.requestAnimationFrame(finish)
+        })
+      }
+      attempt()
+      return cleanup
+    }
+
+    const pane = previewPaneElement
+    if (!pane || previewDocumentId !== docId) return cleanup
+    // Two frames: the new HTML is in, and the headings it reports have been measured.
+    frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame(() => {
+        const { anchors, geometry } = previewGeometry(pane)
+        pane.scrollTo({ top: previewTopForEditorLine(line, anchors, geometry), behavior: 'auto' })
+        finish()
+      })
+    })
+    return cleanup
+  }, [activeDocId, html, mode, previewDocumentId, previewGeometry, previewPaneElement, scrollRestore])
 
   // Follow the preview while it is the pane being scrolled.
   useEffect(() => {
@@ -1772,7 +2173,7 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.isComposing || dialogOpen) return
+      if (event.isComposing || dialogOpen || externalDialog) return
 
       const key = event.key.toLowerCase()
       const primary = event.ctrlKey || event.metaKey
@@ -1911,6 +2312,7 @@ export function App(): JSX.Element {
     closeActivePanel,
     closeDocument,
     dialogOpen,
+    externalDialog,
     doFindNext,
     doFindPrevious,
     doNew,
@@ -1935,7 +2337,11 @@ export function App(): JSX.Element {
     // macOS Edit > Select All (menu item or its Command+A when nothing above claimed it).
     const offSelectAll = window.api.onSelectAll(() => selectAllInDocument(previewPaneRef.current))
     const offClose = window.api.onCloseRequest(() => {
-      void confirmAnyUnsaved().then((result) => window.api.confirmClose(result === 'proceed'))
+      void confirmAnyUnsaved().then((result) => {
+        // The reading position may still be waiting on its debounce; the window is about to go.
+        if (result === 'proceed') writeSession()
+        return window.api.confirmClose(result === 'proceed')
+      })
     })
     // Main pushes only metadata; the content arrives through the same streamed read as every
     // other open, so document text is fetched in exactly one place.
@@ -1985,7 +2391,49 @@ export function App(): JSX.Element {
       offProgress()
       offDone()
     }
-  }, [confirmAnyUnsaved, drainOpenManyQueue, finishOpenManySession, openPaths])
+  }, [confirmAnyUnsaved, drainOpenManyQueue, finishOpenManySession, openPaths, writeSession])
+
+  // Main watches exactly the files open here; the guides it refuses on its own.
+  const watchedPathsKey = documents
+    .flatMap((doc) => (doc.path && !doc.readOnly ? [doc.path] : []))
+    .join('\n')
+  useEffect(() => {
+    window.api.watchDocuments(watchedPathsKey ? watchedPathsKey.split('\n') : [])
+  }, [watchedPathsKey])
+
+  useEffect(() => window.api.onDocumentChanged(({ path, kind }) => {
+    const doc = stateRef.current.documents.find((item) => item.path === path)
+    if (!doc || doc.readOnly) return
+    // Nothing to lose: take the new version and just say so.
+    if (kind === 'modified' && doc.revision === doc.savedRevision) {
+      void reloadDocument(doc.id, doc.revision).then((reloaded) => {
+        if (reloaded) flash(t('externalChange.reloaded', { name: documentName(doc, t('app.untitled')) }))
+      })
+      return
+    }
+    setDocuments((prev) => prev.map((item) => (item.id === doc.id ? { ...item, externalChange: kind } : item)))
+  }), [flash, reloadDocument, t])
+
+  const resolveExternalChange = useCallback(
+    async (docId: string, kind: ExternalChangeKind): Promise<void> => {
+      // Cleared up front: the decision below is the answer, whatever it is.
+      setDocuments((prev) => prev.map((item) => (item.id === docId ? { ...item, externalChange: null } : item)))
+      const choice = await askExternalChange(docId, kind)
+      if (choice === 'reload') await reloadDocument(docId)
+      else if (choice === 'save') await saveDocument(docId)
+      else if (choice === 'saveAs') await saveDocumentAs(docId)
+      // `keep` leaves both versions alone; the next save still asks before overwriting.
+    },
+    [askExternalChange, reloadDocument, saveDocument, saveDocumentAs]
+  )
+
+  // Asked only about the tab in front of the user, never by switching tabs on their behalf; a
+  // background tab keeps its mark until it is selected.
+  const pendingExternalChange = activeDoc?.externalChange ?? null
+  useEffect(() => {
+    if (!activeDocId || !pendingExternalChange || dialogOpen || externalDialog) return
+    void resolveExternalChange(activeDocId, pendingExternalChange)
+  }, [activeDocId, dialogOpen, externalDialog, pendingExternalChange, resolveExternalChange])
 
   // --- Drag & drop -------------------------------------------------------
   const onDrop = useCallback(
@@ -2212,6 +2660,9 @@ export function App(): JSX.Element {
       )}
       {notice && <div className={`notice ${notice.error ? 'notice--error' : ''}`}>{notice.text}</div>}
       {dialogOpen && <ConfirmDialog onChoice={onDialogChoice} />}
+      {externalDialog && (
+        <ExternalChangeDialog variant={externalDialog.variant} name={externalDialog.name} onChoice={onExternalDialogChoice} />
+      )}
     </div>
   )
 }

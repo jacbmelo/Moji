@@ -56,6 +56,8 @@ const DRAFT_ID_PATTERN = /^draft-[a-zA-Z0-9-]+$/
 interface ManifestEntry {
   id: string
   title: string
+  path?: string
+  baseHash?: string
 }
 
 /** Injection points for the capacity checks, so tests can shrink the machine instead of filling it. */
@@ -85,8 +87,20 @@ export function isDraft(value: unknown): value is AutoSaveDraft {
     isDraftId(raw['id']) &&
     typeof raw['title'] === 'string' &&
     raw['title'].length <= MAX_TITLE_LENGTH &&
-    typeof raw['content'] === 'string'
+    typeof raw['content'] === 'string' &&
+    (raw['path'] === undefined || typeof raw['path'] === 'string') &&
+    (raw['baseHash'] === undefined || typeof raw['baseHash'] === 'string')
   )
+}
+
+/** Fields the manifest keeps for a draft; content lives in its own file. */
+function manifestEntry({ id, title, path, baseHash }: AutoSaveDraft): ManifestEntry {
+  return {
+    id,
+    title,
+    ...(path === undefined ? {} : { path }),
+    ...(baseHash === undefined ? {} : { baseHash })
+  }
 }
 
 /**
@@ -176,7 +190,9 @@ export class DraftStore {
           Boolean(entry) &&
           typeof entry === 'object' &&
           isDraftId((entry as ManifestEntry).id) &&
-          typeof (entry as ManifestEntry).title === 'string'
+          typeof (entry as ManifestEntry).title === 'string' &&
+          ((entry as ManifestEntry).path === undefined || typeof (entry as ManifestEntry).path === 'string') &&
+          ((entry as ManifestEntry).baseHash === undefined || typeof (entry as ManifestEntry).baseHash === 'string')
       )
     } catch {
       return []
@@ -262,7 +278,7 @@ export class DraftStore {
     for (const draft of drafts) {
       await writeFileAtomic(this.contentFile(draft.id), draft.content)
     }
-    await this.writeManifest(drafts.map(({ id, title }) => ({ id, title })))
+    await this.writeManifest(drafts.map(manifestEntry))
 
     // Confirm the manifest is readable before dropping the only other copy of this data.
     const confirmed = await this.readManifestEntries()
@@ -315,7 +331,7 @@ export class DraftStore {
       const content = await this.readContent(entry.id)
       // An entry whose content never landed is an interrupted save, not a recoverable draft.
       if (content === null) continue
-      drafts.push({ id: entry.id, title: entry.title, content })
+      drafts.push({ ...entry, content })
       // Restored drafts are counted, never rejected: text already on disk is the user's, whatever
       // the budget says about writing more of it.
       this.bytes.set(entry.id, draftBytes(content))
@@ -375,7 +391,7 @@ export class DraftStore {
   }
 
   private manifestEntries(drafts: readonly AutoSaveDraft[]): ManifestEntry[] {
-    return drafts.map(({ id, title }) => ({ id, title }))
+    return drafts.map(manifestEntry)
   }
 
   private enqueue<T>(id: string, operation: () => Promise<T>): Promise<T> {
@@ -420,7 +436,12 @@ export class DraftStore {
         return updated
       })
 
-      if (!previous || previous.title !== draft.title) {
+      if (
+        !previous ||
+        previous.title !== draft.title ||
+        previous.path !== draft.path ||
+        previous.baseHash !== draft.baseHash
+      ) {
         await this.writeManifest(this.manifestEntries(next))
       }
     })

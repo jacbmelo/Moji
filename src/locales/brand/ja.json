@@ -21,5 +21,24 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} を GitHub Releases からダウンロードできます。"
+  },
+  "externalChange": {
+    "modifiedTitle": "ファイルが別のアプリで変更されました",
+    "modifiedBody": "「{{name}}」は Moji Plus の外部で変更されましたが、ここには未保存の変更があります。再読み込みすると変更は破棄されます。名前を付けて保存すると両方のバージョンを残せます。",
+    "deletedTitle": "ファイルが削除されました",
+    "deletedBody": "「{{name}}」は Moji Plus の外部で削除または移動されました。保存して再作成するか、別の名前で保存してください。",
+    "conflictTitle": "ディスク上のファイルが変更されました",
+    "conflictBody": "「{{name}}」は開いた後に別のアプリで変更されました。置き換えるとその変更は破棄されます。",
+    "reload": "再読み込み",
+    "save": "保存",
+    "saveAs": "名前を付けて保存…",
+    "overwrite": "置き換え",
+    "keep": "自分の変更を保持",
+    "cancel": "キャンセル",
+    "reloaded": "「{{name}}」をディスク上のバージョンで更新しました。"
+  },
+  "settingsDialog": {
+    "autoSave": "新規ドキュメントと未保存の変更をセッション間で保持",
+    "reopenFiles": "起動時に開いていたファイルを再度開く"
   }
 }

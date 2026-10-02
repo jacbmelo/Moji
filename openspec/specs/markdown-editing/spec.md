@@ -48,6 +48,10 @@ The system SHALL offer a split view that shows the rendered preview beside the s
 ### Requirement: Dirty-state tracking
 The system SHALL track unsaved changes and indicate the dirty state, warning before actions that would discard unsaved edits.
 
+#### Scenario: Undo back to the saved version
+- **WHEN** the user undoes every edit, or retypes the text so it matches the version last opened or saved again
+- **THEN** the unsaved-changes indicator clears and closing the document no longer asks to save
+
 #### Scenario: Indicate unsaved changes
 - **WHEN** the user modifies the document after the last save
 - **THEN** the UI shows an unsaved-changes indicator (e.g. a modified marker in the title)
@@ -71,8 +75,51 @@ The system SHALL save the current document back to its file, and SHALL support s
 - **WHEN** the user invokes Save on a document with no file path yet
 - **THEN** the application prompts for a destination path before writing
 
+### Requirement: External file changes
+The system SHALL detect when the file behind an open document is changed or removed by another application, and SHALL never overwrite such a change without the user's confirmation.
+
+#### Scenario: Reload an unedited document silently
+- **WHEN** another application changes the file of an open document that has no unsaved changes
+- **THEN** the document is reloaded from disk and a brief notice says it was updated
+
+#### Scenario: Conflict with unsaved changes
+- **WHEN** another application changes the file of an open document that has unsaved changes
+- **THEN** the application offers to reload (discarding local edits), save the local version under another name, or keep the local edits
+
+#### Scenario: File removed
+- **WHEN** the file of an open document is deleted or moved away
+- **THEN** the application offers to save it again at the same path, save it under another name, or keep it open unchanged
+
+#### Scenario: Save after an external change
+- **WHEN** the user saves a document whose file changed on disk since it was last read or saved
+- **THEN** nothing is written and the application offers to replace the file, save under another name, reload, or cancel
+
+#### Scenario: Background tabs
+- **WHEN** the changed document is not the active tab
+- **THEN** the application does not switch tabs; the question is asked when the user selects that tab
+
+#### Scenario: Changes that are not real
+- **WHEN** the file is touched without changing its bytes, or Moji itself saves it
+- **THEN** no notice or prompt is shown
+
+#### Scenario: Atomic saves and missed events
+- **WHEN** another editor saves by writing a temporary file and renaming it over the original, or the filesystem does not deliver change events
+- **THEN** the change is still detected, at the latest when the Moji window regains focus
+
 ### Requirement: Recover untitled documents
 The system SHALL persist documents without a filesystem path as internal recovery drafts by default and SHALL restore those documents on the next app launch.
+
+#### Scenario: Recover unsaved changes to a file
+- **WHEN** keeping new documents and unsaved changes between sessions is enabled, a file has unsaved changes, and the user quits the application
+- **THEN** the application does not ask to save; on the next launch the file reopens with those changes and its unsaved-changes indicator, even when reopening files is disabled
+
+#### Scenario: Closing a file with unsaved changes still asks
+- **WHEN** the user closes the tab of a file with unsaved changes
+- **THEN** the application asks to save, discard, or cancel, and discarding removes the recovery draft
+
+#### Scenario: Recovered changes to a file that changed meanwhile
+- **WHEN** a file with recovered changes was modified or deleted while the application was closed
+- **THEN** the external-change flow applies: the user is asked what to do, and saving asks before overwriting the newer file
 
 #### Scenario: Recover after restart
 - **WHEN** an untitled document is open and its latest content has been persisted as a recovery draft
@@ -97,6 +144,21 @@ The system SHALL persist documents without a filesystem path as internal recover
 #### Scenario: Recovery storage is unavailable
 - **WHEN** a recovery draft cannot be written because the memory budget or the free disk space is insufficient
 - **THEN** the application reports how much was needed and how much was available, keeps the previously stored draft unchanged, and never stores a shortened copy of the document
+
+### Requirement: Reopen files
+The system SHALL reopen, on launch, the tabs that were open when it was last closed, in the same order and with the same active tab.
+
+#### Scenario: Reopen open files
+- **WHEN** reopening files is enabled (the default) and the user relaunches the application
+- **THEN** every file that was open is read again from disk, together with recovered untitled documents and files with unsaved changes, in their previous order
+
+#### Scenario: Reopening disabled
+- **WHEN** reopening files is disabled
+- **THEN** only documents with recovery drafts (untitled documents and files with unsaved changes) are restored
+
+#### Scenario: Missing file
+- **WHEN** a file without unsaved changes no longer exists at launch
+- **THEN** it is skipped and removed from the recent files
 
 ### Requirement: Indent and outdent in the source editor
 The system SHALL indent with Tab and outdent with Shift+Tab inside the source editor, using two spaces per level, instead of moving focus to the next control.

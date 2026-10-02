@@ -21,5 +21,24 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} 可從 GitHub Releases 下載。"
+  },
+  "externalChange": {
+    "modifiedTitle": "檔案已在其他應用程式中變更",
+    "modifiedBody": "「{{name}}」已在 Moji Plus 之外被變更，且此處有未儲存的變更。重新載入將捨棄你的變更；另存新檔可保留兩個版本。",
+    "deletedTitle": "檔案已移除",
+    "deletedBody": "「{{name}}」已在 Moji Plus 之外被刪除或移動。儲存以重新建立，或以新名稱儲存。",
+    "conflictTitle": "磁碟上的檔案已變更",
+    "conflictBody": "「{{name}}」在你開啟後已在其他應用程式中被變更。取代將捨棄這些變更。",
+    "reload": "重新載入",
+    "save": "儲存",
+    "saveAs": "另存新檔…",
+    "overwrite": "取代",
+    "keep": "保留我的變更",
+    "cancel": "取消",
+    "reloaded": "已使用磁碟上的版本更新「{{name}}」。"
+  },
+  "settingsDialog": {
+    "autoSave": "在工作階段之間保留新文件和未儲存的變更",
+    "reopenFiles": "啟動時重新開啟已開啟的檔案"
   }
 }

@@ -191,6 +191,16 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                   onChange={(e) => onChange({ autoSave: e.currentTarget.checked })}
                 />
               </label>
+
+              <label className="settings-field">
+                <span className="settings-field__label">{t('settingsDialog.reopenFiles')}</span>
+                <input
+                  className="settings-checkbox"
+                  type="checkbox"
+                  checked={settings.reopenFiles}
+                  onChange={(e) => onChange({ reopenFiles: e.currentTarget.checked })}
+                />
+              </label>
             </div>
           </section>
         )}

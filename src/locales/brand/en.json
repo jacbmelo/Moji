@@ -21,5 +21,24 @@
   },
   "update": {
     "availableBody": "Moji Plus {{version}} is ready to download on GitHub Releases."
+  },
+  "externalChange": {
+    "modifiedTitle": "File changed in another app",
+    "modifiedBody": "“{{name}}” was changed outside Moji Plus, and it has unsaved changes here. Reload discards your changes; Save As keeps both versions.",
+    "deletedTitle": "File removed",
+    "deletedBody": "“{{name}}” was deleted or moved outside Moji Plus. Save to recreate it, or save it under a new name.",
+    "conflictTitle": "File changed on disk",
+    "conflictBody": "“{{name}}” was changed in another app since you opened it. Replacing it discards those changes.",
+    "reload": "Reload",
+    "save": "Save",
+    "saveAs": "Save As…",
+    "overwrite": "Replace",
+    "keep": "Keep mine",
+    "cancel": "Cancel",
+    "reloaded": "“{{name}}” was updated with the version on disk."
+  },
+  "settingsDialog": {
+    "autoSave": "Keep new documents and unsaved changes between sessions",
+    "reopenFiles": "Reopen open files on startup"
   }
 }

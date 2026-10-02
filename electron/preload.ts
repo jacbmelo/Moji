@@ -3,6 +3,7 @@ import {
   IPC,
   type AutoSaveDraft,
   type DiagramPngRequest,
+  type DocumentChangedEvent,
   type DraftResult,
   type DocumentMetadata,
   type DocumentStreamMessage,
@@ -15,6 +16,8 @@ import {
   type OpenManyProgress,
   type OpenResult,
   type PerformanceReport,
+  type RestoredDraft,
+  type SaveOptions,
   type Settings,
   type UpdateState,
   type WriteResult
@@ -91,7 +94,7 @@ function readDocumentStream(filePath: string): Promise<OpenResult> {
 const api = {
   getSettings: (): Promise<Settings> => ipcRenderer.invoke(IPC.getSettings),
   setSettings: (patch: Partial<Settings>): Promise<Settings> => ipcRenderer.invoke(IPC.setSettings, patch),
-  getDrafts: (): Promise<AutoSaveDraft[]> => ipcRenderer.invoke(IPC.getDrafts),
+  getDrafts: (): Promise<RestoredDraft[]> => ipcRenderer.invoke(IPC.getDrafts),
   saveDraft: (draft: AutoSaveDraft): Promise<DraftResult> => ipcRenderer.invoke(IPC.saveDraft, draft),
   /** `batches` holds one entry per editor transaction, in order; they cannot be flattened. */
   appendDraftEdits: (id: string, batches: DraftEditPayload[][], expectedLength: number): Promise<DraftAppendResult> =>
@@ -104,7 +107,8 @@ const api = {
   readPath: (filePath: string): Promise<OpenResult> => readDocumentStream(filePath),
   openLocalPath: (fileUrl: string): Promise<WriteResult> => ipcRenderer.invoke(IPC.openLocalPath, fileUrl),
   readSample: (sampleName: string): Promise<OpenResult> => ipcRenderer.invoke(IPC.readSample, sampleName),
-  save: (filePath: string, content: string): Promise<WriteResult> => ipcRenderer.invoke(IPC.save, filePath, content),
+  save: (filePath: string, content: string, options?: SaveOptions): Promise<WriteResult> =>
+    ipcRenderer.invoke(IPC.save, filePath, content, options),
   saveAs: (content: string, suggestedName?: string): Promise<WriteResult> =>
     ipcRenderer.invoke(IPC.saveAs, content, suggestedName),
   exportAs: (request: ExportRequest): Promise<WriteResult> => ipcRenderer.invoke(IPC.export, request),
@@ -118,6 +122,8 @@ const api = {
   /** Ends the whole app through the unsaved-changes guard, not just this window — closing the
    *  window alone never quits on macOS, where the app stays running in the dock. */
   requestQuit: (): void => ipcRenderer.send(IPC.requestQuit),
+  /** Replaces the set of open documents main watches for changes made by other applications. */
+  watchDocuments: (paths: string[]): void => ipcRenderer.send(IPC.watchDocuments, paths),
   getUpdateState: (): Promise<UpdateState> => ipcRenderer.invoke(IPC.getUpdateState),
   checkForUpdate: (): Promise<UpdateState> => ipcRenderer.invoke(IPC.checkForUpdate),
   getPerformanceReport: (): Promise<PerformanceReport> => ipcRenderer.invoke(IPC.getPerformanceReport),
@@ -132,6 +138,11 @@ const api = {
     const listener = (_e: unknown, doc: DocumentMetadata): void => cb(doc)
     ipcRenderer.on(IPC.openDocument, listener)
     return () => ipcRenderer.removeListener(IPC.openDocument, listener)
+  },
+  onDocumentChanged: (cb: (event: DocumentChangedEvent) => void): (() => void) => {
+    const listener = (_e: unknown, event: DocumentChangedEvent): void => cb(event)
+    ipcRenderer.on(IPC.documentChanged, listener)
+    return () => ipcRenderer.removeListener(IPC.documentChanged, listener)
   },
   onExportProgress: (cb: (progress: ExportProgress) => void): (() => void) => {
     const listener = (_e: unknown, progress: ExportProgress): void => cb(progress)

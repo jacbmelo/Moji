@@ -37,6 +37,10 @@ Features added in Moji Plus, on top of the original:
 - **App-wide light and dark themes**: chrome, editor, dialogs, and preview follow the OS theme by default. The top-bar toggle switches between light and dark, and Settings > General has a Theme option (System / Light / Dark). Exports always use the light theme.
 - **YAML front matter**: a `---` … `---` block at the top of a document renders as a highlighted YAML code block in the preview and in exports.
 - **No native title bar**: the top bar fills the top of the window and keeps the native window controls.
+- **Session restore**: on launch, Moji Plus reopens the tabs from last time, in the same order. Unsaved changes to files are kept like untitled documents, so quitting does not ask and they come back as they were. Settings > General has separate options for keeping new documents and unsaved changes between sessions, and for reopening files without changes.
+- **Layout restore**: the app reopens in preview or editor mode as it was left, with the outline, full width, and maximized window as they were. Each document also returns to where it was read, after switching tabs or restarting.
+- **Unsaved-changes mark follows the text**: undoing every edit, so the text matches the saved version again, clears the mark.
+- **External change detection**: when another app changes an open file, Moji Plus reloads it automatically if it has no unsaved edits; otherwise, or when the file is deleted, it offers to reload, save under another name, or keep your version. Saving never overwrites a change made elsewhere without asking.
 
 Every change specific to Moji Plus is listed in [CHANGELOG.md](CHANGELOG.md).
 

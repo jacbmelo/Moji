@@ -73,6 +73,21 @@ The system SHALL expose only typed update status and check operations through pr
 - **WHEN** main process update state changes
 - **THEN** renderer receives serializable state through dedicated preload listener without access to native event object
 
+### Requirement: Restore the workspace layout
+The system SHALL reopen with the view options it had when it was last closed.
+
+#### Scenario: Reopen in the same mode and layout
+- **WHEN** the user quits with documents open in preview or editor mode, with the outline shown or hidden, with full width on or off, or with the window maximized
+- **THEN** the next launch restores the documents in that mode, with the outline, full width and maximized state as they were, alongside the options already kept in settings (split view and ratio, font sizes, reading width, theme, window size)
+
+#### Scenario: Reading position per document
+- **WHEN** the user scrolls a document in the preview or the editor, switches to another tab and back, or quits and relaunches
+- **THEN** the document opens at the same place, measured as the source line at the top of the view, so it holds across font size, width and theme changes; a document never scrolled opens at the top
+
+#### Scenario: No documents open
+- **WHEN** the user closes every tab before quitting
+- **THEN** the last mode used with documents open is kept for the next restored session
+
 ### Requirement: Quitting is distinct from closing the window
 The system SHALL treat quitting the application as distinct from closing its window on macOS, where closing the last window leaves the process running. Every exit path SHALL pass through the unsaved-changes guard before the application terminates.
 
