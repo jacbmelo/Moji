@@ -51,16 +51,31 @@ export class DocumentWatcher {
     this.lastNotified.delete(filePath)
   }
 
-  /** Replaces the set of watched documents. */
+  /** Hash of the version the renderer holds, if one is known. */
+  baselineHash(filePath: string): string | undefined {
+    return this.baselines.get(filePath)?.hash
+  }
+
+  /**
+   * Replaces the set of watched documents.
+   *
+   * A newly watched document is checked straight away: one restored from a recovery draft may
+   * have been changed or deleted while the app was closed, and no event will ever say so.
+   */
   watch(paths: readonly string[]): void {
     const next = new Set(paths)
+    const added: string[] = []
     for (const filePath of this.watched) {
       if (!next.has(filePath)) this.unwatchPath(filePath)
     }
     for (const filePath of next) {
-      if (!this.watched.has(filePath)) this.watchPath(filePath)
+      if (!this.watched.has(filePath)) {
+        this.watchPath(filePath)
+        added.push(filePath)
+      }
     }
     this.watched = next
+    for (const filePath of added) this.schedule(filePath)
   }
 
   /** Re-checks every watched document; the fallback for when `fs.watch` missed an event. */

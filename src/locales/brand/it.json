@@ -36,5 +36,9 @@
     "keep": "Mantieni le mie",
     "cancel": "Annulla",
     "reloaded": "«{{name}}» è stato aggiornato con la versione sul disco."
+  },
+  "settingsDialog": {
+    "autoSave": "Mantieni i nuovi documenti e le modifiche non salvate tra le sessioni",
+    "reopenFiles": "Riapri i file aperti all'avvio"
   }
 }

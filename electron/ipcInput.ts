@@ -1,11 +1,14 @@
 import { extname } from 'node:path'
-import { isDraft } from './draftStore'
+import { isDraft, isDraftId } from './draftStore'
 import {
   MARKDOWN_EXTENSIONS,
+  MAX_SESSION_DOCUMENTS,
   SUPPORTED_LANGUAGES,
   isThemePreference,
   type AutoSaveDraft,
   type Language,
+  type SessionEntry,
+  type SessionState,
   type Settings,
   type WindowBounds
 } from './shared'
@@ -33,6 +36,41 @@ export function isMarkdown(filePath: unknown): filePath is string {
   return (MARKDOWN_EXTENSIONS as readonly string[]).includes(extname(filePath).toLowerCase())
 }
 
+/** Far past any real document; only bounds what settings.json can carry. */
+const MAX_SCROLL_LINE = 10_000_000
+
+/**
+ * Keeps well-formed session entries in order, without duplicates. Whether a path may actually be
+ * reopened is decided by the caller against the paths the user granted.
+ */
+export function sanitizeSession(value: unknown): SessionState | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const raw = value as Record<string, unknown>
+  if (!Array.isArray(raw['documents'])) return undefined
+  const seen = new Set<string>()
+  const documents: SessionEntry[] = []
+  for (const entry of raw['documents']) {
+    if (!entry || typeof entry !== 'object') continue
+    const item = entry as Record<string, unknown>
+    const path = isMarkdown(item['path']) ? item['path'] : undefined
+    const draftId = isDraftId(item['draftId']) ? item['draftId'] : undefined
+    const key = draftId ?? path
+    if (key === undefined || seen.has(key)) continue
+    seen.add(key)
+    const line = item['scrollLine']
+    const scrollLine = typeof line === 'number' && Number.isFinite(line) && line > 0 ? Math.min(line, MAX_SCROLL_LINE) : undefined
+    documents.push({
+      ...(path === undefined ? {} : { path }),
+      ...(draftId === undefined ? {} : { draftId }),
+      ...(scrollLine === undefined ? {} : { scrollLine })
+    })
+    if (documents.length >= MAX_SESSION_DOCUMENTS) break
+  }
+  const index = raw['activeIndex']
+  const activeIndex = typeof index === 'number' && Number.isInteger(index) && index >= 0 && index < documents.length ? index : 0
+  return { documents, activeIndex }
+}
+
 /** Keeps only the known settings fields; range limits are applied later by `settings.ts`. */
 export function sanitizeSettingsPatch(value: unknown): Partial<Settings> {
   if (!value || typeof value !== 'object') return {}
@@ -50,6 +88,11 @@ export function sanitizeSettingsPatch(value: unknown): Partial<Settings> {
   if (typeof raw['splitRatio'] === 'number') patch.splitRatio = raw['splitRatio']
   if (typeof raw['previewWidth'] === 'number') patch.previewWidth = raw['previewWidth']
   if (typeof raw['autoSave'] === 'boolean') patch.autoSave = raw['autoSave']
+  if (typeof raw['reopenFiles'] === 'boolean') patch.reopenFiles = raw['reopenFiles']
+  if (raw['viewMode'] === 'view' || raw['viewMode'] === 'edit') patch.viewMode = raw['viewMode']
+  if (typeof raw['outlineVisible'] === 'boolean') patch.outlineVisible = raw['outlineVisible']
+  const session = sanitizeSession(raw['session'])
+  if (session) patch.session = session
   if (Array.isArray(raw['recentFiles'])) patch.recentFiles = raw['recentFiles'].filter((p): p is string => typeof p === 'string')
   if (isWindowBounds(raw['windowBounds'])) patch.windowBounds = raw['windowBounds']
 
@@ -59,7 +102,13 @@ export function sanitizeSettingsPatch(value: unknown): Partial<Settings> {
 /** Validated by the same rules the store enforces, then narrowed to exactly the persisted fields. */
 export function sanitizeDraft(value: unknown): AutoSaveDraft | null {
   if (!isDraft(value)) return null
-  return { id: value.id, title: value.title, content: value.content }
+  // `baseHash` is main's to set: the renderer never vouches for what is on disk.
+  return {
+    id: value.id,
+    title: value.title,
+    content: value.content,
+    ...(isMarkdown(value.path) ? { path: value.path } : {})
+  }
 }
 
 /** Characters Windows refuses in a file name, plus C0 control characters. `\` and `/` are

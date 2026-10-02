@@ -36,5 +36,9 @@
     "keep": "Manter as minhas",
     "cancel": "Cancelar",
     "reloaded": "“{{name}}” foi atualizado com a versão do disco."
+  },
+  "settingsDialog": {
+    "autoSave": "Manter documentos novos e alterações não salvas entre sessões",
+    "reopenFiles": "Reabrir os arquivos abertos ao iniciar"
   }
 }

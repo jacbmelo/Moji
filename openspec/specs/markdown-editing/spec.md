@@ -48,6 +48,10 @@ The system SHALL offer a split view that shows the rendered preview beside the s
 ### Requirement: Dirty-state tracking
 The system SHALL track unsaved changes and indicate the dirty state, warning before actions that would discard unsaved edits.
 
+#### Scenario: Undo back to the saved version
+- **WHEN** the user undoes every edit, or retypes the text so it matches the version last opened or saved again
+- **THEN** the unsaved-changes indicator clears and closing the document no longer asks to save
+
 #### Scenario: Indicate unsaved changes
 - **WHEN** the user modifies the document after the last save
 - **THEN** the UI shows an unsaved-changes indicator (e.g. a modified marker in the title)
@@ -105,6 +109,18 @@ The system SHALL detect when the file behind an open document is changed or remo
 ### Requirement: Recover untitled documents
 The system SHALL persist documents without a filesystem path as internal recovery drafts by default and SHALL restore those documents on the next app launch.
 
+#### Scenario: Recover unsaved changes to a file
+- **WHEN** keeping new documents and unsaved changes between sessions is enabled, a file has unsaved changes, and the user quits the application
+- **THEN** the application does not ask to save; on the next launch the file reopens with those changes and its unsaved-changes indicator, even when reopening files is disabled
+
+#### Scenario: Closing a file with unsaved changes still asks
+- **WHEN** the user closes the tab of a file with unsaved changes
+- **THEN** the application asks to save, discard, or cancel, and discarding removes the recovery draft
+
+#### Scenario: Recovered changes to a file that changed meanwhile
+- **WHEN** a file with recovered changes was modified or deleted while the application was closed
+- **THEN** the external-change flow applies: the user is asked what to do, and saving asks before overwriting the newer file
+
 #### Scenario: Recover after restart
 - **WHEN** an untitled document is open and its latest content has been persisted as a recovery draft
 - **THEN** closing and reopening the application restores that document with its title and content
@@ -128,6 +144,21 @@ The system SHALL persist documents without a filesystem path as internal recover
 #### Scenario: Recovery storage is unavailable
 - **WHEN** a recovery draft cannot be written because the memory budget or the free disk space is insufficient
 - **THEN** the application reports how much was needed and how much was available, keeps the previously stored draft unchanged, and never stores a shortened copy of the document
+
+### Requirement: Reopen files
+The system SHALL reopen, on launch, the tabs that were open when it was last closed, in the same order and with the same active tab.
+
+#### Scenario: Reopen open files
+- **WHEN** reopening files is enabled (the default) and the user relaunches the application
+- **THEN** every file that was open is read again from disk, together with recovered untitled documents and files with unsaved changes, in their previous order
+
+#### Scenario: Reopening disabled
+- **WHEN** reopening files is disabled
+- **THEN** only documents with recovery drafts (untitled documents and files with unsaved changes) are restored
+
+#### Scenario: Missing file
+- **WHEN** a file without unsaved changes no longer exists at launch
+- **THEN** it is skipped and removed from the recent files
 
 ### Requirement: Indent and outdent in the source editor
 The system SHALL indent with Tab and outdent with Shift+Tab inside the source editor, using two spaces per level, instead of moving focus to the next control.

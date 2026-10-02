@@ -65,13 +65,25 @@ export interface Settings {
   splitRatio: number
   /** Reading column width as a percentage (20-100, in steps of 5) of the available preview area. */
   previewWidth: number
-  /** Persist and restore untitled documents between app sessions. */
+  /** Keep untitled documents and unsaved edits to files as recovery drafts, restored on the next launch. */
   autoSave: boolean
+  /** Reopen the files that were open at quit, not just the ones with unsaved edits. */
+  reopenFiles: boolean
+  /** Tabs open when the app was last used, so the next launch can restore them in order. */
+  session?: SessionState
+  /** Preview or editor, as it was when the app was last used; restored with the session. */
+  viewMode: ViewMode
+  /** Show the outline sidebar. */
+  outlineVisible: boolean
+  /** The window was maximized when last closed. Main's to set: it watches the window itself. */
+  windowMaximized?: boolean
   /** Absolute paths of recently opened documents, most-recent first. */
   recentFiles: string[]
   lastDialogDirectory?: string
   windowBounds?: WindowBounds
 }
+
+export type ViewMode = 'view' | 'edit'
 
 export interface WindowBounds {
   x?: number
@@ -101,12 +113,48 @@ export type DocumentStreamMessage =
 
 export type DocumentSizeProfile = 'normal' | 'large' | 'very-large'
 
-/** App-managed recovery copy for a document that has no filesystem path yet. */
+/**
+ * App-managed recovery copy of unsaved work: a document that has no filesystem path yet, or a
+ * file's edits that were not saved to it.
+ */
 export interface AutoSaveDraft {
   id: string
   title: string
   content: string
+  /** The file these edits belong to; absent for an untitled document. */
+  path?: string
+  /** Hash of the file's bytes the edits were made on top of. Set by main, never by the renderer. */
+  baseHash?: string
 }
+
+/** A draft as handed back at startup. */
+export interface RestoredDraft extends AutoSaveDraft {
+  /**
+   * For a file draft: the file's current text when it still matches `baseHash`, so undoing every
+   * edit can be recognised as "back to the saved version". `null` when the file changed or is gone.
+   */
+  savedContent?: string | null
+}
+
+/**
+ * One tab of the last session, in tab order. A file carries its path, plus its draft when it had
+ * unsaved edits; an untitled document carries only its draft. If the draft never reached the
+ * disk, the path still lets the file be reopened.
+ */
+export interface SessionEntry {
+  path?: string
+  draftId?: string
+  /** Source line (fractional) at the top of the view when the session ended. */
+  scrollLine?: number
+}
+
+export interface SessionState {
+  documents: SessionEntry[]
+  activeIndex: number
+}
+
+/** Tabs a session may hold; far beyond any real use, it only bounds what settings.json can carry. */
+export const MAX_SESSION_DOCUMENTS = 200
 
 /**
  * Why a draft could not be written. Drafts have no size limit of their own: a save is refused only

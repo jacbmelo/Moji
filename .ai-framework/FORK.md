@@ -18,6 +18,10 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 ## Comportamento proprio do fork
 
 - Barras de scroll no Windows/Linux: ficam transparentes e so aparecem durante o scroll ou com o rato sobre elas, como no macOS. Vive em ficheiros do fork (`src/styles/plus-scrollbars.css`, `src/lib/autoHideScrollbars.ts`), ligados em `src/main.tsx`; nao alterar as regras de scrollbar do `app.css` do upstream para isto.
+- Sessao e alteracoes por guardar: ficheiros com alteracoes ficam em rascunho (`settings.autoSave`) e reabrem sempre; `settings.reopenFiles` (novo) reabre tambem os ficheiros sem alteracoes. Os textos das duas opcoes sobrepoem `settingsDialog.autoSave` e acrescentam `settingsDialog.reopenFiles` em `src/locales/brand/`.
+- Disposicao da janela: `settings.viewMode` (pre-visualizacao/editor, so gravado com documentos abertos), `settings.outlineVisible` e `settings.windowMaximized` (gravado pelo main) sao restaurados no arranque. Ao contrario do upstream, `previewFluidWidth` tambem persiste (`updateSettings` em `electron/settings.ts`, rever em cada sync).
+- Posicao de leitura: por documento, como linha do codigo-fonte (fracionaria) no topo da vista, a mesma coordenada do split view (`src/lib/splitScroll.ts`). Fica em `docScrollRef` no `App.tsx`, vai para `session.documents[].scrollLine` com debounce e ao sair, e e reposta ao ativar o separador.
+- Alteracoes externas: `electron/documentWatcher.ts` e `ExternalChangeDialog.tsx`; textos em `externalChange` nos overlays de `src/locales/brand/`.
 - Contagem de tokens na status bar: e uma estimativa (caracteres / 4), por isso aparece como `~N` com tooltip. Os textos sobrepoem `statusbar.tokenCount` e acrescentam `statusbar.tokenEstimate` em `src/locales/brand/`; o `title` fica no `StatusBar.tsx` do upstream (rever em cada sync).
 - Atualizacoes no macOS: ao contrario do upstream, o macOS tambem verifica as GitHub Releases (`supportsAutomaticUpdates()` em `electron/updater.ts`, rever em cada sync). So verifica: `autoDownload` fica desligado e o aviso abre as Releases, por isso a app nao precisa de ser assinada. Exige o `latest-mac.yml` em cada release.
 

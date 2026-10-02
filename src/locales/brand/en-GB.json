@@ -36,5 +36,9 @@
     "keep": "Keep mine",
     "cancel": "Cancel",
     "reloaded": "‘{{name}}’ was updated with the version on disk."
+  },
+  "settingsDialog": {
+    "autoSave": "Keep new documents and unsaved changes between sessions",
+    "reopenFiles": "Reopen open files on startup"
   }
 }

@@ -14,6 +14,7 @@ import {
   type Settings,
   type WindowBounds
 } from './shared'
+import { sanitizeSession } from './ipcInput'
 
 let cache: Settings | null = null
 
@@ -73,6 +74,9 @@ function defaults(): Settings {
     splitRatio: SPLIT_RATIO_DEFAULT,
     previewWidth: PREVIEW_WIDTH_DEFAULT,
     autoSave: true,
+    reopenFiles: true,
+    viewMode: 'view' as const,
+    outlineVisible: true,
     recentFiles: []
   }
 }
@@ -134,11 +138,16 @@ export function getSettings(): Settings {
       previewFontSize: boundedNumber(raw.previewFontSize, base.previewFontSize, 12, 24),
       editorFontSize: boundedNumber(raw.editorFontSize, base.editorFontSize, 12, 24),
       previewLineHeight: boundedNumber(raw.previewLineHeight, base.previewLineHeight, 1.2, 2.4),
-      previewFluidWidth: base.previewFluidWidth,
+      previewFluidWidth: typeof raw.previewFluidWidth === 'boolean' ? raw.previewFluidWidth : base.previewFluidWidth,
       splitView: typeof raw.splitView === 'boolean' ? raw.splitView : base.splitView,
       splitRatio: normalizeSplitRatio(raw.splitRatio, base.splitRatio),
       previewWidth: normalizePreviewWidth(raw.previewWidth, base.previewWidth),
       autoSave: typeof raw.autoSave === 'boolean' ? raw.autoSave : base.autoSave,
+      reopenFiles: typeof raw.reopenFiles === 'boolean' ? raw.reopenFiles : base.reopenFiles,
+      session: sanitizeSession(raw.session),
+      viewMode: raw.viewMode === 'edit' ? 'edit' : base.viewMode,
+      outlineVisible: typeof raw.outlineVisible === 'boolean' ? raw.outlineVisible : base.outlineVisible,
+      windowMaximized: raw.windowMaximized === true,
       recentFiles: sanitizeRecentFiles(raw.recentFiles),
       lastDialogDirectory: typeof raw.lastDialogDirectory === 'string' ? raw.lastDialogDirectory : undefined,
       windowBounds: sanitizeWindowBounds(raw.windowBounds)
@@ -164,16 +173,19 @@ export function updateSettings(patch: Partial<Settings>): Settings {
     splitRatio: normalizeSplitRatio(merged.splitRatio),
     previewWidth: normalizePreviewWidth(merged.previewWidth),
     autoSave: typeof merged.autoSave === 'boolean' ? merged.autoSave : true,
+    reopenFiles: typeof merged.reopenFiles === 'boolean' ? merged.reopenFiles : true,
+    session: sanitizeSession(merged.session),
+    viewMode: merged.viewMode === 'edit' ? 'edit' : 'view',
+    outlineVisible: typeof merged.outlineVisible === 'boolean' ? merged.outlineVisible : true,
+    windowMaximized: merged.windowMaximized === true,
     recentFiles: sanitizeRecentFiles(merged.recentFiles),
     lastDialogDirectory: typeof merged.lastDialogDirectory === 'string' ? merged.lastDialogDirectory : undefined,
     windowBounds: sanitizeWindowBounds(merged.windowBounds)
   }
   cache = next
   try {
-    const persisted: Partial<Settings> = { ...next }
-    // Full-width stays a per-session toggle; font sizes are configured in Settings and persist.
-    delete persisted.previewFluidWidth
-    writeFileAtomicSync(settingsFile(), JSON.stringify(persisted, null, 2))
+    // Moji Plus: full width persists like every other view option, so the app reopens as it was.
+    writeFileAtomicSync(settingsFile(), JSON.stringify(next, null, 2))
   } catch {
     // Non-fatal: preference simply won't persist this session. Any temporary file this attempt
     // left behind is swept up (or simply overwritten) the next time a write succeeds.

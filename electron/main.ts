@@ -16,6 +16,7 @@ import {
   type DraftResult,
   type OpenDialogResult,
   type OpenResult,
+  type RestoredDraft,
   type Settings,
   type UpdateState,
   type WriteResult
@@ -539,7 +540,8 @@ function windowOptionsFromSettings(): Pick<Electron.BrowserWindowConstructorOpti
 
 function persistWindowBounds(win: BrowserWindow): void {
   if (win.isDestroyed() || win.isMinimized() || win.isFullScreen()) return
-  updateSettings({ windowBounds: win.getNormalBounds() })
+  // Normal bounds even when maximized, so un-maximizing after a restart returns to the right size.
+  updateSettings({ windowBounds: win.getNormalBounds(), windowMaximized: win.isMaximized() })
 }
 
 function schedulePersistWindowBounds(win: BrowserWindow): void {
@@ -596,10 +598,14 @@ function createWindow(): void {
   rendererReady = false
   closePending = false
 
-  // Paths in persisted recent history came from earlier user-authorized opens. Restore them
-  // before the renderer can request their bytes.
-  for (const filePath of getSettings().recentFiles) {
+  // Paths in persisted recent history and the last session came from earlier user-authorized
+  // opens. Restore them before the renderer can request their bytes.
+  const { recentFiles, session } = getSettings()
+  for (const filePath of recentFiles) {
     if (isMarkdown(filePath)) grantDocument(filePath)
+  }
+  for (const entry of session?.documents ?? []) {
+    if (isMarkdown(entry.path)) grantDocument(entry.path)
   }
 
   // `themeSource` drives `prefers-color-scheme` in the renderer and native controls, so the
@@ -633,6 +639,7 @@ function createWindow(): void {
 
   mainWindow.once('ready-to-show', () => {
     mainWindow?.setMenuBarVisibility(false)
+    if (getSettings().windowMaximized) mainWindow?.maximize()
     revealMainWindow()
     // Any file still pending is delivered once the renderer confirms its listener is mounted
     // (`IPC.rendererReady`), not here: first paint does not guarantee `onOpenDocument` is wired up yet.
@@ -684,6 +691,14 @@ function createWindow(): void {
     if (mainWindow) schedulePersistWindowBounds(mainWindow)
   })
 
+  mainWindow.on('maximize', () => {
+    if (mainWindow) schedulePersistWindowBounds(mainWindow)
+  })
+
+  mainWindow.on('unmaximize', () => {
+    if (mainWindow) schedulePersistWindowBounds(mainWindow)
+  })
+
   mainWindow.on('closed', () => {
     if (persistWindowBoundsTimer) {
       clearTimeout(persistWindowBoundsTimer)
@@ -732,7 +747,9 @@ function createWindow(): void {
     void dialog.showMessageBox(mainWindow, {
       type: 'warning',
       message: `${APP_NAME} recovered after a crash.`,
-      detail: 'The window was reloaded. Untitled documents were recovered, but any changes you had not saved to files on disk were lost.'
+      detail: getSettings().autoSave
+        ? 'The window was reloaded. Untitled documents and unsaved changes already kept as recovery drafts were restored; edits made in the last moments before the crash may be missing.'
+        : 'The window was reloaded. Any changes you had not saved to files on disk were lost.'
     })
   })
 
@@ -795,22 +812,67 @@ async function saveWouldOverwriteExternalChange(filePath: string): Promise<boole
   }
 }
 
+/**
+ * Prepares a stored draft for the renderer at startup.
+ *
+ * A file draft's path was granted when the user first opened it, so it is granted again. The
+ * file's current bytes decide two things: whether the text the edits started from is still on
+ * disk (then it is handed back as `savedContent`, so undoing every edit reads as clean again),
+ * and what the watcher compares against. When the file changed while the app was closed, the
+ * watcher keeps the old hash, so it reports the change and a save asks before overwriting it.
+ */
+async function restoreDraft(draft: AutoSaveDraft): Promise<RestoredDraft> {
+  if (draft.path === undefined || !isMarkdown(draft.path)) return draft
+  grantDocument(draft.path)
+  if (draft.baseHash === undefined) return { ...draft, savedContent: null }
+  try {
+    const fileStat = await stat(draft.path)
+    const bytes = await readFile(draft.path)
+    const hash = contentHash().update(bytes).digest('hex')
+    if (fileStat.isFile() && hash === draft.baseHash) {
+      documentWatcher.setBaseline(draft.path, { size: fileStat.size, mtimeMs: fileStat.mtimeMs, hash })
+      return { ...draft, savedContent: stripLeadingBom(bytes.toString('utf-8')) }
+    }
+  } catch {
+    // Gone or unreadable: the watcher reports it once the document is watched.
+  }
+  // Size and mtime that never match force the watcher to compare by content.
+  documentWatcher.setBaseline(draft.path, { size: -1, mtimeMs: -1, hash: draft.baseHash })
+  return { ...draft, savedContent: null }
+}
+
 function registerIpc(): void {
   handleFromRenderer(IPC.getSettings, (): Settings => getSettings())
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)
     if (patch.recentFiles) patch.recentFiles = patch.recentFiles.filter((filePath) => capabilities.allows(filePath))
+    if (patch.session) {
+      // A path the user never opened is dropped; the tab's draft, if any, still counts.
+      const documents = patch.session.documents
+        .map((entry) => (entry.path === undefined || capabilities.allows(entry.path) ? entry : { draftId: entry.draftId, scrollLine: entry.scrollLine }))
+        .filter((entry) => entry.path !== undefined || entry.draftId !== undefined)
+      patch.session = { documents, activeIndex: Math.min(patch.session.activeIndex, Math.max(0, documents.length - 1)) }
+    }
     const next = updateSettings(patch)
     if (nativeTheme.themeSource !== next.appearance) nativeTheme.themeSource = next.appearance
     return next
   })
 
-  handleFromRenderer(IPC.getDrafts, (): Promise<AutoSaveDraft[]> => getDrafts())
+  handleFromRenderer(IPC.getDrafts, async (): Promise<RestoredDraft[]> => {
+    const drafts = await getDrafts()
+    return Promise.all(drafts.map(restoreDraft))
+  })
 
   handleFromRenderer(IPC.saveDraft, async (_e, value: unknown): Promise<DraftResult> => {
     const draft = sanitizeDraft(value)
     if (!draft) return { ok: false, error: 'invalid-draft' }
+    if (draft.path !== undefined) {
+      // Only a file the user opened can carry edits that are reopened with it later.
+      if (!capabilities.allows(draft.path)) return { ok: false, error: 'forbidden' }
+      const baseHash = documentWatcher.baselineHash(draft.path)
+      if (baseHash !== undefined) draft.baseHash = baseHash
+    }
     try {
       await saveDraft(draft)
       return { ok: true }

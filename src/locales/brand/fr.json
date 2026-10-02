@@ -36,5 +36,9 @@
     "keep": "Garder les miennes",
     "cancel": "Annuler",
     "reloaded": "« {{name}} » a été mis à jour avec la version du disque."
+  },
+  "settingsDialog": {
+    "autoSave": "Conserver les nouveaux documents et les modifications non enregistrées entre les sessions",
+    "reopenFiles": "Rouvrir les fichiers ouverts au démarrage"
   }
 }

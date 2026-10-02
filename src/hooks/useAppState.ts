@@ -7,6 +7,12 @@ export interface WorkspaceDocument {
   path: string | null
   title: string | null
   content: string
+  /**
+   * Text of the version last read from or saved to disk, so undoing back to it clears the
+   * unsaved-changes mark. The same string as `content` until the document is edited. `null` when
+   * unknown (a file restored with edits whose original changed on disk meanwhile).
+   */
+  savedContent: string | null
   stats: { length: number; lines: number; tokens: number; words: number }
   revision: number
   savedRevision: number
@@ -21,7 +27,7 @@ export interface WorkspaceDocument {
 export function useSettingsState() {
   const [settings, setSettings] = useState<Settings>({
     appearance: 'system', language: 'en', previewFontFamily: 'Inter', previewFontSize: 16, editorFontSize: 14,
-    previewLineHeight: 1.7, previewFluidWidth: false, splitView: false, splitRatio: SPLIT_RATIO_DEFAULT, previewWidth: PREVIEW_WIDTH_DEFAULT, autoSave: true, recentFiles: []
+    previewLineHeight: 1.7, previewFluidWidth: false, splitView: false, splitRatio: SPLIT_RATIO_DEFAULT, previewWidth: PREVIEW_WIDTH_DEFAULT, autoSave: true, reopenFiles: true, viewMode: 'view', outlineVisible: true, recentFiles: []
   })
   const mdTheme = useResolvedTheme()
   return { settings, setSettings, mdTheme }

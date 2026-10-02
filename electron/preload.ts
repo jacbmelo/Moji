@@ -16,6 +16,7 @@ import {
   type OpenManyProgress,
   type OpenResult,
   type PerformanceReport,
+  type RestoredDraft,
   type SaveOptions,
   type Settings,
   type UpdateState,
@@ -93,7 +94,7 @@ function readDocumentStream(filePath: string): Promise<OpenResult> {
 const api = {
   getSettings: (): Promise<Settings> => ipcRenderer.invoke(IPC.getSettings),
   setSettings: (patch: Partial<Settings>): Promise<Settings> => ipcRenderer.invoke(IPC.setSettings, patch),
-  getDrafts: (): Promise<AutoSaveDraft[]> => ipcRenderer.invoke(IPC.getDrafts),
+  getDrafts: (): Promise<RestoredDraft[]> => ipcRenderer.invoke(IPC.getDrafts),
   saveDraft: (draft: AutoSaveDraft): Promise<DraftResult> => ipcRenderer.invoke(IPC.saveDraft, draft),
   /** `batches` holds one entry per editor transaction, in order; they cannot be flattened. */
   appendDraftEdits: (id: string, batches: DraftEditPayload[][], expectedLength: number): Promise<DraftAppendResult> =>

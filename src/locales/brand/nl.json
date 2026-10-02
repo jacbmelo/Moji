@@ -36,5 +36,9 @@
     "keep": "Mijn versie behouden",
     "cancel": "Annuleren",
     "reloaded": "‘{{name}}’ is bijgewerkt met de versie op schijf."
+  },
+  "settingsDialog": {
+    "autoSave": "Nieuwe documenten en niet-opgeslagen wijzigingen tussen sessies bewaren",
+    "reopenFiles": "Geopende bestanden opnieuw openen bij het starten"
   }
 }

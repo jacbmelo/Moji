@@ -36,5 +36,9 @@
     "keep": "保留我的變更",
     "cancel": "取消",
     "reloaded": "已使用磁碟上的版本更新「{{name}}」。"
+  },
+  "settingsDialog": {
+    "autoSave": "在工作階段之間保留新文件和未儲存的變更",
+    "reopenFiles": "啟動時重新開啟已開啟的檔案"
   }
 }

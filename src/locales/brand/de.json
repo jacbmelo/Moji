@@ -36,5 +36,9 @@
     "keep": "Meine behalten",
     "cancel": "Abbrechen",
     "reloaded": "„{{name}}“ wurde mit der Version auf dem Datenträger aktualisiert."
+  },
+  "settingsDialog": {
+    "autoSave": "Neue Dokumente und nicht gespeicherte Änderungen zwischen Sitzungen behalten",
+    "reopenFiles": "Geöffnete Dateien beim Start wieder öffnen"
   }
 }

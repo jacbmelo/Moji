@@ -9,7 +9,16 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Added
 
 - Open documents are watched for changes made by other applications. A document without unsaved edits reloads automatically with a short notice; one with unsaved edits, or whose file was deleted or moved, asks whether to reload, save under another name, or keep the local version. Background tabs are asked about when selected.
+- Moji Plus reopens the tabs from the last session, in the same order and with the same active tab. A new "Reopen open files on startup" option (Settings > General, on by default) controls whether files without changes come back.
+- Unsaved changes to files are now kept as recovery drafts, like untitled documents, when "Keep new documents and unsaved changes between sessions" is on: quitting no longer asks, and the files reopen with their changes and the unsaved-changes mark, whatever the reopen option says. Closing the tab still asks. If the file changed or was deleted while Moji Plus was closed, the external-change prompt appears.
 - Saving a file that changed on disk since it was read no longer overwrites it silently: Moji Plus offers to replace it, save under another name, reload, or cancel. Atomic saves (temp file + rename) are detected, and the check also runs when the window regains focus.
+
+### Changed
+
+- The app reopens in the mode it was left in (preview or editor), with the outline shown or hidden, full width on or off, and the window maximized if it was. Full width used to reset on every launch.
+- Each document keeps its reading position: switching tabs, or quitting and reopening, returns to the place it was read, in the preview and in the editor. A tab no longer opens at the scroll offset of the tab shown before it.
+- Undoing every edit (or retyping the original text) clears the unsaved-changes mark instead of leaving the document marked as changed.
+- The recovery option is now labelled "Keep new documents and unsaved changes between sessions", since it also covers files.
 
 ## [1.0.2] - 2026-10-02 — based on Moji 1.0.7
 
