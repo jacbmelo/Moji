@@ -5,6 +5,12 @@ dist/
 tmp/
 *.log
 .DS_Store
+
+# Local secrets (tokens, credentials)
+.env
+.env.*
+.claude/settings.local.json
+
 .vite/
 .tmp/
 .tmp/benchmark-corpus/
