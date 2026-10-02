@@ -13,7 +13,11 @@
 > All credit for the original application goes to its author. See [CREDITS.md](CREDITS.md).
 
 <p align="center">
-  <img src="docs/plus/screenshot-main.png" alt="Moji Plus showing the Markdown guide in preview mode" width="100%" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/plus/screenshot-dark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="docs/plus/screenshot-light.png" />
+    <img src="docs/plus/screenshot-light.png" alt="Moji Plus showing the Markdown guide in preview mode, with the outline open" width="100%" />
+  </picture>
 </p>
 
 <p align="center">
