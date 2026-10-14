@@ -1,3 +1,5 @@
+import { plusScrollInset } from './plusScrollInset'
+
 function getPreviewScroller(target: Element | null): HTMLElement | null {
   return target?.closest('.pane') as HTMLElement | null
 }
@@ -5,7 +7,8 @@ function getPreviewScroller(target: Element | null): HTMLElement | null {
 export function getHeadingTopInScroller(scroller: HTMLElement, heading: HTMLElement): number {
   const scrollerRect = scroller.getBoundingClientRect()
   const headingRect = heading.getBoundingClientRect()
-  return headingRect.top - scrollerRect.top + scroller.scrollTop
+  // Moji Plus: measured from below the toolbar the document scrolls under (plusScrollInset.ts).
+  return headingRect.top - scrollerRect.top + scroller.scrollTop - plusScrollInset(scroller)
 }
 
 export function previewFragmentIdentifiers(href: string): string[] {
@@ -54,7 +57,7 @@ export function getActivePreviewHeadingId(
   const maxScrollTop = Math.max(0, scroller.scrollHeight - scroller.clientHeight)
   if (maxScrollTop - scroller.scrollTop <= 2) return headings[headings.length - 1].id
 
-  const probeTop = scroller.getBoundingClientRect().top + offset
+  const probeTop = scroller.getBoundingClientRect().top + plusScrollInset(scroller) + offset
   // Headings follow document order. Read only O(log n) positions, rather than
   // measuring every preceding heading on each frame near the end of a document.
   let low = 0

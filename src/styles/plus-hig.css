@@ -402,39 +402,65 @@
   outline-offset: -1px;
 }
 
-/* --- macOS: translucent toolbar with a scroll edge -------------------------------------- */
-/* As in Safari, the toolbar and tab bar are glass over the window material, and the top of
-   the document fades into them: text scrolling up blurs and dissolves progressively instead
-   of meeting a hard edge. The document still starts below the toolbar, so scroll positions,
-   outline jumps and the split view keep upstream's geometry. */
+/* --- macOS: content under a translucent toolbar ---------------------------------------- */
+/* As in Safari, the document runs to the top of the window and scrolls under the toolbar and
+   tab bar, which are glass; just below them a short band blurs and dissolves the text
+   progressively instead of a hard edge. Each scroller reserves the toolbar's height as padding
+   and `scroll-padding-top`; plusScrollInset.ts reads it wherever upstream code measures "the
+   top of the visible document" (outline jumps, active heading, split sync, reading position). */
 :root[data-platform='darwin'] {
-  --chrome-glass: color-mix(in srgb, var(--bg) 80%, transparent);
-  --scroll-edge-h: 28px;
+  --chrome-glass: color-mix(in srgb, var(--bg) 72%, transparent);
+  --tabs-row-h: 42px;
+  --plus-top-inset: var(--toolbar-h);
+  --scroll-edge-h: 24px;
+}
+
+:root[data-platform='darwin'] .app:has(.document-tab + .document-tab) {
+  --plus-top-inset: calc(var(--toolbar-h) + var(--tabs-row-h));
+}
+
+/* The document spans the toolbar and tab rows; they are drawn over it. */
+:root[data-platform='darwin'] .main {
+  position: relative;
+  grid-row: 1 / 4;
 }
 
 :root[data-platform='darwin'] .app > .plus-toolbar,
 :root[data-platform='darwin'] .app > .document-tabs {
+  position: relative;
+  z-index: 10;
   background: var(--chrome-glass);
   -webkit-backdrop-filter: blur(24px) saturate(1.8);
   backdrop-filter: blur(24px) saturate(1.8);
 }
 
-:root[data-platform='darwin'] .main {
-  position: relative;
+:root[data-platform='darwin'] .app > .document-tabs {
+  height: var(--tabs-row-h);
 }
 
+/* Scrollers: the preview (and Welcome) pane and the editor's CodeMirror scroller. */
+:root[data-platform='darwin'] .main .pane:not(.editor-pane),
+:root[data-platform='darwin'] .main .editor-pane .cm-scroller {
+  /* The edge band is part of the inset, so jumps land on clear text below it. */
+  padding-top: calc(var(--plus-top-inset) + var(--scroll-edge-h));
+  scroll-padding-top: calc(var(--plus-top-inset) + var(--scroll-edge-h));
+}
+
+/* Progressive edge right below the toolbar (or the tab bar). */
 :root[data-platform='darwin'] .main::before {
   content: '';
   position: absolute;
-  inset: 0 0 auto;
+  top: var(--plus-top-inset);
+  left: 0;
+  right: 0;
   z-index: 5;
   height: var(--scroll-edge-h);
   pointer-events: none;
   background: linear-gradient(to bottom, var(--chrome-glass), transparent);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.5) 50%, transparent 100%);
 }
 
 @media (prefers-reduced-transparency: reduce) {
@@ -456,7 +482,6 @@
 :root[data-platform='darwin'] .document-tabs {
   position: relative;
   isolation: isolate;
-  height: auto;
   padding: 2px calc(var(--space-3) + 2px) calc(var(--space-2) + 2px);
   gap: 2px;
   overflow: visible;

@@ -55,6 +55,7 @@ import { usePlusWindowDocument } from './lib/plusWindow'
 import { usePlusMenu } from './lib/plusMenu'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
 import { usePlusSettingsSync } from './lib/plusSettings'
+import { plusScrollInset } from './lib/plusScrollInset'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -1811,7 +1812,7 @@ export function App(): JSX.Element {
     if (cached && cached.pane === pane && cached.headings === headings && cached.lines === headingLines
       && cached.width === width && cached.height === height) return cached.anchors
 
-    const origin = pane.getBoundingClientRect().top - pane.scrollTop
+    const origin = pane.getBoundingClientRect().top + plusScrollInset(pane) - pane.scrollTop
     const anchors = buildSplitAnchors(
       headings.map((heading) => ({ id: heading.id, top: heading.getBoundingClientRect().top - origin })),
       headingLines

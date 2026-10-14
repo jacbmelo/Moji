@@ -11,6 +11,7 @@ import { extractMarkdownOutline } from '../lib/markdown'
 import { measureRendererNextFrame } from '../lib/performanceMetrics'
 import { collectDraftEdits } from '../lib/draftEdits'
 import { EDITOR_INDENT_UNIT, indentWithTab, outdentWithShiftTab } from '../lib/editorIndent'
+import { plusScrollInset } from '../lib/plusScrollInset'
 import type { OutlineItem } from '../lib/outline'
 
 interface EditorProps {
@@ -342,7 +343,7 @@ const externalSearchHighlight = StateField.define<{
 /** Reads layout, so it must never run while CodeMirror is applying an update. */
 function topVisibleLine(view: EditorView): number {
   const rect = view.scrollDOM.getBoundingClientRect()
-  const height = Math.max(0, rect.top - view.documentTop)
+  const height = Math.max(0, rect.top + plusScrollInset(view.scrollDOM) - view.documentTop)
   const block = view.lineBlockAtHeight(height)
   const fraction = block.height > 0 ? Math.min(1, Math.max(0, (height - block.top) / block.height)) : 0
   return view.state.doc.lineAt(block.from).number - 1 + fraction
@@ -363,7 +364,7 @@ function scrollLineToTop(view: EditorView, line: number, isCurrent: () => boolea
   const readScrollTop = (): number | null => {
     if (!isCurrent() || view.state.doc !== doc) return null
     const block = view.lineBlockAt(doc.line(index + 1).from)
-    const delta = view.documentTop + block.top + fraction * block.height - scroller.getBoundingClientRect().top
+    const delta = view.documentTop + block.top + fraction * block.height - scroller.getBoundingClientRect().top - plusScrollInset(scroller)
     const maxScrollTop = Math.max(0, scroller.scrollHeight - scroller.clientHeight)
     return Math.min(Math.max(0, scroller.scrollTop + delta), maxScrollTop)
   }
@@ -496,6 +497,8 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor({ do
         externalSearchHighlight,
         syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
         EditorView.lineWrapping,
+        // Moji Plus: keep scrolled-to lines clear of the toolbar the text scrolls under.
+        EditorView.scrollMargins.of((view) => ({ top: plusScrollInset(view.scrollDOM) })),
         EditorView.domEventHandlers({
           blur: () => onBlurRef.current()
         }),
