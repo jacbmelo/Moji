@@ -412,7 +412,9 @@
   --chrome-glass: color-mix(in srgb, var(--bg) 72%, transparent);
   --tabs-row-h: 42px;
   --plus-top-inset: var(--toolbar-h);
-  --scroll-edge-h: 24px;
+  /* Band of progressive blur below the toolbar; 0 leaves only the toolbar's own glass. */
+  --scroll-edge-h: 0px;
+  --chrome-blur: blur(8px) saturate(1.5);
 }
 
 :root[data-platform='darwin'] .app:has(.document-tab + .document-tab) {
@@ -430,8 +432,8 @@
   position: relative;
   z-index: 10;
   background: var(--chrome-glass);
-  -webkit-backdrop-filter: blur(24px) saturate(1.8);
-  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: var(--chrome-blur);
+  backdrop-filter: var(--chrome-blur);
 }
 
 :root[data-platform='darwin'] .app > .document-tabs {
