@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "Token 數：~{{count}}",
     "tokenEstimate": "估算值：約每 4 個字元計 1 個 token。實際數量取決於模型與語言。"
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} 已是最新版本。",
-    "updateAvailable": "Moji Plus {{version}} 有更新版本可用。",
-    "whyNameTitle": "為什麼叫 Moji Plus？",
-    "whyNameBody": "Moji Plus 沿用原版 Moji 的名稱——簡短、容易記住，讓人聯想到文字與書寫——並以「Plus」表示在其基礎上維護的變更。",
+    "updateCurrent": "Moji+ {{version}} 已是最新版本。",
+    "updateAvailable": "Moji+ {{version}} 有更新版本可用。",
+    "whyNameTitle": "為什麼叫 Moji+？",
+    "whyNameBody": "Moji+ 沿用原版 Moji 的名稱——簡短、容易記住，讓人聯想到文字與書寫——並以「+」表示在其基礎上維護的變更。",
     "upstreamTitle": "基於",
-    "upstreamBody": "Moji Plus 是 Alex Ishida 開發的 Moji 的衍生版本，依據 MIT 授權條款散布。它會持續同步原專案的變更，並加入獨立維護的自有變更。",
+    "upstreamBody": "Moji+ 是 Alex Ishida 開發的 Moji 的衍生版本，依據 MIT 授權條款散布。它會持續同步原專案的變更，並加入獨立維護的自有變更。",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} 可從 GitHub Releases 下載。"
+    "availableBody": "Moji+ {{version}} 可從 GitHub Releases 下載。"
   },
   "externalChange": {
     "modifiedTitle": "檔案已在其他應用程式中變更",
-    "modifiedBody": "「{{name}}」已在 Moji Plus 之外被變更，且此處有未儲存的變更。重新載入將捨棄你的變更；另存新檔可保留兩個版本。",
+    "modifiedBody": "「{{name}}」已在 Moji+ 之外被變更，且此處有未儲存的變更。重新載入將捨棄你的變更；另存新檔可保留兩個版本。",
     "deletedTitle": "檔案已移除",
-    "deletedBody": "「{{name}}」已在 Moji Plus 之外被刪除或移動。儲存以重新建立，或以新名稱儲存。",
+    "deletedBody": "「{{name}}」已在 Moji+ 之外被刪除或移動。儲存以重新建立，或以新名稱儲存。",
     "conflictTitle": "磁碟上的檔案已變更",
     "conflictBody": "「{{name}}」在你開啟後已在其他應用程式中被變更。取代將捨棄這些變更。",
     "reload": "重新載入",

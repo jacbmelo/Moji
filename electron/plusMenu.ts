@@ -2,7 +2,7 @@
 // the state, so it describes the menu and main only builds it: a click on an item with an `id`
 // goes back to the renderer as a command. See FORK.md.
 import { app, Menu, shell, type BrowserWindow, type MenuItemConstructorOptions } from 'electron'
-import { APP_NAME, APP_VERSION, AUTHOR, REPOSITORY_URL, UPSTREAM } from './brand'
+import { BRAND_NAME, APP_VERSION, AUTHOR, REPOSITORY_URL, UPSTREAM } from './brand'
 
 export type PlusMenuItem =
   | { type: 'separator' }
@@ -88,7 +88,7 @@ export function applyPlusMenu(value: unknown, win: BrowserWindow | null, channel
 /** The standard About panel, with the credits FORK.md requires. */
 export function configureAboutPanel(): void {
   app.setAboutPanelOptions({
-    applicationName: APP_NAME,
+    applicationName: BRAND_NAME,
     applicationVersion: APP_VERSION,
     version: `${UPSTREAM.name} ${UPSTREAM.baseVersion}`,
     credits: `${AUTHOR.name} — ${REPOSITORY_URL}\n\nBased on ${UPSTREAM.name} by ${UPSTREAM.author} (${UPSTREAM.license})\n${UPSTREAM.repositoryUrl}`,

@@ -38,7 +38,7 @@ import { stripLeadingBom } from './documentDecoder'
 import { AssetCache } from './assetCache'
 import { contentHash, DocumentWatcher } from './documentWatcher'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
-import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
+import { APP_NAME, BRAND_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
 import { applyWindowDocument, sanitizeMessageBox, sanitizeWindowDocument } from './plusWindow'
 import { applyPlusMenu, configureAboutPanel } from './plusMenu'
@@ -749,7 +749,7 @@ function createWindow(): void {
     // after a reload, so this is the one place a reload loop is worse than stopping.
     if (details.reason === 'launch-failed' || details.reason === 'integrity-failure') {
       dialog.showErrorBox(
-        `${APP_NAME} could not start`,
+        `${BRAND_NAME} could not start`,
         `The window failed to load (${details.reason}). The app will quit.`
       )
       app.exit(1)
@@ -763,7 +763,7 @@ function createWindow(): void {
     mainWindow.reload()
     void dialog.showMessageBox(mainWindow, {
       type: 'warning',
-      message: `${APP_NAME} recovered after a crash.`,
+      message: `${BRAND_NAME} recovered after a crash.`,
       detail: getSettings().autoSave
         ? 'The window was reloaded. Untitled documents and unsaved changes already kept as recovery drafts were restored; edits made in the last moments before the crash may be missing.'
         : 'The window was reloaded. Any changes you had not saved to files on disk were lost.'

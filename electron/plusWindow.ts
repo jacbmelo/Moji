@@ -1,6 +1,6 @@
 // Moji Plus: native window state that mirrors the active document (see FORK.md).
 import { app, type BrowserWindow } from 'electron'
-import { APP_NAME } from './brand'
+import { BRAND_NAME } from './brand'
 
 export interface WindowDocument {
   title: string
@@ -21,7 +21,7 @@ export function sanitizeWindowDocument(value: unknown): WindowDocument | null {
  * the represented file on macOS. `allows` keeps the represented file to paths the user opened.
  */
 export function applyWindowDocument(win: BrowserWindow, doc: WindowDocument, allows: (path: string) => boolean): void {
-  win.setTitle(doc.title || APP_NAME)
+  win.setTitle(doc.title || BRAND_NAME)
   if (process.platform !== 'darwin') return
   win.setDocumentEdited(doc.edited)
   const path = doc.path && allows(doc.path) ? doc.path : ''

@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "الرموز: ~{{count}}",
     "tokenEstimate": "تقدير: نحو 4 أحرف لكل رمز. يعتمد العدد الفعلي على النموذج واللغة."
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} محدّث.",
-    "updateAvailable": "Moji Plus {{version}} متاح.",
-    "whyNameTitle": "لماذا Moji Plus؟",
-    "whyNameBody": "يحتفظ Moji Plus باسم Moji الأصلي، القصير والسهل التذكر والذي يوحي بالأحرف والكتابة، ويضيف “Plus” للتغييرات التي يصونها فوقه.",
+    "updateCurrent": "Moji+ {{version}} محدّث.",
+    "updateAvailable": "Moji+ {{version}} متاح.",
+    "whyNameTitle": "لماذا Moji+؟",
+    "whyNameBody": "يحتفظ Moji+ باسم Moji الأصلي، القصير والسهل التذكر والذي يوحي بالأحرف والكتابة، ويضيف “+” للتغييرات التي يصونها فوقه.",
     "upstreamTitle": "مبني على",
-    "upstreamBody": "Moji Plus إصدار مشتق من Moji للمطور Alex Ishida، ويُوزَّع بموجب ترخيص MIT. يواصل تلقي التغييرات التي تُجرى على المشروع الأصلي ويضيف تغييراته الخاصة التي تُصان بشكل مستقل.",
+    "upstreamBody": "Moji+ إصدار مشتق من Moji للمطور Alex Ishida، ويُوزَّع بموجب ترخيص MIT. يواصل تلقي التغييرات التي تُجرى على المشروع الأصلي ويضيف تغييراته الخاصة التي تُصان بشكل مستقل.",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} جاهز للتنزيل من GitHub Releases."
+    "availableBody": "Moji+ {{version}} جاهز للتنزيل من GitHub Releases."
   },
   "externalChange": {
     "modifiedTitle": "تم تغيير الملف في تطبيق آخر",
-    "modifiedBody": "تم تغيير \"{{name}}\" خارج Moji Plus، ويحتوي هنا على تغييرات غير محفوظة. تؤدي إعادة التحميل إلى تجاهل تغييراتك؛ ويحتفظ الحفظ باسم بالنسختين.",
+    "modifiedBody": "تم تغيير \"{{name}}\" خارج Moji+، ويحتوي هنا على تغييرات غير محفوظة. تؤدي إعادة التحميل إلى تجاهل تغييراتك؛ ويحتفظ الحفظ باسم بالنسختين.",
     "deletedTitle": "تمت إزالة الملف",
-    "deletedBody": "تم حذف \"{{name}}\" أو نقله خارج Moji Plus. احفظه لإعادة إنشائه، أو احفظه باسم جديد.",
+    "deletedBody": "تم حذف \"{{name}}\" أو نقله خارج Moji+. احفظه لإعادة إنشائه، أو احفظه باسم جديد.",
     "conflictTitle": "تم تغيير الملف على القرص",
     "conflictBody": "تم تغيير \"{{name}}\" في تطبيق آخر منذ فتحه. يؤدي الاستبدال إلى تجاهل تلك التغييرات.",
     "reload": "إعادة التحميل",

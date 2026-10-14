@@ -68,7 +68,7 @@ linux:
   # No email on purpose: the maintainer is identified by the GitHub profile.
   maintainer: João Melo (https://github.com/jacbmelo)
   synopsis: Clean Markdown viewer and editor
-  description: Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
+  description: Moji+, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
   icon: build/plus/icons
   syncDesktopName: true
   extraFiles:
@@ -95,7 +95,7 @@ appImage:
       X-AppImage-Repository: https://github.com/jacbmelo/Moji
       X-AppImage-Author: João Melo
       X-AppImage-Homepage: https://github.com/jacbmelo/Moji
-      X-AppImage-Description: Moji Plus, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
+      X-AppImage-Description: Moji+, based on Moji by Alex Ishida, is a desktop app for opening, reading, editing, and exporting Markdown files with split preview/editing, outline navigation, localized UI, and PDF, HTML, and PNG export.
 deb:
   artifactName: Moji-Plus-${version}-${arch}.${ext}
   packageCategory: editors

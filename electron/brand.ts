@@ -5,7 +5,10 @@ import packageJson from '../package.json'
  * as few conflicts as possible. Moji Plus is a derivative of Moji by Alex Ishida; the
  * `UPSTREAM` credits must stay visible in the app and in the documentation.
  */
+/** Official name: app bundle, installers, settings, store listings and licence. */
 export const APP_NAME = 'Moji Plus'
+/** How the app is written wherever people read it (menus, About, Welcome, messages, docs). */
+export const BRAND_NAME = 'Moji+'
 export const APP_VERSION: string = packageJson.version
 
 /** Separate from upstream's `moji` directory so both apps can be installed side by side. */

@@ -3,7 +3,7 @@
 // so key handling stays exactly as it is; the rest are native roles or menu-owned commands.
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { APP_NAME } from '../../electron/brand'
+import { BRAND_NAME } from '../../electron/brand'
 import type { PlusMenuItem } from '../../electron/plusMenu'
 import type { ExportFormat, ThemePreference } from '../../electron/shared'
 import { useContextMenuLabels } from './plusContextMenu'
@@ -63,7 +63,7 @@ function fileName(path: string): string {
 }
 
 export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): void {
-  const appName = APP_NAME
+  const appName = BRAND_NAME
   const { t, i18n } = useTranslation()
   useContextMenuLabels()
   const actionsRef = useRef(actions)

@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "Tokens: ~{{count}}",
     "tokenEstimate": "Estimate: about 4 characters per token. The actual count depends on the model and language."
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} is up to date.",
-    "updateAvailable": "Moji Plus {{version}} is available.",
-    "whyNameTitle": "Why Moji Plus?",
-    "whyNameBody": "Moji Plus keeps the name of the original Moji—short, easy to remember, and evocative of characters and writing—and adds “Plus” for the changes it maintains on top of it.",
+    "updateCurrent": "Moji+ {{version}} is up to date.",
+    "updateAvailable": "Moji+ {{version}} is available.",
+    "whyNameTitle": "Why Moji+?",
+    "whyNameBody": "Moji+ keeps the name of the original Moji—short, easy to remember, and evocative of characters and writing—and adds “+” for the changes it maintains on top of it.",
     "upstreamTitle": "Based on",
-    "upstreamBody": "Moji Plus is a derivative of Moji by Alex Ishida, distributed under the MIT License. It keeps receiving the changes made to the original project and adds its own, maintained independently.",
+    "upstreamBody": "Moji+ is a derivative of Moji by Alex Ishida, distributed under the MIT License. It keeps receiving the changes made to the original project and adds its own, maintained independently.",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} is ready to download on GitHub Releases."
+    "availableBody": "Moji+ {{version}} is ready to download on GitHub Releases."
   },
   "externalChange": {
     "modifiedTitle": "File changed in another app",
-    "modifiedBody": "“{{name}}” was changed outside Moji Plus, and it has unsaved changes here. Reload discards your changes; Save As keeps both versions.",
+    "modifiedBody": "“{{name}}” was changed outside Moji+, and it has unsaved changes here. Reload discards your changes; Save As keeps both versions.",
     "deletedTitle": "File removed",
-    "deletedBody": "“{{name}}” was deleted or moved outside Moji Plus. Save to recreate it, or save it under a new name.",
+    "deletedBody": "“{{name}}” was deleted or moved outside Moji+. Save to recreate it, or save it under a new name.",
     "conflictTitle": "File changed on disk",
     "conflictBody": "“{{name}}” was changed in another app since you opened it. Replacing it discards those changes.",
     "reload": "Reload",

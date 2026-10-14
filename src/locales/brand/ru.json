@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "Токенов: ~{{count}}",
     "tokenEstimate": "Оценка: примерно 4 символа на токен. Точное число зависит от модели и языка."
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Установлена актуальная версия Moji Plus {{version}}.",
-    "updateAvailable": "Доступна версия Moji Plus {{version}}.",
-    "whyNameTitle": "Почему Moji Plus?",
-    "whyNameBody": "Moji Plus сохраняет имя оригинального Moji — короткое, легко запоминающееся и ассоциирующееся с символами и письмом — и добавляет «Plus» для изменений, поддерживаемых поверх него.",
+    "updateCurrent": "Установлена актуальная версия Moji+ {{version}}.",
+    "updateAvailable": "Доступна версия Moji+ {{version}}.",
+    "whyNameTitle": "Почему Moji+?",
+    "whyNameBody": "Moji+ сохраняет имя оригинального Moji — короткое, легко запоминающееся и ассоциирующееся с символами и письмом — и добавляет «+» для изменений, поддерживаемых поверх него.",
     "upstreamTitle": "Основано на",
-    "upstreamBody": "Moji Plus — производная версия Moji от Alex Ishida, распространяемая по лицензии MIT. Она продолжает получать изменения исходного проекта и добавляет собственные, которые поддерживаются независимо.",
+    "upstreamBody": "Moji+ — производная версия Moji от Alex Ishida, распространяемая по лицензии MIT. Она продолжает получать изменения исходного проекта и добавляет собственные, которые поддерживаются независимо.",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} можно скачать в GitHub Releases."
+    "availableBody": "Moji+ {{version}} можно скачать в GitHub Releases."
   },
   "externalChange": {
     "modifiedTitle": "Файл изменён в другом приложении",
-    "modifiedBody": "«{{name}}» изменён вне Moji Plus, а здесь есть несохранённые изменения. Перезагрузка отменит ваши изменения; «Сохранить как» сохранит обе версии.",
+    "modifiedBody": "«{{name}}» изменён вне Moji+, а здесь есть несохранённые изменения. Перезагрузка отменит ваши изменения; «Сохранить как» сохранит обе версии.",
     "deletedTitle": "Файл удалён",
-    "deletedBody": "«{{name}}» удалён или перемещён вне Moji Plus. Сохраните, чтобы создать его заново, или сохраните под другим именем.",
+    "deletedBody": "«{{name}}» удалён или перемещён вне Moji+. Сохраните, чтобы создать его заново, или сохраните под другим именем.",
     "conflictTitle": "Файл изменён на диске",
     "conflictBody": "«{{name}}» изменён в другом приложении после открытия. Замена отменит эти изменения.",
     "reload": "Перезагрузить",

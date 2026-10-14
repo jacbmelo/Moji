@@ -3,7 +3,7 @@
   "version": "1.1.0",
   "upstreamVersion": "1.0.7",
   "desktopName": "moji-plus.desktop",
-  "description": "Moji Plus: a derivative of Moji, the clean cross-platform Markdown viewer and editor (React + Electron)",
+  "description": "Moji+ (Moji Plus): a derivative of Moji, the clean cross-platform Markdown viewer and editor (React + Electron)",
   "homepage": "https://github.com/jacbmelo/Moji",
   "repository": {
     "type": "git",

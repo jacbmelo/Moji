@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "टोकन: ~{{count}}",
     "tokenEstimate": "अनुमान: लगभग 4 वर्ण प्रति टोकन। वास्तविक संख्या मॉडल और भाषा पर निर्भर करती है।"
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} नवीनतम है।",
-    "updateAvailable": "Moji Plus {{version}} उपलब्ध है।",
-    "whyNameTitle": "Moji Plus नाम क्यों?",
-    "whyNameBody": "Moji Plus मूल Moji का नाम बनाए रखता है — छोटा, याद रखने में आसान और अक्षरों तथा लेखन का बोध कराने वाला — और उस पर बनाए गए बदलावों के लिए “Plus” जोड़ता है।",
+    "updateCurrent": "Moji+ {{version}} नवीनतम है।",
+    "updateAvailable": "Moji+ {{version}} उपलब्ध है।",
+    "whyNameTitle": "Moji+ नाम क्यों?",
+    "whyNameBody": "Moji+ मूल Moji का नाम बनाए रखता है — छोटा, याद रखने में आसान और अक्षरों तथा लेखन का बोध कराने वाला — और उस पर बनाए गए बदलावों के लिए “+” जोड़ता है।",
     "upstreamTitle": "इस पर आधारित",
-    "upstreamBody": "Moji Plus, Alex Ishida द्वारा बनाए गए Moji का एक व्युत्पन्न संस्करण है, जो MIT लाइसेंस के अंतर्गत वितरित है। यह मूल प्रोजेक्ट में किए गए बदलाव प्राप्त करता रहता है और अपने स्वयं के बदलाव जोड़ता है, जिनका रखरखाव स्वतंत्र रूप से होता है।",
+    "upstreamBody": "Moji+, Alex Ishida द्वारा बनाए गए Moji का एक व्युत्पन्न संस्करण है, जो MIT लाइसेंस के अंतर्गत वितरित है। यह मूल प्रोजेक्ट में किए गए बदलाव प्राप्त करता रहता है और अपने स्वयं के बदलाव जोड़ता है, जिनका रखरखाव स्वतंत्र रूप से होता है।",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} GitHub Releases से डाउनलोड करने के लिए तैयार है।"
+    "availableBody": "Moji+ {{version}} GitHub Releases से डाउनलोड करने के लिए तैयार है।"
   },
   "externalChange": {
     "modifiedTitle": "फ़ाइल किसी अन्य ऐप में बदली गई",
-    "modifiedBody": "\"{{name}}\" को Moji Plus के बाहर बदला गया है, और यहाँ इसमें बिना सहेजे बदलाव हैं। फिर से लोड करने पर आपके बदलाव हट जाएँगे; इस रूप में सहेजें दोनों संस्करण रखता है।",
+    "modifiedBody": "\"{{name}}\" को Moji+ के बाहर बदला गया है, और यहाँ इसमें बिना सहेजे बदलाव हैं। फिर से लोड करने पर आपके बदलाव हट जाएँगे; इस रूप में सहेजें दोनों संस्करण रखता है।",
     "deletedTitle": "फ़ाइल हटाई गई",
-    "deletedBody": "\"{{name}}\" को Moji Plus के बाहर हटाया या स्थानांतरित किया गया। इसे फिर से बनाने के लिए सहेजें, या नए नाम से सहेजें।",
+    "deletedBody": "\"{{name}}\" को Moji+ के बाहर हटाया या स्थानांतरित किया गया। इसे फिर से बनाने के लिए सहेजें, या नए नाम से सहेजें।",
     "conflictTitle": "डिस्क पर फ़ाइल बदली गई",
     "conflictBody": "\"{{name}}\" को खोलने के बाद किसी अन्य ऐप में बदला गया है। बदलने पर वे बदलाव हट जाएँगे।",
     "reload": "फिर से लोड करें",

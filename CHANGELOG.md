@@ -1,12 +1,14 @@
 # Changelog
 
-All notable changes to Moji Plus are documented in this file. Each release names the version of the original [Moji](https://github.com/alexishida/Moji) it is based on; the original changelog is kept in [docs/upstream/CHANGELOG.md](docs/upstream/CHANGELOG.md).
+All notable changes to Moji+ (officially Moji Plus) are documented in this file. Each release names the version of the original [Moji](https://github.com/alexishida/Moji) it is based on; the original changelog is kept in [docs/upstream/CHANGELOG.md](docs/upstream/CHANGELOG.md).
 
 Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
 ### Changed
+
+- New app icon: the Markdown mark “M+” with a straight M and an orange “+”. The app is now written “Moji+” everywhere you read it; its official name, used by the installers, the app bundle and the settings folder, is still Moji Plus.
 
 - The interface follows Apple's Human Interface Guidelines on macOS, with the layout of Safari and Finder: a translucent sidebar running the full height of the window under the traffic lights, a translucent toolbar and tab bar with their controls in capsules, under which the document scrolls and the document title, Safari-style tabs shown only with two or more documents, the system font, colors and accent color, native overlay scrollbars and a slimmer status bar.
 - macOS has a full menu bar (File, Edit, View, Window, Help) with every command and its shortcut, and the standard About panel. Find and Replace is ⌥⌘F, since ⌘H hides the app; leaving the editor with the keyboard is ⌃M, so ⌘M minimizes.

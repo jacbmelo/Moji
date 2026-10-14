@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import type { UpdateState } from '../../electron/shared'
-import { APP_NAME, AUTHOR, RELEASES_URL, REPOSITORY_URL, UPSTREAM } from '../../electron/brand'
+import { BRAND_NAME, AUTHOR, RELEASES_URL, REPOSITORY_URL, UPSTREAM } from '../../electron/brand'
 import { IconRefresh, IconX } from './icons'
 import logoMark from '../assets/brand/logo-mark.png'
 
@@ -45,7 +45,7 @@ export function AboutDialog({ version, updateState, onClose, onCheckForUpdates }
           </div>
           <div className="about-dialog__hero-content">
             <p className="about-dialog__eyebrow">{t('aboutDialog.application')}</p>
-            <h3 className="about-dialog__name">{APP_NAME}</h3>
+            <h3 className="about-dialog__name">{BRAND_NAME}</h3>
             <span className="about-dialog__badge">{t('aboutDialog.version', { version })}</span>
           </div>
         </section>

@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "トークン: ~{{count}}",
     "tokenEstimate": "推定値: 1 トークンあたり約 4 文字。実際の数はモデルと言語によって異なります。"
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} は最新です。",
-    "updateAvailable": "Moji Plus {{version}} を利用できます。",
-    "whyNameTitle": "なぜ Moji Plus？",
-    "whyNameBody": "Moji Plus は、短く覚えやすく、文字や書くことを連想させるオリジナルの Moji の名前を受け継ぎ、その上に加えた変更を表す「Plus」を付けています。",
+    "updateCurrent": "Moji+ {{version}} は最新です。",
+    "updateAvailable": "Moji+ {{version}} を利用できます。",
+    "whyNameTitle": "なぜ Moji+？",
+    "whyNameBody": "Moji+ は、短く覚えやすく、文字や書くことを連想させるオリジナルの Moji の名前を受け継ぎ、その上に加えた変更を表す「+」を付けています。",
     "upstreamTitle": "ベース",
-    "upstreamBody": "Moji Plus は Alex Ishida による Moji の派生版で、MIT ライセンスで配布されています。オリジナルのプロジェクトの変更を引き続き取り込みつつ、独自に管理する変更を加えています。",
+    "upstreamBody": "Moji+ は Alex Ishida による Moji の派生版で、MIT ライセンスで配布されています。オリジナルのプロジェクトの変更を引き続き取り込みつつ、独自に管理する変更を加えています。",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} を GitHub Releases からダウンロードできます。"
+    "availableBody": "Moji+ {{version}} を GitHub Releases からダウンロードできます。"
   },
   "externalChange": {
     "modifiedTitle": "ファイルが別のアプリで変更されました",
-    "modifiedBody": "「{{name}}」は Moji Plus の外部で変更されましたが、ここには未保存の変更があります。再読み込みすると変更は破棄されます。名前を付けて保存すると両方のバージョンを残せます。",
+    "modifiedBody": "「{{name}}」は Moji+ の外部で変更されましたが、ここには未保存の変更があります。再読み込みすると変更は破棄されます。名前を付けて保存すると両方のバージョンを残せます。",
     "deletedTitle": "ファイルが削除されました",
-    "deletedBody": "「{{name}}」は Moji Plus の外部で削除または移動されました。保存して再作成するか、別の名前で保存してください。",
+    "deletedBody": "「{{name}}」は Moji+ の外部で削除または移動されました。保存して再作成するか、別の名前で保存してください。",
     "conflictTitle": "ディスク上のファイルが変更されました",
     "conflictBody": "「{{name}}」は開いた後に別のアプリで変更されました。置き換えるとその変更は破棄されます。",
     "reload": "再読み込み",

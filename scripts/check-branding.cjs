@@ -11,7 +11,9 @@ const brandDir = join(localesDir, 'brand')
 
 // Chaves de credito que citam o Moji original de proposito.
 const CREDIT_KEYS = new Set(['aboutDialog.whyNameBody', 'aboutDialog.upstreamBody'])
-const UNBRANDED = /\bMoji\b(?! Plus)/
+const UNBRANDED = /\bMoji\b(?! Plus|\+)/
+// Na interface a marca escreve-se "Moji+"; "Moji Plus" e o nome oficial (brand.ts, instaladores, licenca).
+const OFFICIAL_IN_UI = /\bMoji Plus\b/
 
 function flatten(object, prefix = '', out = {}) {
   for (const [key, value] of Object.entries(object)) {
@@ -38,6 +40,9 @@ for (const file of readdirSync(localesDir).filter((name) => name.endsWith('.json
     if (typeof value === 'string' && UNBRANDED.test(value)) {
       problems.push(`src/locales/${file} ${key}: ${JSON.stringify(value)}`)
     }
+    if (typeof value === 'string' && OFFICIAL_IN_UI.test(value)) {
+      problems.push(`src/locales/${file} ${key}: usar "Moji+" em vez de "Moji Plus": ${JSON.stringify(value)}`)
+    }
   }
 }
 
@@ -58,7 +63,7 @@ for (const path of sourceFiles) {
   readFileSync(path, 'utf8')
     .split('\n')
     .forEach((line, index) => {
-      if (/alexishida/i.test(line) || /['"`>]Moji(?! Plus)\b/.test(line)) {
+      if (/alexishida/i.test(line) || /['"`>]Moji(?! Plus|\+)\b/.test(line)) {
         problems.push(`${file}:${index + 1}: ${line.trim()}`)
       }
     })

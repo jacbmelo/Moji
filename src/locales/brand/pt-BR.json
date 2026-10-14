@@ -1,32 +1,32 @@
 {
   "app": {
-    "name": "Moji Plus v{{version}}"
+    "name": "Moji+ v{{version}}"
   },
   "statusbar": {
-    "brand": "Moji Plus v{{version}}",
+    "brand": "Moji+ v{{version}}",
     "tokenCount": "Tokens: ~{{count}}",
     "tokenEstimate": "Estimativa: cerca de 4 caracteres por token. O valor real depende do modelo e do idioma."
   },
   "welcome": {
-    "title": "Moji Plus v{{version}}"
+    "title": "Moji+ v{{version}}"
   },
   "aboutDialog": {
-    "updateCurrent": "Moji Plus {{version}} está atualizado.",
-    "updateAvailable": "Moji Plus {{version}} está disponível.",
-    "whyNameTitle": "Por que Moji Plus?",
-    "whyNameBody": "Moji Plus mantém o nome do Moji original — curto, fácil de lembrar e que remete a caracteres e escrita — e acrescenta “Plus” pelas alterações que mantém sobre ele.",
+    "updateCurrent": "Moji+ {{version}} está atualizado.",
+    "updateAvailable": "Moji+ {{version}} está disponível.",
+    "whyNameTitle": "Por que Moji+?",
+    "whyNameBody": "Moji+ mantém o nome do Moji original — curto, fácil de lembrar e que remete a caracteres e escrita — e acrescenta “+” pelas alterações que mantém sobre ele.",
     "upstreamTitle": "Baseado em",
-    "upstreamBody": "Moji Plus é uma versão derivada do Moji, de Alex Ishida, distribuída sob a Licença MIT. Continua recebendo as alterações feitas no projeto original e adiciona as suas próprias, mantidas de forma independente.",
+    "upstreamBody": "Moji+ é uma versão derivada do Moji, de Alex Ishida, distribuída sob a Licença MIT. Continua recebendo as alterações feitas no projeto original e adiciona as suas próprias, mantidas de forma independente.",
     "profileLabel": "GitHub"
   },
   "update": {
-    "availableBody": "Moji Plus {{version}} já pode ser baixado no GitHub Releases."
+    "availableBody": "Moji+ {{version}} já pode ser baixado no GitHub Releases."
   },
   "externalChange": {
     "modifiedTitle": "Arquivo alterado em outro aplicativo",
-    "modifiedBody": "“{{name}}” foi alterado fora do Moji Plus e tem alterações não salvas aqui. Recarregar descarta suas alterações; Salvar como mantém as duas versões.",
+    "modifiedBody": "“{{name}}” foi alterado fora do Moji+ e tem alterações não salvas aqui. Recarregar descarta suas alterações; Salvar como mantém as duas versões.",
     "deletedTitle": "Arquivo removido",
-    "deletedBody": "“{{name}}” foi excluído ou movido fora do Moji Plus. Salve para recriá-lo ou salve com outro nome.",
+    "deletedBody": "“{{name}}” foi excluído ou movido fora do Moji+. Salve para recriá-lo ou salve com outro nome.",
     "conflictTitle": "Arquivo alterado no disco",
     "conflictBody": "“{{name}}” foi alterado em outro aplicativo desde que você o abriu. Substituir descarta essas alterações.",
     "reload": "Recarregar",
