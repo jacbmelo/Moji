@@ -24,6 +24,7 @@ import {
 } from './shared'
 import { DocumentTextDecoder } from './documentDecoder'
 import type { PlusMenuItem } from './plusMenu'
+import type { PlusMessageBox } from './plusWindow'
 
 /** No message (not even progress on a large file) for this long means main is never going to answer. */
 const READ_STREAM_INACTIVITY_TIMEOUT_MS = 15_000
@@ -202,7 +203,9 @@ const api = {
   },
   /** Moji Plus: native context menu; resolves with the chosen item's id, or null. */
   showContextMenu: (items: PlusMenuItem[]): Promise<string | null> => ipcRenderer.invoke(IPC.showContextMenu, items),
-  setContextMenuLabels: (labels: Record<string, string>): void => ipcRenderer.send(IPC.setContextMenuLabels, labels)
+  setContextMenuLabels: (labels: Record<string, string>): void => ipcRenderer.send(IPC.setContextMenuLabels, labels),
+  /** Moji Plus: native alert (a sheet on macOS); resolves with the index of the button pressed. */
+  showMessageBox: (box: PlusMessageBox): Promise<number> => ipcRenderer.invoke(IPC.showMessageBox, box)
 }
 
 export type RendererApi = typeof api

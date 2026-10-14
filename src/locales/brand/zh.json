@@ -114,6 +114,12 @@
       "copyImage": "拷贝图像",
       "lookUp": "查询“{{text}}”",
       "noGuesses": "无建议"
+    },
+    "dialog": {
+      "unsavedMessage": "要存储对“{{name}}”所做的更改吗？",
+      "unsavedManyMessage": "要存储对 {{count}} 个文稿所做的更改吗？",
+      "unsavedDetail": "如果不存储，你的更改将会丢失。",
+      "dontSave": "不存储"
     }
   }
 }

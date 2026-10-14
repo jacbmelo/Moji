@@ -114,6 +114,12 @@
       "copyImage": "Kopieer afbeelding",
       "lookUp": "Zoek ‘{{text}}’ op",
       "noGuesses": "Geen suggesties"
+    },
+    "dialog": {
+      "unsavedMessage": "Wil je de wijzigingen in ‘{{name}}’ bewaren?",
+      "unsavedManyMessage": "Wil je de wijzigingen in {{count}} documenten bewaren?",
+      "unsavedDetail": "Als je ze niet bewaart, gaan je wijzigingen verloren.",
+      "dontSave": "Bewaar niet"
     }
   }
 }

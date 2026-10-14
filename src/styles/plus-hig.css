@@ -419,6 +419,127 @@
   visibility: hidden;
 }
 
+/* --- Sheets (Export) ---------------------------------------------------------- */
+/* A modal panel over the document. Centered on Windows and Linux; on macOS it hangs just
+   below the toolbar, as a sheet does. */
+.plus-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.plus-sheet-backdrop .export-dialog {
+  width: min(680px, 100%);
+  max-height: calc(100vh - 2 * var(--space-4));
+  background: var(--bg-elevated);
+  animation: plus-sheet-in 0.2s ease-out;
+}
+
+@keyframes plus-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+:root[data-platform='darwin'] .plus-sheet-backdrop {
+  align-items: flex-start;
+  padding-top: 60px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+:root[data-platform='darwin'] .plus-sheet-backdrop .export-dialog {
+  max-height: calc(100vh - 76px);
+  border: 0;
+  box-shadow: var(--shadow);
+}
+
+/* Sheets close with Cancel or Esc, not with a close box. */
+:root[data-platform='darwin'] .plus-sheet-backdrop .export-dialog__header .iconbtn {
+  display: none;
+}
+
+:root[data-platform='darwin'] .export-dialog__header {
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 0;
+}
+
+:root[data-platform='darwin'] .export-dialog__title {
+  font-size: var(--text-title3);
+  font-weight: 600;
+}
+
+:root[data-platform='darwin'] .export-dialog__title svg {
+  display: none;
+}
+
+:root[data-platform='darwin'] .export-dialog__heading {
+  margin-bottom: var(--space-3);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+:root[data-platform='darwin'] .export-format {
+  min-height: 56px;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg);
+  border-color: var(--border);
+}
+
+:root[data-platform='darwin'] .export-format__title {
+  font-size: var(--text-body);
+}
+
+:root[data-platform='darwin'] .export-format__description {
+  font-size: var(--text-footnote);
+}
+
+:root[data-platform='darwin'] .export-dialog__footer {
+  padding: var(--space-3) var(--space-5) var(--space-4);
+  background: none;
+  border-top: 0;
+}
+
+:root[data-platform='darwin'] .export-dialog__footer .btn {
+  min-width: 80px;
+}
+
+:root[data-platform='darwin'] .export-dialog__footer .btn svg {
+  display: none;
+}
+
+/* --- macOS: popovers (search, text size) ---------------------------------------- */
+:root[data-platform='darwin'] :is(.topbar__replace-popover, .font-size-popover) {
+  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  border: 0;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(24px) saturate(1.6);
+  backdrop-filter: blur(24px) saturate(1.6);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-platform='darwin'] :is(.topbar__replace-popover, .font-size-popover) {
+    background: var(--bg-elevated);
+    backdrop-filter: none;
+  }
+}
+
+/* --- Remaining HTML modals (Mermaid viewer) ------------------------------------- */
+:root[data-platform='darwin'] :is(.dialog, .diagram-modal) {
+  border: 0;
+  box-shadow: var(--shadow);
+}
+
+:root[data-platform='darwin'] .diagram-modal__title {
+  font-size: var(--text-body);
+}
+
 /* --- Every platform: quieter counts, disabled colors ----------------------- */
 .statusbar__count {
   color: var(--text-muted);

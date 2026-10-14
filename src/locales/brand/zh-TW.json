@@ -114,6 +114,12 @@
       "copyImage": "拷貝影像",
       "lookUp": "查詢「{{text}}」",
       "noGuesses": "無建議"
+    },
+    "dialog": {
+      "unsavedMessage": "要儲存對「{{name}}」所做的更動嗎？",
+      "unsavedManyMessage": "要儲存對 {{count}} 份文件所做的更動嗎？",
+      "unsavedDetail": "若不儲存，你的更動將會遺失。",
+      "dontSave": "不要儲存"
     }
   }
 }

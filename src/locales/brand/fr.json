@@ -114,6 +114,12 @@
       "copyImage": "Copier l’image",
       "lookUp": "Rechercher « {{text}} »",
       "noGuesses": "Aucune suggestion"
+    },
+    "dialog": {
+      "unsavedMessage": "Voulez-vous enregistrer les modifications apportées à « {{name}} » ?",
+      "unsavedManyMessage": "Voulez-vous enregistrer les modifications apportées à {{count}} documents ?",
+      "unsavedDetail": "Vos modifications seront perdues si vous ne les enregistrez pas.",
+      "dontSave": "Ne pas enregistrer"
     }
   }
 }

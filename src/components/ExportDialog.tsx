@@ -49,7 +49,7 @@ export function ExportDialog({ initialFormat, onCancel, onExport }: ExportDialog
   const [pageOrientation, setPageOrientation] = useState<ExportPageOrientation>('portrait')
 
   return (
-    <section className="export-dialog export-dialog--inline" aria-label={t('exportDialog.title')}>
+    <section className="export-dialog export-dialog--inline" role="dialog" aria-modal="true" aria-label={t('exportDialog.title')}>
       <header className="export-dialog__header">
         <h2 className="export-dialog__title">
           <IconDownload width={18} height={18} aria-hidden="true" />
@@ -126,7 +126,11 @@ export function ExportDialog({ initialFormat, onCancel, onExport }: ExportDialog
       </div>
 
       <footer className="export-dialog__footer">
-        <button className="btn btn--primary" onClick={() => onExport({ format, pageSize, pageOrientation })}>
+        {/* Moji Plus: sheets end with Cancel beside the default button (see FORK.md). */}
+        <button className="btn" onClick={onCancel}>
+          {t('dialog.cancel')}
+        </button>
+        <button className="btn btn--primary" autoFocus onClick={() => onExport({ format, pageSize, pageOrientation })}>
           <IconDownload width={15} height={15} />
           {t('exportDialog.export')}
         </button>

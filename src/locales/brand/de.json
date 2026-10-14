@@ -114,6 +114,12 @@
       "copyImage": "Bild kopieren",
       "lookUp": "„{{text}}“ nachschlagen",
       "noGuesses": "Keine Vorschläge"
+    },
+    "dialog": {
+      "unsavedMessage": "Möchtest du die Änderungen an „{{name}}“ sichern?",
+      "unsavedManyMessage": "Möchtest du die Änderungen an {{count}} Dokumenten sichern?",
+      "unsavedDetail": "Deine Änderungen gehen verloren, wenn du sie nicht sicherst.",
+      "dontSave": "Nicht sichern"
     }
   }
 }

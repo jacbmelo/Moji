@@ -29,3 +29,28 @@ export function applyWindowDocument(win: BrowserWindow, doc: WindowDocument, all
   // Dock menu and Finder's recent items.
   if (path) app.addRecentDocument(path)
 }
+
+export interface PlusMessageBox {
+  type: 'warning' | 'question' | 'info'
+  message: string
+  detail?: string
+  buttons: string[]
+  defaultId: number
+  cancelId: number
+}
+
+export function sanitizeMessageBox(value: unknown): PlusMessageBox | null {
+  if (!value || typeof value !== 'object') return null
+  const box = value as Record<string, unknown>
+  const buttons = Array.isArray(box.buttons) ? box.buttons.filter((b): b is string => typeof b === 'string').slice(0, 4) : []
+  if (typeof box.message !== 'string' || buttons.length === 0) return null
+  const index = (n: unknown): number => (typeof n === 'number' && Number.isInteger(n) && n >= 0 && n < buttons.length ? n : 0)
+  return {
+    type: box.type === 'question' || box.type === 'info' ? box.type : 'warning',
+    message: box.message.slice(0, 512),
+    detail: typeof box.detail === 'string' ? box.detail.slice(0, 2048) : undefined,
+    buttons: buttons.map((b) => b.slice(0, 64)),
+    defaultId: index(box.defaultId),
+    cancelId: index(box.cancelId)
+  }
+}

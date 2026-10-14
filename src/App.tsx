@@ -53,6 +53,7 @@ import {
 import packageJson from '../package.json'
 import { usePlusWindowDocument } from './lib/plusWindow'
 import { usePlusMenu } from './lib/plusMenu'
+import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -867,12 +868,12 @@ export function App(): JSX.Element {
   }, [activeDoc, dirty, hasDoc, t])
 
   // --- Unsaved-changes guard --------------------------------------------
-  const askUnsaved = useCallback((): Promise<ConfirmChoice> => {
-    return new Promise((resolve) => {
-      dialogResolver.current = resolve
-      setDialogOpen(true)
-    })
-  }, [])
+  // Moji Plus: a native alert instead of ConfirmDialog (see FORK.md).
+  const askUnsaved = useCallback(
+    (docs: DocumentState[]): Promise<ConfirmChoice> =>
+      askUnsavedNative(t, docs.map((doc) => documentName(doc, t('app.untitled')))),
+    [t]
+  )
 
   const onDialogChoice = useCallback((choice: ConfirmChoice) => {
     setDialogOpen(false)
@@ -886,10 +887,8 @@ export function App(): JSX.Element {
       const doc = stateRef.current.documents.find((item) => item.id === docId)
       if (!doc) return Promise.resolve(variant === 'conflict' ? 'cancel' : 'keep')
       setActiveDocId(docId)
-      return new Promise((resolve) => {
-        externalDialogResolver.current = resolve
-        setExternalDialog({ variant, name: documentName(doc, t('app.untitled')) })
-      })
+      // Moji Plus: a native alert instead of ExternalChangeDialog (see FORK.md).
+      return askExternalChangeNative(t, variant, documentName(doc, t('app.untitled')))
     },
     [t]
   )
@@ -1227,7 +1226,7 @@ export function App(): JSX.Element {
       if (!doc || doc.readOnly || !needsUnsavedConfirmation(doc, stateRef.current.autoSave, 'close')) return 'proceed'
 
       setActiveDocId(docId)
-      const choice = await askUnsaved()
+      const choice = await askUnsaved([doc])
       if (choice === 'discard') return 'proceed'
       if (choice === 'save') return (await saveDocument(docId)) ? 'proceed' : 'cancel'
       return 'cancel'
@@ -1244,7 +1243,7 @@ export function App(): JSX.Element {
     if (dirtyDocs.length === 0) return 'proceed'
 
     setActiveDocId(dirtyDocs[0].id)
-    const choice = await askUnsaved()
+    const choice = await askUnsaved(dirtyDocs)
     if (choice === 'discard') {
       const removed = await Promise.all(dirtyDocs.map(removeDocumentDraft))
       return removed.every(Boolean) ? 'proceed' : 'cancel'
@@ -2599,12 +2598,12 @@ export function App(): JSX.Element {
       )}
 
       <div className="body">
-        {hasDoc && !exportDialogFormat && !settingsOpen && !aboutOpen && outlineVisible && (
+        {hasDoc && !settingsOpen && !aboutOpen && outlineVisible && (
           <Sidebar
             hasDoc={hasDoc}
             outline={outline}
             activeId={activeHeadingId}
-            showOutline={!exportDialogFormat}
+            showOutline
             onSelectHeading={scrollToHeading}
           />
         )}
@@ -2636,16 +2635,6 @@ export function App(): JSX.Element {
                 onOpenRecent={openRecent}
                 onForgetRecent={(path) => forgetRecent([path])}
               />
-            ) : exportDialogFormat ? (
-              <div className="export-workspace">
-                <Suspense fallback={null}>
-                  <ExportDialog
-                    initialFormat={exportDialogFormat}
-                    onCancel={() => setExportDialogFormat(null)}
-                    onExport={confirmExport}
-                  />
-                </Suspense>
-              </div>
             ) : (
               <SplitView
                 split={mode === 'edit' && splitActive}
@@ -2687,6 +2676,19 @@ export function App(): JSX.Element {
       </div>
 
       <StatusBar hasDoc={hasDoc} stats={stats} onGuide={doGuide} />
+
+      {/* Moji Plus: Export is a sheet over the document instead of replacing it (see FORK.md). */}
+      {hasDoc && exportDialogFormat && !settingsOpen && !aboutOpen && (
+        <div className="plus-sheet-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setExportDialogFormat(null)}>
+          <Suspense fallback={null}>
+            <ExportDialog
+              initialFormat={exportDialogFormat}
+              onCancel={() => setExportDialogFormat(null)}
+              onExport={confirmExport}
+            />
+          </Suspense>
+        </div>
+      )}
 
       {dragging && <div className="drop-overlay">{t('welcome.dropHint')}</div>}
       {dismissedUpdate !== updateKey && (

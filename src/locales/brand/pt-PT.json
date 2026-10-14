@@ -114,6 +114,12 @@
       "copyImage": "Copiar imagem",
       "lookUp": "Procurar “{{text}}”",
       "noGuesses": "Sem sugestões"
+    },
+    "dialog": {
+      "unsavedMessage": "Pretende guardar as alterações feitas a “{{name}}”?",
+      "unsavedManyMessage": "Pretende guardar as alterações feitas a {{count}} documentos?",
+      "unsavedDetail": "As alterações serão perdidas se não as guardar.",
+      "dontSave": "Não guardar"
     }
   }
 }

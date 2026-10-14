@@ -114,6 +114,12 @@
       "copyImage": "イメージをコピー",
       "lookUp": "“{{text}}”を調べる",
       "noGuesses": "候補が見つかりません"
+    },
+    "dialog": {
+      "unsavedMessage": "“{{name}}”に加えた変更を保存しますか?",
+      "unsavedManyMessage": "{{count}}個の書類に加えた変更を保存しますか?",
+      "unsavedDetail": "保存しないと、変更内容は失われます。",
+      "dontSave": "保存しない"
     }
   }
 }

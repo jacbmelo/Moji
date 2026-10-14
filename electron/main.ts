@@ -40,7 +40,7 @@ import { contentHash, DocumentWatcher } from './documentWatcher'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
 import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
-import { applyWindowDocument, sanitizeWindowDocument } from './plusWindow'
+import { applyWindowDocument, sanitizeMessageBox, sanitizeWindowDocument } from './plusWindow'
 import { applyPlusMenu, configureAboutPanel } from './plusMenu'
 import { installEditContextMenu, popupRendererMenu, setContextMenuLabels } from './plusContextMenu'
 
@@ -859,6 +859,11 @@ function registerIpc(): void {
   })
   onFromRenderer(IPC.setMenu, (_e, value: unknown) => applyPlusMenu(value, mainWindow, IPC.menuCommand, { quit: requestQuit }))
   onFromRenderer(IPC.setContextMenuLabels, (_e, value: unknown) => setContextMenuLabels(value))
+  handleFromRenderer(IPC.showMessageBox, async (_e, value: unknown): Promise<number> => {
+    const box = sanitizeMessageBox(value)
+    if (!box || !mainWindow || mainWindow.isDestroyed()) return box?.cancelId ?? 0
+    return (await dialog.showMessageBox(mainWindow, { ...box, noLink: true })).response
+  })
   handleFromRenderer(IPC.showContextMenu, (_e, value: unknown) => (mainWindow ? popupRendererMenu(value, mainWindow) : null))
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
