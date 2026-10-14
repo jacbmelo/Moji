@@ -55,6 +55,17 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.2.0" date="2026-10-14">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>New icon, and the app is now written Moji+ in its interface.</li>
+          <li>Native menus, context menus and alerts; Settings opens in its own window and Export as a sheet over the document.</li>
+          <li>On macOS, the interface follows Apple's Human Interface Guidelines: a full-height translucent sidebar, a single-row toolbar, the system font, colors and accent color.</li>
+          <li>Visible keyboard focus, arrow-key navigation in the outline, and support for reduced motion and increased contrast.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-10-02">
       <description>
         <p>Based on Moji 1.0.7.</p>
