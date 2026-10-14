@@ -4,7 +4,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FontSizeButton } from './FontSizeButton'
-import { IconEye, IconMoon, IconPencil, IconSidebar, IconSplitPreview, IconSun } from './icons'
+import { IconEye, IconLayoutWidth, IconMoon, IconPencil, IconSidebar, IconSplitPreview, IconSun } from './icons'
 import { IconShare } from './plusIcons'
 import type { TopBarProps } from './TopBar'
 
@@ -70,6 +70,18 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
           aria-pressed={props.splitView}
         >
           <IconSplitPreview />
+        </button>
+
+        <button
+          className={`iconbtn ${props.previewFluidWidth ? 'iconbtn--active' : ''}`}
+          type="button"
+          onClick={props.onTogglePreviewWidth}
+          disabled={!props.canTogglePreviewWidth}
+          title={props.previewFluidWidth ? t('toolbar.useFixedWidth') : t('toolbar.useFluidWidth')}
+          aria-label={props.previewFluidWidth ? t('toolbar.useFixedWidth') : t('toolbar.useFluidWidth')}
+          aria-pressed={props.previewFluidWidth}
+        >
+          <IconLayoutWidth />
         </button>
 
         <FontSizeButton
