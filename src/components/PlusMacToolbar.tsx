@@ -1,10 +1,10 @@
 // Moji Plus: unified single-row toolbar for macOS (HIG "Toolbars"). Commands that live in the
-// menu bar on the Mac (New, Open, Save, appearance, Settings, About) leave the toolbar; the
+// menu bar on the Mac (New, Open, Save, Settings, About) leave the toolbar; the
 // search field and its popover come from TopBar unchanged. See FORK.md.
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FontSizeButton } from './FontSizeButton'
-import { IconEye, IconPencil, IconSidebar, IconSplitPreview } from './icons'
+import { IconEye, IconMoon, IconPencil, IconSidebar, IconSplitPreview, IconSun } from './icons'
 import { IconShare } from './plusIcons'
 import type { TopBarProps } from './TopBar'
 
@@ -80,6 +80,16 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
           disabled={!props.canAdjustFontSize}
           onChange={props.onFontSizeChange}
         />
+
+        <button
+          className="iconbtn"
+          type="button"
+          onClick={props.onToggleTheme}
+          title={props.theme === 'dark' ? t('toolbar.themeLight') : t('toolbar.themeDark')}
+          aria-label={props.theme === 'dark' ? t('toolbar.themeLight') : t('toolbar.themeDark')}
+        >
+          {props.theme === 'dark' ? <IconSun /> : <IconMoon />}
+        </button>
 
         <button
           className={`iconbtn ${props.exportOpen ? 'iconbtn--active' : ''}`}

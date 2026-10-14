@@ -312,6 +312,16 @@
   color: var(--text-muted);
 }
 
+/* Every control group is excluded from the window drag region as a whole: a no-drag button
+   inside a plain box of the drag area can lose its clicks to the window on macOS. */
+.plus-toolbar > .iconbtn,
+.plus-toolbar__items,
+.plus-toolbar__items > *,
+.plus-toolbar .segment,
+.plus-toolbar .topbar__search-group {
+  -webkit-app-region: no-drag;
+}
+
 /* Capsules: the sidebar button, the button group, the view switch and the search field. */
 .plus-toolbar > .iconbtn,
 .plus-toolbar__items,
@@ -358,7 +368,7 @@
   background: var(--capsule-bg);
 }
 
-.plus-toolbar .segment {
+:root[data-platform='darwin'] .plus-toolbar .segment {
   height: 34px;
   align-items: center;
   padding: 2px;
@@ -366,7 +376,7 @@
   border-radius: 999px;
 }
 
-.plus-toolbar .segment__btn {
+:root[data-platform='darwin'] .plus-toolbar .segment__btn {
   height: 30px;
   padding: 0 var(--space-4);
   border-radius: 999px;
