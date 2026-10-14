@@ -8,7 +8,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-- The interface follows Apple's Human Interface Guidelines on macOS, with the layout of Safari and Finder: a translucent sidebar running the full height of the window under the traffic lights, a light toolbar with its controls in capsules and the document title, Safari-style tabs shown only with two or more documents, the system font, colors and accent color, native overlay scrollbars and a slimmer status bar.
+- The interface follows Apple's Human Interface Guidelines on macOS, with the layout of Safari and Finder: a translucent sidebar running the full height of the window under the traffic lights, a translucent toolbar with its controls in capsules, into which the document fades as it scrolls and the document title, Safari-style tabs shown only with two or more documents, the system font, colors and accent color, native overlay scrollbars and a slimmer status bar.
 - macOS has a full menu bar (File, Edit, View, Window, Help) with every command and its shortcut, and the standard About panel. Find and Replace is ⌥⌘F, since ⌘H hides the app; leaving the editor with the keyboard is ⌃M, so ⌘M minimizes.
 - Settings opens in its own window, and Export as a sheet over the document instead of replacing it.
 - Unsaved-changes and external-change prompts are native alerts (sheets on macOS) with Save, Don't Save and Cancel.

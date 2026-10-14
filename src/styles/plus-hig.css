@@ -402,6 +402,54 @@
   outline-offset: -1px;
 }
 
+/* --- macOS: translucent toolbar with a scroll edge -------------------------------------- */
+/* As in Safari, the toolbar and tab bar are glass over the window material, and the top of
+   the document fades into them: text scrolling up blurs and dissolves progressively instead
+   of meeting a hard edge. The document still starts below the toolbar, so scroll positions,
+   outline jumps and the split view keep upstream's geometry. */
+:root[data-platform='darwin'] {
+  --chrome-glass: color-mix(in srgb, var(--bg) 80%, transparent);
+  --scroll-edge-h: 28px;
+}
+
+:root[data-platform='darwin'] .app > .plus-toolbar,
+:root[data-platform='darwin'] .app > .document-tabs {
+  background: var(--chrome-glass);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  backdrop-filter: blur(24px) saturate(1.8);
+}
+
+:root[data-platform='darwin'] .main {
+  position: relative;
+}
+
+:root[data-platform='darwin'] .main::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  z-index: 5;
+  height: var(--scroll-edge-h);
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--chrome-glass), transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0, 0, 0, 0.6) 45%, transparent 100%);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  :root[data-platform='darwin'] .app > .plus-toolbar,
+  :root[data-platform='darwin'] .app > .document-tabs {
+    background: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  :root[data-platform='darwin'] .main::before {
+    display: none;
+  }
+}
+
 /* --- macOS: tabs ------------------------------------------------------------------- */
 /* Safari's tab bar: equal-width capsules on a track below the toolbar, shown only with two
    or more documents. The close button sits on the left and appears on hover. */
