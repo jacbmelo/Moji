@@ -79,10 +79,10 @@
   --border: rgba(0, 0, 0, 0.1);
   --border-strong: rgba(0, 0, 0, 0.18);
 
-  --sidebar-bg: #ebebeb;
-  --chrome-bg: #f3f3f3;
+  --sidebar-bg: #eeeef0;
+  --chrome-bg: #ffffff;
   --nav-hover-bg: rgba(0, 0, 0, 0.05);
-  --nav-active-bg: rgba(0, 0, 0, 0.08);
+  --nav-active-bg: rgba(0, 0, 0, 0.07);
   --segment-track: rgba(0, 0, 0, 0.06);
   --segment-active-bg: #ffffff;
 
@@ -183,28 +183,88 @@
   font-size: var(--text-body);
 }
 
-/* --- macOS: window material ------------------------------------------------ */
-/* The window has a sidebar vibrancy material (electron/main.ts); the chrome lets it show
-   through and the document area stays opaque. With "Reduce transparency" macOS itself
-   draws the material opaque. */
+/* --- macOS: window layout (macOS 26+ style, like Safari and Finder) ---------------- */
+/* The sidebar runs the full height of the window, with the traffic lights at its top; the
+   toolbar, tabs, document and status bar sit in the column beside it, on the light content
+   background. The window has a sidebar vibrancy material (electron/main.ts) that shows
+   through the sidebar only; with "Reduce transparency" macOS draws it opaque. */
 :root[data-platform='darwin'] {
   --traffic-lights-w: 84px;
-  --chrome-bg: rgba(40, 40, 40, 0.55);
-  --sidebar-bg: transparent;
+  --toolbar-h: 52px;
+  --chrome-bg: var(--bg);
+  --sidebar-bg: rgba(44, 44, 46, 0.72);
+  --capsule-bg: rgba(255, 255, 255, 0.07);
+  --capsule-border: rgba(255, 255, 255, 0.1);
+  --capsule-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --capsule-hover: rgba(255, 255, 255, 0.08);
+  --track-bg: rgba(255, 255, 255, 0.06);
+  --track-active-bg: rgba(255, 255, 255, 0.14);
 }
 
 :root[data-platform='darwin'][data-theme='light'] {
-  --chrome-bg: rgba(246, 246, 246, 0.6);
-  --sidebar-bg: transparent;
+  --chrome-bg: var(--bg);
+  --sidebar-bg: rgba(238, 238, 240, 0.78);
+  --capsule-bg: #ffffff;
+  --capsule-border: rgba(0, 0, 0, 0.07);
+  --capsule-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 0 1px rgba(0, 0, 0, 0.08);
+  --capsule-hover: rgba(0, 0, 0, 0.05);
+  --track-bg: rgba(0, 0, 0, 0.05);
+  --track-active-bg: #ffffff;
 }
 
-:root[data-platform='darwin'] body,
-:root[data-platform='darwin'] .app {
+:root[data-platform='darwin'] body {
   background: transparent;
 }
 
+:root[data-platform='darwin'] .app {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  background: transparent;
+}
+
+/* Sidebar and main become cells of the window grid. */
+:root[data-platform='darwin'] .body {
+  display: contents;
+}
+
+:root[data-platform='darwin'] .sidebar {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1 / -1;
+  padding-top: var(--toolbar-h);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+}
+
+/* The top of the sidebar is title bar: it holds the traffic lights and drags the window. */
+:root[data-platform='darwin'] .sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: var(--toolbar-h);
+  -webkit-app-region: drag;
+}
+
+:root[data-platform='darwin'] .app > .topbar {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+:root[data-platform='darwin'] .app > .document-tabs {
+  grid-column: 2;
+  grid-row: 2;
+}
+
 :root[data-platform='darwin'] .main {
+  grid-column: 2;
+  grid-row: 3;
   background: var(--bg);
+}
+
+:root[data-platform='darwin'] .app > .statusbar {
+  grid-column: 2;
+  grid-row: 4;
 }
 
 /* SF Symbols-like weight for the line icons. */
@@ -212,18 +272,20 @@
   stroke-width: 1.5;
 }
 
-/* --- macOS: unified toolbar (PlusMacToolbar.tsx) --------------------------- */
+/* --- macOS: toolbar (PlusMacToolbar.tsx) -------------------------------------------- */
+/* Controls float as capsules on the content background, grouped as in Safari's toolbar. */
 :root[data-platform='darwin'] .plus-toolbar {
   flex-direction: row;
   align-items: center;
   gap: var(--space-2);
-  height: 52px;
-  padding: 0 var(--space-3) 0 var(--traffic-lights-w);
-  border-bottom: 1px solid var(--border);
+  height: var(--toolbar-h);
+  padding: 0 var(--space-3);
+  background: var(--chrome-bg);
 }
 
-:root[data-platform='darwin'][data-fullscreen] .plus-toolbar {
-  padding-left: var(--space-3);
+/* Without the sidebar the traffic lights sit on the toolbar itself. */
+:root[data-platform='darwin']:not([data-fullscreen]) .app:not(:has(.sidebar)) .plus-toolbar {
+  padding-left: var(--traffic-lights-w);
 }
 
 .plus-toolbar__title {
@@ -250,42 +312,108 @@
   color: var(--text-muted);
 }
 
-.plus-toolbar__items {
+/* Capsules: the sidebar button, the button group, the view switch and the search field. */
+.plus-toolbar > .iconbtn,
+.plus-toolbar__items,
+.plus-toolbar .topbar__search-group {
+  height: 34px;
+  background: var(--capsule-bg);
+  border: 0.5px solid var(--capsule-border);
+  border-radius: 999px;
+  box-shadow: var(--capsule-shadow);
+}
+
+.plus-toolbar > .iconbtn {
+  width: 34px;
+}
+
+.plus-toolbar__items,
+.plus-toolbar .topbar__search-group {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
+  padding: 0 2px;
 }
 
-.plus-toolbar .topbar__search {
-  width: 168px;
-  padding-left: 26px;
-  background: var(--bg-inset)
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m15.5 15.5 5 5'/%3E%3C/svg%3E")
-    no-repeat 8px center / 13px 13px;
+.plus-toolbar__items .iconbtn,
+.plus-toolbar .topbar__search-group .iconbtn {
+  width: 32px;
+  height: 30px;
+  border: 0;
+  border-radius: 999px;
 }
 
-.plus-toolbar .topbar__replace-toggle {
-  width: 28px;
+:root[data-platform='darwin'] .plus-toolbar .iconbtn:hover:not(:disabled) {
+  background: var(--capsule-hover);
+}
+
+:root[data-platform='darwin'] .plus-toolbar .iconbtn--active {
+  color: var(--accent);
+  background: var(--capsule-hover);
 }
 
 /* The sidebar button shows no on/off state on the Mac; the sidebar itself is the state. */
-.plus-toolbar > .iconbtn:first-child.iconbtn--active {
+:root[data-platform='darwin'] .plus-toolbar > .iconbtn:first-child.iconbtn--active {
   color: var(--text-muted);
-  background: none;
+  background: var(--capsule-bg);
 }
 
-:root[data-platform='darwin'] .iconbtn--active {
-  color: var(--accent);
-  background: var(--nav-hover-bg);
+.plus-toolbar .segment {
+  height: 34px;
+  align-items: center;
+  padding: 2px;
+  background: var(--track-bg);
+  border-radius: 999px;
 }
 
-/* --- macOS: window tabs ------------------------------------------------------ */
-/* Equal-width tabs across the window, shown only with two or more documents, like Safari and
-   Finder. The close button sits on the left and appears on hover. */
+.plus-toolbar .segment__btn {
+  height: 30px;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+}
+
+:root[data-platform='darwin'] .plus-toolbar .segment__btn--active {
+  background: var(--track-active-bg);
+  box-shadow: var(--capsule-shadow);
+}
+
+.plus-toolbar .topbar__search {
+  width: 180px;
+  height: 30px;
+  padding-left: 24px;
+  background: transparent
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m15.5 15.5 5 5'/%3E%3C/svg%3E")
+    no-repeat 6px center / 13px 13px;
+  border: 0;
+  border-radius: 999px;
+}
+
+.plus-toolbar .topbar__search:focus-visible {
+  outline-offset: -1px;
+}
+
+/* --- macOS: tabs ------------------------------------------------------------------- */
+/* Safari's tab bar: equal-width capsules on a track below the toolbar, shown only with two
+   or more documents. The close button sits on the left and appears on hover. */
 :root[data-platform='darwin'] .document-tabs {
-  height: 28px;
-  background: color-mix(in srgb, var(--text) 6%, transparent);
-  border-bottom: 1px solid var(--border);
+  position: relative;
+  isolation: isolate;
+  height: auto;
+  padding: 2px calc(var(--space-3) + 2px) calc(var(--space-2) + 2px);
+  gap: 2px;
+  overflow: visible;
+  background: var(--bg);
+  border: 0;
+}
+
+/* The rounded track, drawn behind the tabs so the row keeps the content background. */
+:root[data-platform='darwin'] .document-tabs::before {
+  content: '';
+  position: absolute;
+  inset: 0 var(--space-3) var(--space-2);
+  z-index: -1;
+  background: var(--track-bg);
+  border-radius: 999px;
 }
 
 :root[data-platform='darwin'] .document-tabs:not(:has(> .document-tab + .document-tab)) {
@@ -296,16 +424,11 @@
   width: auto;
   min-width: 120px;
   max-width: none;
-  height: 28px;
+  height: 30px;
   flex: 1 1 0;
-  border-top: 0;
-  border-right: 0;
-  border-left: 1px solid var(--border);
   background: transparent;
-}
-
-:root[data-platform='darwin'] .document-tab:first-child {
-  border-left: 0;
+  border: 0;
+  border-radius: 999px;
 }
 
 :root[data-platform='darwin'] .document-tab::before {
@@ -313,26 +436,27 @@
 }
 
 :root[data-platform='darwin'] .document-tab:hover:not(.document-tab--active) {
-  background: color-mix(in srgb, var(--text) 5%, transparent);
+  background: var(--capsule-hover);
 }
 
 :root[data-platform='darwin'] .document-tab--active {
-  background: var(--bg);
+  background: var(--track-active-bg);
+  box-shadow: var(--capsule-shadow);
 }
 
 :root[data-platform='darwin'] .document-tab__label {
   justify-content: center;
-  padding: 0 28px;
-  font-size: var(--text-callout);
+  padding: 0 30px;
+  font-size: var(--text-body);
 }
 
 :root[data-platform='darwin'] .document-tab__close {
   position: absolute;
-  left: 4px;
-  width: 18px;
-  height: 18px;
+  left: 6px;
+  width: 20px;
+  height: 20px;
   margin: 0;
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 :root[data-platform='darwin'] .document-tab--active .document-tab__close {
@@ -348,13 +472,9 @@
   color: var(--text-muted);
 }
 
-/* --- macOS: sidebar ------------------------------------------------------------ */
-:root[data-platform='darwin'] .sidebar {
-  border-right-color: var(--border);
-}
-
+/* --- macOS: sidebar ------------------------------------------------------------------- */
 :root[data-platform='darwin'] .sidebar__body {
-  padding: var(--space-2) var(--space-2) var(--space-3);
+  padding: 0 var(--space-3) var(--space-3);
 }
 
 :root[data-platform='darwin'] .outline-head {
@@ -384,11 +504,12 @@
 
 :root[data-platform='darwin'] .outline-item {
   color: var(--text);
+  border-radius: 8px;
 }
 
 :root[data-platform='darwin'] .outline-item__label {
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 :root[data-platform='darwin'] .outline-item--active {
@@ -405,13 +526,15 @@
   border-left-color: transparent;
 }
 
-/* --- macOS: status bar ----------------------------------------------------- */
+/* --- macOS: status bar --------------------------------------------------------- */
 :root[data-platform='darwin'] {
-  --statusbar-h: 24px;
+  --statusbar-h: 26px;
 }
 
 :root[data-platform='darwin'] .statusbar {
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
+  background: var(--bg);
+  border-top: 1px solid var(--border);
 }
 
 /* The app name already heads the menu bar and the About panel. */

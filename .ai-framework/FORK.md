@@ -30,6 +30,7 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 Regras gerais (foco, movimento reduzido, contraste, acento do sistema) valem para todas as plataformas; o resto fica em `[data-platform='darwin']`. Ficheiros do fork:
 
 - `src/styles/plus-hig.css`: tokens e estilos que sobrepoem `theme.css` e `app.css` sem os editar (fonte do sistema, cores dinamicas, scrollbars nativas, toolbar, separadores, sidebar, sheets, janela de Settings, editor). Nao mudar o `app.css` do upstream para isto.
+  No macOS a janela segue o layout do Safari/Finder (macOS 26+): `.app` passa a grelha e `.body` a `display: contents`, para a sidebar ocupar a altura toda (com os semaforos no topo) e a toolbar, os separadores, o documento e a status bar ficarem na coluna ao lado, sobre o fundo claro do conteudo, com os controlos em capsulas. Depende de a ordem `.topbar`, `.document-tabs`, `.body > .sidebar + .main`, `.statusbar` do `App.tsx` se manter; os overlays sao `position: fixed` e ficam fora da grelha.
 - `electron/plusAppearance.ts` + `src/lib/plusAppearance.ts`: cor de acento do sistema (macOS e Windows) em `--system-accent`.
 - `src/components/PlusMacToolbar.tsx` (+ `plusIcons.tsx`): toolbar unificada de uma linha no macOS. Os comandos que sairam dela vivem na barra de menus.
 - `electron/plusWindow.ts` + `src/lib/plusWindow.ts`: titulo da janela, `setDocumentEdited`, ficheiro representado e documentos recentes; tambem os alertas nativos (`showMessageBox`).
