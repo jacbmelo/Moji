@@ -29,6 +29,8 @@ interface ShortcutItem {
   keys: readonly string[]
   /** A second chord that performs the same action, shown alongside the primary one. */
   altKeys?: readonly string[]
+  /** Moji Plus: the chord on macOS when it differs (menu bar conventions). */
+  macKeys?: readonly string[]
 }
 
 interface ShortcutSection {
@@ -52,7 +54,7 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
     key: 'search',
     items: [
       { action: 'search', keys: ['Ctrl', 'F'] },
-      { action: 'replace', keys: ['Ctrl', 'H'] },
+      { action: 'replace', keys: ['Ctrl', 'H'], macKeys: ['Alt', 'Ctrl', 'F'] },
       { action: 'findNext', keys: ['F3'], altKeys: ['Ctrl', 'G'] },
       { action: 'findPrevious', keys: ['Shift', 'F3'], altKeys: ['Ctrl', 'Shift', 'G'] }
     ]
@@ -95,7 +97,7 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
       { action: 'codeBlock', keys: ['Ctrl', 'Shift', 'K'] },
       { action: 'indent', keys: ['Tab'] },
       { action: 'outdent', keys: ['Shift', 'Tab'] },
-      { action: 'exitFocus', keys: ['Ctrl', 'M'] }
+      { action: 'exitFocus', keys: ['Ctrl', 'M'], macKeys: ['Control', 'M'] }
     ]
   }
 ]
@@ -106,8 +108,23 @@ type SettingsTab = 'general' | 'preview' | 'editor' | 'shortcuts'
 // (`event.ctrlKey || event.metaKey`), so the shortcut list must not print "Ctrl" there too.
 const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.userAgent)
 
+// Moji Plus: macOS key symbols (HIG "Keyboards"); `Control` is the real Control key there.
+const MAC_KEY_SYMBOLS: Record<string, string> = { Ctrl: '⌘', Control: '⌃', Shift: '⇧', Alt: '⌥', Tab: '⇥', Esc: 'esc' }
+
+const MAC_MODIFIER_ORDER = ['Control', 'Alt', 'Shift', 'Ctrl']
+
 function platformKeyLabel(key: string): string {
-  return isMac && key === 'Ctrl' ? '⌘' : key
+  return isMac ? (MAC_KEY_SYMBOLS[key] ?? key) : key
+}
+
+/** On macOS modifiers read ⌃⌥⇧⌘, before the key. */
+function platformKeys(keys: readonly string[], macKeys?: readonly string[]): readonly string[] {
+  if (!isMac) return keys
+  const rank = (key: string): number => {
+    const index = MAC_MODIFIER_ORDER.indexOf(key)
+    return index < 0 ? MAC_MODIFIER_ORDER.length : index
+  }
+  return [...(macKeys ?? keys)].sort((a, b) => rank(a) - rank(b))
 }
 
 export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogProps): JSX.Element {
@@ -321,7 +338,7 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                         {t(`settingsDialog.shortcutActions.${item.action}`)}
                       </span>
                       <span className="settings-shortcut__keys">
-                        {item.keys.map((key) => (
+                        {platformKeys(item.keys, item.macKeys).map((key) => (
                           <kbd className="settings-shortcut__key" key={key}>
                             {platformKeyLabel(key)}
                           </kbd>
@@ -329,7 +346,7 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                         {item.altKeys && (
                           <>
                             <span className="settings-shortcut__key-or">{t('settingsDialog.shortcutOr')}</span>
-                            {item.altKeys.map((key) => (
+                            {platformKeys(item.altKeys).map((key) => (
                               <kbd className="settings-shortcut__key" key={key}>
                                 {platformKeyLabel(key)}
                               </kbd>

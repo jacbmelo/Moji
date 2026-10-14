@@ -203,3 +203,7 @@ O preview deve manter suporte visual para:
 - Estados hover/foco devem ser visiveis.
 - Botoes iconicos precisam de `title` ou `aria-label`.
 - Acoes principais ficam acessiveis pela top bar com `title` ou `aria-label` nos botoes iconicos.
+
+## Moji Plus: Apple HIG
+
+O fork sobrepoe estes tokens e parte da estrutura acima em `src/styles/plus-hig.css` (ver `.ai-framework/FORK.md`, "Interface alinhada com as Apple HIG"). No macOS: fonte do sistema (`--font-ui`) com a escala `--text-title1..footnote` (22/17/15/13/12/11px), cores dinamicas do sistema com alfa, material `sidebar` da janela por tras da chrome, toolbar unificada de uma linha, separadores so com dois ou mais documentos, scrollbars nativas e cursor de seta. Em todas as plataformas: acento do sistema (`--system-accent`), anel de foco `--focus-ring`, `prefers-reduced-motion`, `prefers-contrast`, menus de contexto e alertas nativos, Export como sheet e Settings numa janela propria.

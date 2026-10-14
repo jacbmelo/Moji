@@ -363,5 +363,7 @@ export const IPC = {
   menuCommand: 'plus:menu-command',
   showContextMenu: 'plus:show-context-menu',
   setContextMenuLabels: 'plus:set-context-menu-labels',
-  showMessageBox: 'plus:show-message-box'
+  showMessageBox: 'plus:show-message-box',
+  openSettingsWindow: 'plus:open-settings-window',
+  settingsChanged: 'plus:settings-changed'
 } as const

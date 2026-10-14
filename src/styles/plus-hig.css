@@ -540,6 +540,152 @@
   font-size: var(--text-body);
 }
 
+/* --- Settings window (PlusSettingsWindow.tsx) --------------------------------- */
+.plus-settings-window {
+  height: 100vh;
+  display: flex;
+}
+
+.plus-settings-window .settings-dialog {
+  width: 100%;
+  max-height: none;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* The OS draws the title and the close button of this window. */
+.plus-settings-window .export-dialog__header {
+  display: none;
+}
+
+.plus-settings-window .settings-dialog__body {
+  flex: 1 1 auto;
+}
+
+.plus-settings-window .export-dialog__header {
+  flex: none;
+}
+
+/* The window is narrower than upstream's 720px breakpoint; keep label and control side by side. */
+.plus-settings-window .settings-field {
+  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* macOS: hidden title bar over a window material; the title row is drawn here. */
+:root[data-platform='darwin'][data-window='settings'] .plus-settings-window .export-dialog__header {
+  display: flex;
+  justify-content: center;
+  height: 52px;
+  padding: 0 var(--space-4);
+  border-bottom: 0;
+  -webkit-app-region: drag;
+}
+
+:root[data-platform='darwin'][data-window='settings'] .settings-dialog {
+  background: transparent;
+}
+
+:root[data-platform='darwin'] .plus-settings-window .export-dialog__header .iconbtn,
+:root[data-platform='darwin'] .plus-settings-window .export-dialog__title svg {
+  display: none;
+}
+
+:root[data-platform='darwin'] .plus-settings-window .export-dialog__title {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+:root[data-platform='darwin'] .plus-settings-window .settings-dialog__body {
+  padding-top: 0;
+}
+
+.plus-settings-window .settings-tabs {
+  align-self: center;
+}
+
+:root[data-platform='darwin'] .settings-tabs {
+  padding: 2px;
+  border-radius: 7px;
+}
+
+:root[data-platform='darwin'] .settings-tabs__button {
+  height: 24px;
+  padding: 0 var(--space-3);
+  border-radius: 5px;
+  font-size: var(--text-body);
+}
+
+:root[data-platform='darwin'] .settings-tabs__button--active {
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+/* Grouped form, as in System Settings: no uppercase section bar. */
+:root[data-platform='darwin'] .settings-section {
+  background: var(--bg-inset);
+  border: 0;
+  border-radius: var(--radius);
+}
+
+:root[data-platform='darwin'] .settings-section__heading {
+  padding: var(--space-3) var(--space-4) var(--space-1);
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--text);
+  text-transform: none;
+  background: none;
+  border-bottom: 0;
+}
+
+:root[data-platform='darwin'] .settings-field {
+  padding: var(--space-2) var(--space-4);
+}
+
+:root[data-platform='darwin'] .settings-field__control {
+  height: 24px;
+}
+
+:root[data-platform='darwin'] .settings-shortcut__key {
+  font-family: var(--font-ui);
+  font-size: var(--text-callout);
+}
+
+/* --- Editor (CodeMirror themes in Editor.tsx) ------------------------------------ */
+/* Caret and selection follow the system accent, like native text views. The selectors
+   outrank CodeMirror's generated theme classes. */
+:root .cm-editor .cm-cursor,
+:root .cm-editor .cm-dropCursor {
+  border-left-color: var(--accent);
+}
+
+:root .cm-editor .cm-selectionLayer .cm-selectionBackground {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+:root .cm-editor .cm-content ::selection {
+  background: color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+:root .cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground {
+  background: color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+/* macOS: one content background for the editor and the preview. */
+:root[data-platform='darwin'] .cm-editor,
+:root[data-platform='darwin'] .cm-editor .cm-gutters,
+:root[data-platform='darwin'] .cm-editor .cm-panels {
+  background-color: var(--bg);
+}
+
+:root[data-platform='darwin'] .cm-editor .cm-activeLine,
+:root[data-platform='darwin'] .cm-editor .cm-activeLineGutter {
+  background-color: var(--nav-hover-bg);
+}
+
 /* --- Every platform: quieter counts, disabled colors ----------------------- */
 .statusbar__count {
   color: var(--text-muted);

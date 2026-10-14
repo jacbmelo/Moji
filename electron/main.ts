@@ -43,6 +43,13 @@ import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
 import { applyWindowDocument, sanitizeMessageBox, sanitizeWindowDocument } from './plusWindow'
 import { applyPlusMenu, configureAboutPanel } from './plusMenu'
 import { installEditContextMenu, popupRendererMenu, setContextMenuLabels } from './plusContextMenu'
+import {
+  closeSettingsWindow,
+  openSettingsWindow,
+  sendToOtherWindows,
+  settingsWebContents,
+  SETTINGS_WINDOW_CHANNELS
+} from './plusSettingsWindow'
 
 let mainWindow: BrowserWindow | null = null
 /** Files an open reached main before the renderer's `onOpenDocument` listener was confirmed
@@ -563,9 +570,11 @@ function schedulePersistWindowBounds(win: BrowserWindow): void {
  * somewhere unexpected would reach the same file APIs as the app itself, so the sender is
  * checked once, centrally, rather than being assumed by twenty handlers.
  */
-function isTrustedSender(event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent): boolean {
-  if (!mainWindow || mainWindow.isDestroyed()) return false
-  if (event.sender !== mainWindow.webContents) return false
+function isTrustedSender(event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent, channel = ''): boolean {
+  // Moji Plus: the Settings window reaches only the settings channels (plusSettingsWindow.ts).
+  const fromSettings = event.sender === settingsWebContents() && SETTINGS_WINDOW_CHANNELS.has(channel)
+  if (!fromSettings && (!mainWindow || mainWindow.isDestroyed())) return false
+  if (!fromSettings && event.sender !== mainWindow?.webContents) return false
   // Top frame only: a nested frame never legitimately drives the app.
   return event.senderFrame === null || event.senderFrame === event.sender.mainFrame
 }
@@ -576,7 +585,7 @@ function handleFromRenderer(
   listener: (event: Electron.IpcMainInvokeEvent, ...args: never[]) => unknown
 ): void {
   ipcMain.handle(channel, (event, ...args) => {
-    if (!isTrustedSender(event)) throw new Error('forbidden')
+    if (!isTrustedSender(event, channel)) throw new Error('forbidden')
     return (listener as (event: Electron.IpcMainInvokeEvent, ...args: unknown[]) => unknown)(event, ...args)
   })
 }
@@ -587,7 +596,7 @@ function onFromRenderer(
   listener: (event: Electron.IpcMainEvent, ...args: never[]) => void
 ): void {
   ipcMain.on(channel, (event, ...args) => {
-    if (!isTrustedSender(event)) return
+    if (!isTrustedSender(event, channel)) return
     ;(listener as (event: Electron.IpcMainEvent, ...args: unknown[]) => void)(event, ...args)
   })
 }
@@ -707,6 +716,7 @@ function createWindow(): void {
   })
 
   mainWindow.on('closed', () => {
+    closeSettingsWindow()
     if (persistWindowBoundsTimer) {
       clearTimeout(persistWindowBoundsTimer)
       persistWindowBoundsTimer = null
@@ -766,6 +776,21 @@ function createWindow(): void {
   } else {
     void mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+}
+
+// Moji Plus: shared by the Settings window (plusSettingsWindow.ts).
+function preloadPath(): string {
+  return join(__dirname, '../preload/preload.js')
+}
+
+function appIconPath(): string | undefined {
+  const iconPath = app.isPackaged ? join(process.resourcesPath, 'icon.png') : join(app.getAppPath(), 'build', 'plus', 'icon.png')
+  return existsSync(iconPath) ? iconPath : undefined
+}
+
+function loadRenderer(win: BrowserWindow, hash: string): void {
+  if (process.env['ELECTRON_RENDERER_URL']) void win.loadURL(`${process.env['ELECTRON_RENDERER_URL']}#${hash}`)
+  else void win.loadFile(join(__dirname, '../renderer/index.html'), { hash })
 }
 
 /**
@@ -866,6 +891,11 @@ function registerIpc(): void {
   })
   handleFromRenderer(IPC.showContextMenu, (_e, value: unknown) => (mainWindow ? popupRendererMenu(value, mainWindow) : null))
 
+  for (const channel of [IPC.getSettings, IPC.setSettings, IPC.getAccentColor]) {
+    SETTINGS_WINDOW_CHANNELS.add(channel)
+  }
+  onFromRenderer(IPC.openSettingsWindow, () => openSettingsWindow({ preload: preloadPath(), icon: appIconPath(), load: (win) => loadRenderer(win, 'settings') }))
+
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)
     if (patch.recentFiles) patch.recentFiles = patch.recentFiles.filter((filePath) => capabilities.allows(filePath))
@@ -878,6 +908,7 @@ function registerIpc(): void {
     }
     const next = updateSettings(patch)
     if (nativeTheme.themeSource !== next.appearance) nativeTheme.themeSource = next.appearance
+    sendToOtherWindows(_e.sender, IPC.settingsChanged, next)
     return next
   })
 
@@ -1110,9 +1141,7 @@ if (!gotLock) {
       mainWindow?.setBackgroundColor(windowBackgroundColor())
       if (process.platform !== 'darwin') mainWindow?.setTitleBarOverlay(titleBarOverlay())
     })
-    watchSystemAccentColor((color) => {
-      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(IPC.accentColorChanged, color)
-    })
+    watchSystemAccentColor((color) => sendToOtherWindows(null, IPC.accentColorChanged, color))
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) createWindow()

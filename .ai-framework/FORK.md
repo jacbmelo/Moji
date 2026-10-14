@@ -25,6 +25,31 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 - Contagem de tokens na status bar: e uma estimativa (caracteres / 4), por isso aparece como `~N` com tooltip. Os textos sobrepoem `statusbar.tokenCount` e acrescentam `statusbar.tokenEstimate` em `src/locales/brand/`; o `title` fica no `StatusBar.tsx` do upstream (rever em cada sync).
 - Atualizacoes no macOS: ao contrario do upstream, o macOS tambem verifica as GitHub Releases (`supportsAutomaticUpdates()` em `electron/updater.ts`, rever em cada sync). So verifica: `autoDownload` fica desligado e o aviso abre as Releases, por isso a app nao precisa de ser assinada. Exige o `latest-mac.yml` em cada release.
 
+## Interface alinhada com as Apple HIG
+
+Regras gerais (foco, movimento reduzido, contraste, acento do sistema) valem para todas as plataformas; o resto fica em `[data-platform='darwin']`. Ficheiros do fork:
+
+- `src/styles/plus-hig.css`: tokens e estilos que sobrepoem `theme.css` e `app.css` sem os editar (fonte do sistema, cores dinamicas, scrollbars nativas, toolbar, separadores, sidebar, sheets, janela de Settings, editor). Nao mudar o `app.css` do upstream para isto.
+- `electron/plusAppearance.ts` + `src/lib/plusAppearance.ts`: cor de acento do sistema (macOS e Windows) em `--system-accent`.
+- `src/components/PlusMacToolbar.tsx` (+ `plusIcons.tsx`): toolbar unificada de uma linha no macOS. Os comandos que sairam dela vivem na barra de menus.
+- `electron/plusWindow.ts` + `src/lib/plusWindow.ts`: titulo da janela, `setDocumentEdited`, ficheiro representado e documentos recentes; tambem os alertas nativos (`showMessageBox`).
+- `electron/plusMenu.ts` + `src/lib/plusMenu.ts`: barra de menus do macOS. O renderer descreve o menu (traduzido) e o main constroi-o; os atalhos que o handler de teclas do `App.tsx` ja trata usam `registerAccelerator: false`, para nao mudar o comportamento. Procurar e substituir usa ⌥⌘F (⌘H e Ocultar) e sair do editor usa ⌃M no Mac (⌘M e Minimizar).
+- `electron/plusContextMenu.ts` + `src/lib/plusContextMenu.ts`: menus de contexto nativos (editor, preview, separadores).
+- `src/lib/plusDialogs.ts`: alertas nativos de alteracoes por guardar e de alteracoes externas.
+- `electron/plusSettingsWindow.ts` + `src/components/PlusSettingsWindow.tsx` + `src/lib/plusSettings.ts`: Settings numa janela propria (`#settings` no mesmo renderer). So pode usar os canais em `SETTINGS_WINDOW_CHANNELS`; cada escrita de settings e reenviada as outras janelas (`IPC.settingsChanged`).
+- `src/lib/plusOutlineKeys.ts`: navegacao por setas no outline.
+- Textos novos em `plus.*` nos overlays de `src/locales/brand/`.
+
+Ganchos no upstream, a rever em cada sync:
+
+- `src/main.tsx`: imports dos pesos 500-700 da Inter e de `plus-hig.css`, `installSystemAccentColor()`, e o ramo `#settings`.
+- `electron/main.ts`: `vibrancy` e `trafficLightPosition` no macOS, `windowBackgroundColor()` transparente no macOS, `isTrustedSender(event, channel)`, os handlers `plus:*` em `registerIpc()`, `installEditContextMenu`, `configureAboutPanel()`, o broadcast em `setSettings` e `loadRenderer()`.
+- `electron/shared.ts` / `electron/preload.ts`: canais e metodos `plus:*`.
+- `src/App.tsx`: `usePlusSettingsSync`, `usePlusWindowDocument`, `usePlusMenu`; `askUnsaved` e `askExternalChange` chamam os alertas nativos (o `ConfirmDialog` e o `ExternalChangeDialog` ficam por usar); `openSettings` abre a janela; o Export e uma sheet (`.plus-sheet-backdrop`) em vez de substituir o documento.
+- `src/components/TopBar.tsx`: o bloco de procura passou para `searchGroup` e o ramo `darwin` devolve `PlusMacToolbar`.
+- `src/components/DocumentTabs.tsx`: o `onContextMenu` chama o menu nativo (o menu HTML fica por usar).
+- `src/components/Sidebar.tsx` (`onKeyDown` do `nav`), `Editor.tsx` (`mac: 'Ctrl-m'`), `ExportDialog.tsx` (botao Cancelar, `autoFocus` no Exportar) e `SettingsDialog.tsx` (`macKeys` e simbolos ⌘⇧⌥⌃).
+
 ## Creditos (obrigatorio)
 
 - Manter sempre a referencia ao Moji, ao autor Alex Ishida e ao repositorio original: secao "Baseado em" no painel Sobre, bloco no topo do `README.md`, `CREDITS.md`, `LICENSE` (o aviso de copyright original e exigido pela licenca MIT), metainfo e `electron-builder.yml`.

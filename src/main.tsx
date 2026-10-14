@@ -15,6 +15,7 @@ import { applyDocumentTheme } from './hooks/useAppState'
 import { getRendererPerformanceReport } from './lib/performanceMetrics'
 import { installAutoHideScrollbars } from './lib/autoHideScrollbars'
 import { installSystemAccentColor } from './lib/plusAppearance'
+import { PlusSettingsWindow } from './components/PlusSettingsWindow'
 
 declare global {
   interface Window {
@@ -48,8 +49,12 @@ applyDocumentTheme()
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element not found')
 
+// Moji Plus: the same renderer also runs the Settings window (see FORK.md).
+const settingsWindow = window.location.hash === '#settings'
+if (settingsWindow) document.documentElement.dataset.window = 'settings'
+
 createRoot(container).render(
   <React.StrictMode>
-    <App />
+    {settingsWindow ? <PlusSettingsWindow /> : <App />}
   </React.StrictMode>
 )

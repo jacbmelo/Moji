@@ -6,6 +6,15 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- The interface follows Apple's Human Interface Guidelines on macOS: the system font and colors, the system accent color, a translucent sidebar material, a single-row toolbar with the document title, Finder-style tabs shown only with two or more documents, native overlay scrollbars and a slimmer status bar.
+- macOS has a full menu bar (File, Edit, View, Window, Help) with every command and its shortcut, and the standard About panel. Find and Replace is ⌥⌘F, since ⌘H hides the app; leaving the editor with the keyboard is ⌃M, so ⌘M minimizes.
+- Settings opens in its own window, and Export as a sheet over the document instead of replacing it.
+- Unsaved-changes and external-change prompts are native alerts (sheets on macOS) with Save, Don't Save and Cancel.
+- The editor, the preview and the document tabs have native context menus, with spelling suggestions and Look Up.
+- Keyboard focus is always visible, the outline can be navigated with the arrow keys, and reduced motion and increased contrast are honored. The UI font ships the weights it uses instead of synthesizing bold.
+
 ## [1.1.0] - 2026-10-02 — based on Moji 1.0.7
 
 ### Added

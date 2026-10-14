@@ -54,6 +54,7 @@ import packageJson from '../package.json'
 import { usePlusWindowDocument } from './lib/plusWindow'
 import { usePlusMenu } from './lib/plusMenu'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
+import { usePlusSettingsSync } from './lib/plusSettings'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -302,6 +303,7 @@ export function App(): JSX.Element {
   const { t, i18n } = useTranslation()
 
   const { settings, setSettings, mdTheme } = useSettingsState()
+  usePlusSettingsSync(setSettings)
   const { documents, setDocuments, activeDocId, setActiveDocId, mode, setMode, activeDoc } = useDocumentState()
   // `documents` gets a new array reference on every keystroke (content/revision changes), but
   // the *set* of open ids rarely does. Editor's cache-eviction effect keys off this array, so
@@ -2070,10 +2072,9 @@ export function App(): JSX.Element {
     updateActiveHeadingFromEditorLine(editorRef.current?.getTopVisibleLine() ?? 0)
   }, [activeDocId, editorOutline, mode, outlineVisible, splitActive, updateActiveHeadingFromEditorLine])
 
+  // Moji Plus: Settings opens in its own window instead of replacing the document (see FORK.md).
   const openSettings = useCallback(() => {
-    setExportDialogFormat(null)
-    setAboutOpen(false)
-    setSettingsOpen(true)
+    window.api.openSettingsWindow()
   }, [])
 
   const openAbout = useCallback(() => {

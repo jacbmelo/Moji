@@ -205,7 +205,14 @@ const api = {
   showContextMenu: (items: PlusMenuItem[]): Promise<string | null> => ipcRenderer.invoke(IPC.showContextMenu, items),
   setContextMenuLabels: (labels: Record<string, string>): void => ipcRenderer.send(IPC.setContextMenuLabels, labels),
   /** Moji Plus: native alert (a sheet on macOS); resolves with the index of the button pressed. */
-  showMessageBox: (box: PlusMessageBox): Promise<number> => ipcRenderer.invoke(IPC.showMessageBox, box)
+  showMessageBox: (box: PlusMessageBox): Promise<number> => ipcRenderer.invoke(IPC.showMessageBox, box),
+  /** Moji Plus: Settings lives in its own window; changes made anywhere arrive here. */
+  openSettingsWindow: (): void => ipcRenderer.send(IPC.openSettingsWindow),
+  onSettingsChanged: (cb: (settings: Settings) => void): (() => void) => {
+    const listener = (_e: unknown, settings: Settings): void => cb(settings)
+    ipcRenderer.on(IPC.settingsChanged, listener)
+    return () => ipcRenderer.removeListener(IPC.settingsChanged, listener)
+  }
 }
 
 export type RendererApi = typeof api
