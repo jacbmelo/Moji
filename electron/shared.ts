@@ -357,5 +357,6 @@ export const IPC = {
   fullscreenChanged: 'window:fullscreen-changed',
   // Moji Plus (see FORK.md)
   getAccentColor: 'plus:get-accent-color',
-  accentColorChanged: 'plus:accent-color-changed'
+  accentColorChanged: 'plus:accent-color-changed',
+  setWindowDocument: 'plus:set-window-document'
 } as const

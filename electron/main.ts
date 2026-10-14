@@ -40,6 +40,7 @@ import { contentHash, DocumentWatcher } from './documentWatcher'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
 import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
+import { applyWindowDocument, sanitizeWindowDocument } from './plusWindow'
 
 let mainWindow: BrowserWindow | null = null
 /** Files an open reached main before the renderer's `onOpenDocument` listener was confirmed
@@ -626,8 +627,9 @@ function createWindow(): void {
     // macOS draws its traffic lights over the top-left corner; Windows and Linux get a native
     // controls overlay on the top-right, painted with the chrome colors of the resolved theme.
     titleBarStyle: 'hidden',
+    // Moji Plus: the macOS toolbar is a single 52px row over a sidebar material (see FORK.md).
     ...(process.platform === 'darwin'
-      ? { trafficLightPosition: { x: 16, y: 16 } }
+      ? { trafficLightPosition: { x: 20, y: 19 }, vibrancy: 'sidebar' as const, visualEffectState: 'followWindow' as const }
       : { titleBarOverlay: titleBarOverlay() }),
     webPreferences: {
       preload: join(__dirname, '../preload/preload.js'),
@@ -776,6 +778,8 @@ function draftFailure(err: unknown): { error: string; problem?: DraftPersistProb
 
 /** Matches `--bg` of the resolved theme so resizes and reloads never flash the other palette. */
 function windowBackgroundColor(): string {
+  // Moji Plus: transparent so the vibrancy material shows through the chrome on macOS.
+  if (process.platform === 'darwin') return '#00000000'
   return nativeTheme.shouldUseDarkColors ? '#1e1e1e' : '#ffffff'
 }
 
@@ -845,6 +849,10 @@ async function restoreDraft(draft: AutoSaveDraft): Promise<RestoredDraft> {
 function registerIpc(): void {
   handleFromRenderer(IPC.getSettings, (): Settings => getSettings())
   handleFromRenderer(IPC.getAccentColor, (): string | null => systemAccentColor())
+  onFromRenderer(IPC.setWindowDocument, (_e, value: unknown) => {
+    const doc = sanitizeWindowDocument(value)
+    if (doc && mainWindow && !mainWindow.isDestroyed()) applyWindowDocument(mainWindow, doc, (path) => capabilities.allows(path))
+  })
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)

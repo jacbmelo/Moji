@@ -40,5 +40,8 @@
   "settingsDialog": {
     "autoSave": "在工作階段之間保留新文件和未儲存的變更",
     "reopenFiles": "啟動時重新開啟已開啟的檔案"
+  },
+  "plus": {
+    "edited": "已編輯"
   }
 }

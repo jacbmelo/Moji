@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { IconCollapseAll, IconExpandAll, IconList } from './icons'
 import { OutlineTree } from './OutlineTree'
 import { nestOutline, type OutlineItem, type OutlineNode } from '../lib/outline'
+import { plusOutlineKeyDown } from '../lib/plusOutlineKeys'
 
 interface SidebarProps {
   hasDoc: boolean
@@ -68,7 +69,7 @@ export const Sidebar = memo(function Sidebar(props: SidebarProps): JSX.Element {
             </div>
 
             {tree.length > 0 ? (
-              <nav aria-label={t('sidebar.outline')}>
+              <nav aria-label={t('sidebar.outline')} onKeyDown={plusOutlineKeyDown}>
                 <OutlineTree
                   nodes={tree}
                   activeId={props.activeId}

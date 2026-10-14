@@ -40,5 +40,8 @@
   "settingsDialog": {
     "autoSave": "Keep new documents and unsaved changes between sessions",
     "reopenFiles": "Reopen open files on startup"
+  },
+  "plus": {
+    "edited": "Edited"
   }
 }

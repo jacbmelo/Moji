@@ -51,6 +51,7 @@ import {
   type Settings,
 } from '../electron/shared'
 import packageJson from '../package.json'
+import { usePlusWindowDocument } from './lib/plusWindow'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -2452,6 +2453,7 @@ export function App(): JSX.Element {
   const title = hasDoc
     ? `${dirty ? `${t('app.modifiedMarker')} ` : ''}${activeDoc ? documentName(activeDoc, t('app.untitled')) : ''}`
     : ''
+  usePlusWindowDocument(activeDoc ? documentName(activeDoc, t('app.untitled')) : '', activeDoc?.path ?? null, hasDoc && dirty)
 
   const previewPane = activeDoc ? (
     <Preview

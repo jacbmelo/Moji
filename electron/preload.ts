@@ -188,7 +188,10 @@ const api = {
     const listener = (_e: unknown, color: string | null): void => cb(color)
     ipcRenderer.on(IPC.accentColorChanged, listener)
     return () => ipcRenderer.removeListener(IPC.accentColorChanged, listener)
-  }
+  },
+  /** Moji Plus: window title, edited state and represented file of the active document. */
+  setWindowDocument: (doc: { title: string; path: string | null; edited: boolean }): void =>
+    ipcRenderer.send(IPC.setWindowDocument, doc)
 }
 
 export type RendererApi = typeof api

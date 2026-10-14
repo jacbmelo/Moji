@@ -183,6 +183,242 @@
   font-size: var(--text-body);
 }
 
+/* --- macOS: window material ------------------------------------------------ */
+/* The window has a sidebar vibrancy material (electron/main.ts); the chrome lets it show
+   through and the document area stays opaque. With "Reduce transparency" macOS itself
+   draws the material opaque. */
+:root[data-platform='darwin'] {
+  --traffic-lights-w: 84px;
+  --chrome-bg: rgba(40, 40, 40, 0.55);
+  --sidebar-bg: transparent;
+}
+
+:root[data-platform='darwin'][data-theme='light'] {
+  --chrome-bg: rgba(246, 246, 246, 0.6);
+  --sidebar-bg: transparent;
+}
+
+:root[data-platform='darwin'] body,
+:root[data-platform='darwin'] .app {
+  background: transparent;
+}
+
+:root[data-platform='darwin'] .main {
+  background: var(--bg);
+}
+
+/* SF Symbols-like weight for the line icons. */
+:root[data-platform='darwin'] :is(.topbar, .sidebar, .statusbar, .document-tabs) svg {
+  stroke-width: 1.5;
+}
+
+/* --- macOS: unified toolbar (PlusMacToolbar.tsx) --------------------------- */
+:root[data-platform='darwin'] .plus-toolbar {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-2);
+  height: 52px;
+  padding: 0 var(--space-3) 0 var(--traffic-lights-w);
+  border-bottom: 1px solid var(--border);
+}
+
+:root[data-platform='darwin'][data-fullscreen] .plus-toolbar {
+  padding-left: var(--space-3);
+}
+
+.plus-toolbar__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: var(--space-1);
+  line-height: 1.25;
+}
+
+.plus-toolbar__name {
+  overflow: hidden;
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plus-toolbar__subtitle {
+  font-size: var(--text-footnote);
+  color: var(--text-muted);
+}
+
+.plus-toolbar__items {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.plus-toolbar .topbar__search {
+  width: 168px;
+  padding-left: 26px;
+  background: var(--bg-inset)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='m15.5 15.5 5 5'/%3E%3C/svg%3E")
+    no-repeat 8px center / 13px 13px;
+}
+
+.plus-toolbar .topbar__replace-toggle {
+  width: 28px;
+}
+
+/* The sidebar button shows no on/off state on the Mac; the sidebar itself is the state. */
+.plus-toolbar > .iconbtn:first-child.iconbtn--active {
+  color: var(--text-muted);
+  background: none;
+}
+
+:root[data-platform='darwin'] .iconbtn--active {
+  color: var(--accent);
+  background: var(--nav-hover-bg);
+}
+
+/* --- macOS: window tabs ------------------------------------------------------ */
+/* Equal-width tabs across the window, shown only with two or more documents, like Safari and
+   Finder. The close button sits on the left and appears on hover. */
+:root[data-platform='darwin'] .document-tabs {
+  height: 28px;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+:root[data-platform='darwin'] .document-tabs:not(:has(> .document-tab + .document-tab)) {
+  display: none;
+}
+
+:root[data-platform='darwin'] .document-tab {
+  width: auto;
+  min-width: 120px;
+  max-width: none;
+  height: 28px;
+  flex: 1 1 0;
+  border-top: 0;
+  border-right: 0;
+  border-left: 1px solid var(--border);
+  background: transparent;
+}
+
+:root[data-platform='darwin'] .document-tab:first-child {
+  border-left: 0;
+}
+
+:root[data-platform='darwin'] .document-tab::before {
+  display: none;
+}
+
+:root[data-platform='darwin'] .document-tab:hover:not(.document-tab--active) {
+  background: color-mix(in srgb, var(--text) 5%, transparent);
+}
+
+:root[data-platform='darwin'] .document-tab--active {
+  background: var(--bg);
+}
+
+:root[data-platform='darwin'] .document-tab__label {
+  justify-content: center;
+  padding: 0 28px;
+  font-size: var(--text-callout);
+}
+
+:root[data-platform='darwin'] .document-tab__close {
+  position: absolute;
+  left: 4px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  border-radius: 4px;
+}
+
+:root[data-platform='darwin'] .document-tab--active .document-tab__close {
+  opacity: 0;
+}
+
+:root[data-platform='darwin'] .document-tab:hover .document-tab__close,
+:root[data-platform='darwin'] .document-tab__close:focus-visible {
+  opacity: 1;
+}
+
+:root[data-platform='darwin'] .document-tab__dirty {
+  color: var(--text-muted);
+}
+
+/* --- macOS: sidebar ------------------------------------------------------------ */
+:root[data-platform='darwin'] .sidebar {
+  border-right-color: var(--border);
+}
+
+:root[data-platform='darwin'] .sidebar__body {
+  padding: var(--space-2) var(--space-2) var(--space-3);
+}
+
+:root[data-platform='darwin'] .outline-head {
+  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+:root[data-platform='darwin'] .outline-head__title {
+  padding: 2px var(--space-2);
+}
+
+:root[data-platform='darwin'] .outline-head__title svg {
+  display: none;
+}
+
+:root[data-platform='darwin'] .outline-head__label {
+  font-size: var(--text-footnote);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+:root[data-platform='darwin'] .outline-head__toggle {
+  width: 22px;
+  height: 22px;
+}
+
+:root[data-platform='darwin'] .outline-item {
+  color: var(--text);
+}
+
+:root[data-platform='darwin'] .outline-item__label {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+:root[data-platform='darwin'] .outline-item--active {
+  color: var(--text);
+  box-shadow: none;
+}
+
+:root[data-platform='darwin'] .outline-item--root > .outline-item__label,
+:root[data-platform='darwin'] .outline-item--requirement > .outline-item__label {
+  font-weight: 500;
+}
+
+:root[data-platform='darwin'] .outline-tree__children {
+  border-left-color: transparent;
+}
+
+/* --- macOS: status bar ----------------------------------------------------- */
+:root[data-platform='darwin'] {
+  --statusbar-h: 24px;
+}
+
+:root[data-platform='darwin'] .statusbar {
+  padding: 0 var(--space-3);
+}
+
+/* The app name already heads the menu bar and the About panel. */
+:root[data-platform='darwin'] .statusbar__left {
+  visibility: hidden;
+}
+
 /* --- Every platform: quieter counts, disabled colors ----------------------- */
 .statusbar__count {
   color: var(--text-muted);
