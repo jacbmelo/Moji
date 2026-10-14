@@ -354,5 +354,8 @@ export const IPC = {
   openManyProgress: 'file:open-many-progress',
   openManyDone: 'file:open-many-done',
   updateState: 'update:state',
-  fullscreenChanged: 'window:fullscreen-changed'
+  fullscreenChanged: 'window:fullscreen-changed',
+  // Moji Plus (see FORK.md)
+  getAccentColor: 'plus:get-accent-color',
+  accentColorChanged: 'plus:accent-color-changed'
 } as const

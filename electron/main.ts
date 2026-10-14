@@ -39,6 +39,7 @@ import { AssetCache } from './assetCache'
 import { contentHash, DocumentWatcher } from './documentWatcher'
 import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from './performance'
 import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
+import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
 
 let mainWindow: BrowserWindow | null = null
 /** Files an open reached main before the renderer's `onOpenDocument` listener was confirmed
@@ -843,6 +844,7 @@ async function restoreDraft(draft: AutoSaveDraft): Promise<RestoredDraft> {
 
 function registerIpc(): void {
   handleFromRenderer(IPC.getSettings, (): Settings => getSettings())
+  handleFromRenderer(IPC.getAccentColor, (): string | null => systemAccentColor())
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)
@@ -1086,6 +1088,9 @@ if (!gotLock) {
     nativeTheme.on('updated', () => {
       mainWindow?.setBackgroundColor(windowBackgroundColor())
       if (process.platform !== 'darwin') mainWindow?.setTitleBarOverlay(titleBarOverlay())
+    })
+    watchSystemAccentColor((color) => {
+      if (mainWindow && !mainWindow.isDestroyed()) mainWindow.webContents.send(IPC.accentColorChanged, color)
     })
 
     app.on('activate', () => {

@@ -181,6 +181,13 @@ const api = {
     const listener = (_e: unknown, fullscreen: boolean): void => cb(fullscreen)
     ipcRenderer.on(IPC.fullscreenChanged, listener)
     return () => ipcRenderer.removeListener(IPC.fullscreenChanged, listener)
+  },
+  /** Moji Plus: the OS accent color as `#rrggbb`, or null where there is none. */
+  getAccentColor: (): Promise<string | null> => ipcRenderer.invoke(IPC.getAccentColor),
+  onAccentColorChange: (cb: (color: string | null) => void): (() => void) => {
+    const listener = (_e: unknown, color: string | null): void => cb(color)
+    ipcRenderer.on(IPC.accentColorChanged, listener)
+    return () => ipcRenderer.removeListener(IPC.accentColorChanged, listener)
   }
 }
 

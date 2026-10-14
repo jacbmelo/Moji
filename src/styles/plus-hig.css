@@ -1,0 +1,259 @@
+/* Moji Plus: interface aligned with Apple's Human Interface Guidelines.
+   Overrides theme.css and app.css without editing them, so upstream merges stay clean. Rules
+   scoped to [data-platform='darwin'] follow macOS conventions (system font, system colors,
+   native scrollbars, default cursor); the unscoped ones are general good practice for every
+   platform (focus rings, reduced motion, contrast, system accent). See FORK.md. */
+
+/* --- Shared tokens -------------------------------------------------------- */
+:root {
+  --font-ui: var(--font-sans);
+  --text-tertiary: color-mix(in srgb, var(--text-muted) 60%, transparent);
+  --focus-ring: color-mix(in srgb, var(--accent) 55%, transparent);
+}
+
+/* System accent color (macOS and Windows), set by src/lib/plusAppearance.ts. */
+:root[data-system-accent] {
+  --accent: var(--system-accent);
+  --accent-hover: color-mix(in srgb, var(--system-accent) 85%, #000);
+  --accent-contrast: #fff;
+  --brand: var(--system-accent);
+  --nav-active-text: var(--system-accent);
+  --nav-active-bg: color-mix(in srgb, var(--system-accent) 18%, transparent);
+  --scrollbar-thumb: color-mix(in srgb, var(--text-muted) 70%, transparent);
+  --scrollbar-thumb-hover: var(--text-muted);
+}
+
+/* --- macOS: system font, type scale and dynamic system colors ------------- */
+:root[data-platform='darwin'] {
+  /* SF Pro for the app chrome; the preview keeps its own font setting (markdown.css). */
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+
+  /* macOS type scale (HIG "Typography", macOS built-in text styles) */
+  --text-title1: 22px;
+  --text-title2: 17px;
+  --text-title3: 15px;
+  --text-body: 13px;
+  --text-callout: 12px;
+  --text-footnote: 11px;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.35), 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  /* dark: windowBackgroundColor / controlBackgroundColor / label colors */
+  --bg: #1e1e1e;
+  --bg-elevated: #282828;
+  --bg-inset: rgba(255, 255, 255, 0.07);
+  --text: rgba(255, 255, 255, 0.86);
+  --text-muted: rgba(255, 255, 255, 0.55);
+  --text-tertiary: rgba(255, 255, 255, 0.25);
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  --sidebar-bg: #262626;
+  --chrome-bg: #2b2b2b;
+  --nav-hover-bg: rgba(255, 255, 255, 0.06);
+  --nav-active-bg: rgba(255, 255, 255, 0.1);
+  --nav-active-text: var(--text);
+  --segment-track: rgba(255, 255, 255, 0.07);
+  --segment-active-bg: rgba(255, 255, 255, 0.18);
+
+  --modal-bg: #2b2b2b;
+  --modal-surface: #323232;
+  --modal-inset: rgba(255, 255, 255, 0.07);
+  --modal-text: rgba(255, 255, 255, 0.86);
+  --modal-text-muted: rgba(255, 255, 255, 0.55);
+  --modal-border: rgba(255, 255, 255, 0.1);
+}
+
+:root[data-platform='darwin'][data-theme='light'] {
+  --shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 10px 30px rgba(0, 0, 0, 0.16);
+
+  --bg: #ffffff;
+  --bg-elevated: #f6f6f6;
+  --bg-inset: rgba(0, 0, 0, 0.05);
+  --text: rgba(0, 0, 0, 0.85);
+  --text-muted: rgba(0, 0, 0, 0.5);
+  --text-tertiary: rgba(0, 0, 0, 0.26);
+  --border: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.18);
+
+  --sidebar-bg: #ebebeb;
+  --chrome-bg: #f3f3f3;
+  --nav-hover-bg: rgba(0, 0, 0, 0.05);
+  --nav-active-bg: rgba(0, 0, 0, 0.08);
+  --segment-track: rgba(0, 0, 0, 0.06);
+  --segment-active-bg: #ffffff;
+
+  --modal-bg: #f6f6f6;
+  --modal-surface: #ececec;
+  --modal-inset: rgba(0, 0, 0, 0.05);
+  --modal-text: rgba(0, 0, 0, 0.85);
+  --modal-text-muted: rgba(0, 0, 0, 0.5);
+  --modal-border: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-platform='darwin'] body {
+  font-family: var(--font-ui);
+  font-size: var(--text-body);
+}
+
+/* Native overlay scrollbars. A non-auto scrollbar-width makes Chromium ignore the
+   ::-webkit-scrollbar rules in app.css, and an auto color leaves the drawing to the OS. */
+:root[data-platform='darwin'] * {
+  scrollbar-width: thin;
+  scrollbar-color: auto;
+}
+
+/* Mac controls use the arrow cursor; only links get the pointing hand. */
+:root[data-platform='darwin']
+  :is(
+    .filegroup__btn,
+    .segment__btn,
+    .iconbtn,
+    .navitem,
+    .outline-head__toggle,
+    .outline-item__toggle,
+    .outline-item__label,
+    .document-tab__label,
+    .document-tab__close,
+    .tab-menu__item,
+    .statusbar__link,
+    .btn,
+    .select,
+    .export-format,
+    .settings-tabs__button,
+    .welcome__recent-open,
+    .welcome__recent-remove,
+    .update-notice__close,
+    .diagram-modal__zoom-select,
+    .topbar__search::-webkit-search-cancel-button,
+    .topbar__replace-input::-webkit-search-cancel-button
+  ) {
+  cursor: default;
+}
+
+:root[data-platform='darwin'] :is(.topbar__search, .topbar__replace-input, .topbar__find-label, .topbar__replace-count) {
+  font-size: var(--text-body);
+}
+
+:root[data-platform='darwin'] .topbar__search {
+  border-color: transparent;
+  border-radius: var(--radius-sm);
+}
+
+:root[data-platform='darwin'] .segment {
+  padding: 2px;
+  border-radius: 7px;
+}
+
+:root[data-platform='darwin'] .segment__btn {
+  height: 24px;
+  padding: 0 var(--space-3);
+  border-radius: 5px;
+}
+
+:root[data-platform='darwin'] .segment__btn--active {
+  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-platform='darwin'] .iconbtn {
+  width: 30px;
+  height: 28px;
+}
+
+:root[data-platform='darwin'] .btn,
+:root[data-platform='darwin'] .select,
+:root[data-platform='darwin'] .input {
+  height: 24px;
+  font-size: var(--text-body);
+}
+
+:root[data-platform='darwin'] .btn {
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-platform='darwin'] .statusbar,
+:root[data-platform='darwin'] .statusbar__link {
+  font-size: var(--text-footnote);
+}
+
+:root[data-platform='darwin'] :is(.about-dialog__row, .about-dialog__text, .dialog__body) {
+  font-size: var(--text-body);
+}
+
+/* --- Every platform: quieter counts, disabled colors ----------------------- */
+.statusbar__count {
+  color: var(--text-muted);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+:is(.filegroup__btn, .segment__btn, .iconbtn, .statusbar__link, .btn:not(.btn--primary)):disabled {
+  opacity: 1;
+  color: var(--text-tertiary);
+}
+
+.topbar__search:disabled {
+  opacity: 1;
+  color: var(--text-tertiary);
+}
+
+.topbar__search:disabled::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* --- Every platform: keyboard focus ring ------------------------------------ */
+:is(
+    .filegroup__btn,
+    .segment__btn,
+    .iconbtn,
+    .navitem,
+    .outline-head__toggle,
+    .outline-item__toggle,
+    .outline-item__label,
+    .document-tab__label,
+    .document-tab__close,
+    .tab-menu__item,
+    .statusbar__link,
+    .btn,
+    .export-format,
+    .settings-tabs__button,
+    .welcome__recent-open,
+    .welcome__recent-remove,
+    .update-notice__close,
+    .settings-checkbox
+  ):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* Text fields show the ring whenever they hold focus, as native fields do. */
+:is(.topbar__search, .topbar__replace-input, .input, .select, .diagram-modal__zoom-select):focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 0;
+  border-color: var(--accent);
+}
+
+/* --- Accessibility preferences --------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  /* Outranks the platform and theme token rules above. */
+  html:root:root:root {
+    --border: var(--text-muted);
+    --border-strong: var(--text);
+    --text-muted: var(--text);
+    --focus-ring: var(--accent);
+  }
+}
