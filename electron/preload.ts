@@ -23,6 +23,7 @@ import {
   type WriteResult
 } from './shared'
 import { DocumentTextDecoder } from './documentDecoder'
+import type { PlusMenuItem } from './plusMenu'
 
 /** No message (not even progress on a large file) for this long means main is never going to answer. */
 const READ_STREAM_INACTIVITY_TIMEOUT_MS = 15_000
@@ -191,7 +192,17 @@ const api = {
   },
   /** Moji Plus: window title, edited state and represented file of the active document. */
   setWindowDocument: (doc: { title: string; path: string | null; edited: boolean }): void =>
-    ipcRenderer.send(IPC.setWindowDocument, doc)
+    ipcRenderer.send(IPC.setWindowDocument, doc),
+  /** Moji Plus: describe the macOS menu bar; clicks come back through `onMenuCommand`. */
+  setMenu: (items: PlusMenuItem[]): void => ipcRenderer.send(IPC.setMenu, items),
+  onMenuCommand: (cb: (id: string) => void): (() => void) => {
+    const listener = (_e: unknown, id: string): void => cb(id)
+    ipcRenderer.on(IPC.menuCommand, listener)
+    return () => ipcRenderer.removeListener(IPC.menuCommand, listener)
+  },
+  /** Moji Plus: native context menu; resolves with the chosen item's id, or null. */
+  showContextMenu: (items: PlusMenuItem[]): Promise<string | null> => ipcRenderer.invoke(IPC.showContextMenu, items),
+  setContextMenuLabels: (labels: Record<string, string>): void => ipcRenderer.send(IPC.setContextMenuLabels, labels)
 }
 
 export type RendererApi = typeof api

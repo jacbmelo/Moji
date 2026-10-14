@@ -52,6 +52,7 @@ import {
 } from '../electron/shared'
 import packageJson from '../package.json'
 import { usePlusWindowDocument } from './lib/plusWindow'
+import { usePlusMenu } from './lib/plusMenu'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -2454,6 +2455,57 @@ export function App(): JSX.Element {
     ? `${dirty ? `${t('app.modifiedMarker')} ` : ''}${activeDoc ? documentName(activeDoc, t('app.untitled')) : ''}`
     : ''
   usePlusWindowDocument(activeDoc ? documentName(activeDoc, t('app.untitled')) : '', activeDoc?.path ?? null, hasDoc && dirty)
+  usePlusMenu(
+    {
+      hasDoc,
+      readOnly: activeDoc?.readOnly === true,
+      mode,
+      documentCount: documents.length,
+      splitView: settings.splitView,
+      canToggleSplit,
+      outlineVisible,
+      canToggleOutline: canToggleOutline(),
+      fluidWidth: settings.previewFluidWidth,
+      canToggleFluidWidth: canTogglePreviewWidth(),
+      canAdjustFontSize: canAdjustFontSize(),
+      canReplace: hasDoc && activeDoc?.readOnly !== true && exportDialogFormat === null,
+      appearance: settings.appearance,
+      recentFiles: settings.recentFiles
+    },
+    {
+      newDocument: doNew,
+      selectAll: () => selectAllInDocument(previewPaneRef.current),
+      open: () => void doOpen(),
+      openRecent,
+      clearRecent: () => forgetRecent(settings.recentFiles),
+      close: () => {
+        if (activeDocId) void closeDocument(activeDocId)
+      },
+      save: () => void doSave(),
+      saveAs: () => {
+        if (activeDocId) void saveDocumentAs(activeDocId)
+      },
+      export: openExportDialog,
+      settings: openSettings,
+      checkForUpdates: checkForUpdate,
+      find: focusSearch,
+      replace: focusReplace,
+      findNext: doFindNext,
+      findPrevious: doFindPrevious,
+      setMode: setModeSafe,
+      toggleMode,
+      toggleSplit: toggleSplitView,
+      toggleOutline,
+      toggleFluidWidth: togglePreviewFluidWidth,
+      fontReset: () => changeFontSize(defaultFontSize),
+      fontIn: () => changeFontSize(activeFontSize + 1),
+      fontOut: () => changeFontSize(activeFontSize - 1),
+      setAppearance: (appearance) => changeSettings({ appearance }),
+      nextTab: () => selectAdjacentDocument(1),
+      previousTab: () => selectAdjacentDocument(-1),
+      guide: () => void doGuide()
+    }
+  )
 
   const previewPane = activeDoc ? (
     <Preview

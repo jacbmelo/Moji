@@ -1,5 +1,5 @@
 // Moji Plus: native window state that mirrors the active document (see FORK.md).
-import type { BrowserWindow } from 'electron'
+import { app, type BrowserWindow } from 'electron'
 import { APP_NAME } from './brand'
 
 export interface WindowDocument {
@@ -24,5 +24,8 @@ export function applyWindowDocument(win: BrowserWindow, doc: WindowDocument, all
   win.setTitle(doc.title || APP_NAME)
   if (process.platform !== 'darwin') return
   win.setDocumentEdited(doc.edited)
-  win.setRepresentedFilename(doc.path && allows(doc.path) ? doc.path : '')
+  const path = doc.path && allows(doc.path) ? doc.path : ''
+  win.setRepresentedFilename(path)
+  // Dock menu and Finder's recent items.
+  if (path) app.addRecentDocument(path)
 }

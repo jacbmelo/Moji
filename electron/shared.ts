@@ -358,5 +358,9 @@ export const IPC = {
   // Moji Plus (see FORK.md)
   getAccentColor: 'plus:get-accent-color',
   accentColorChanged: 'plus:accent-color-changed',
-  setWindowDocument: 'plus:set-window-document'
+  setWindowDocument: 'plus:set-window-document',
+  setMenu: 'plus:set-menu',
+  menuCommand: 'plus:menu-command',
+  showContextMenu: 'plus:show-context-menu',
+  setContextMenuLabels: 'plus:set-context-menu-labels'
 } as const

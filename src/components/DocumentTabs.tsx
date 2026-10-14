@@ -1,6 +1,7 @@
 import { memo, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { IconX } from './icons'
+import { showTabContextMenu } from '../lib/plusContextMenu'
 
 export interface DocumentTabItem {
   id: string
@@ -85,7 +86,8 @@ function DocumentTabsView({
           }}
           onContextMenu={(event) => {
             event.preventDefault()
-            setMenu({ id: tab.id, x: event.clientX, y: event.clientY })
+            // Moji Plus: native menu instead of the HTML one below (see FORK.md).
+            void showTabContextMenu(t, tabs, tab.id, { onClose, onCloseOthers, onCloseToRight, onCloseSaved, onCloseAll })
           }}
         >
           <button className="document-tab__label" type="button" onClick={() => onSelect(tab.id)} title={tab.title}>

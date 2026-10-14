@@ -41,6 +41,8 @@ import { beginMainMeasure, captureMainMemory, getMainPerformanceReport } from '.
 import { APP_NAME, DESKTOP_NAME, SETTINGS_DIRECTORY } from './brand'
 import { systemAccentColor, watchSystemAccentColor } from './plusAppearance'
 import { applyWindowDocument, sanitizeWindowDocument } from './plusWindow'
+import { applyPlusMenu, configureAboutPanel } from './plusMenu'
+import { installEditContextMenu, popupRendererMenu, setContextMenuLabels } from './plusContextMenu'
 
 let mainWindow: BrowserWindow | null = null
 /** Files an open reached main before the renderer's `onOpenDocument` listener was confirmed
@@ -640,6 +642,8 @@ function createWindow(): void {
     }
   })
 
+  installEditContextMenu(mainWindow)
+
   mainWindow.once('ready-to-show', () => {
     mainWindow?.setMenuBarVisibility(false)
     if (getSettings().windowMaximized) mainWindow?.maximize()
@@ -853,6 +857,9 @@ function registerIpc(): void {
     const doc = sanitizeWindowDocument(value)
     if (doc && mainWindow && !mainWindow.isDestroyed()) applyWindowDocument(mainWindow, doc, (path) => capabilities.allows(path))
   })
+  onFromRenderer(IPC.setMenu, (_e, value: unknown) => applyPlusMenu(value, mainWindow, IPC.menuCommand, { quit: requestQuit }))
+  onFromRenderer(IPC.setContextMenuLabels, (_e, value: unknown) => setContextMenuLabels(value))
+  handleFromRenderer(IPC.showContextMenu, (_e, value: unknown) => (mainWindow ? popupRendererMenu(value, mainWindow) : null))
 
   handleFromRenderer(IPC.setSettings, (_e, value: unknown): Settings => {
     const patch = sanitizeSettingsPatch(value)
@@ -1090,6 +1097,7 @@ if (!gotLock) {
     registerAssetProtocol()
     registerIpc()
     installApplicationMenu()
+    if (process.platform === 'darwin') configureAboutPanel()
     createWindow()
     initializeUpdater()
 

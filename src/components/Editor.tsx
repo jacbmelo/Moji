@@ -244,6 +244,8 @@ const markdownKeymap = [
   // "toggle tab moves focus" affordance, so it also lands as something some users already know.
   {
     key: 'Mod-m',
+    // Moji Plus: Cmd+M is Minimize on the Mac (HIG), so the escape hatch there is Control-M.
+    mac: 'Ctrl-m',
     run: (view: EditorView) => {
       view.contentDOM.blur()
       return true
