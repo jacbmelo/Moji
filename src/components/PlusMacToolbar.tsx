@@ -1,11 +1,14 @@
-// Moji Plus: unified single-row toolbar for macOS (HIG "Toolbars"). Commands that live in the
-// menu bar on the Mac (New, Open, Save, Settings, About) leave the toolbar; the
-// search field and its popover come from TopBar unchanged. See FORK.md.
+// Moji Plus: unified single-row toolbar (HIG "Toolbars"), on every platform. Commands that
+// live in the app menu (New, Open, Save, Settings, About) leave the toolbar: the menu bar on
+// the Mac, the app menu button on Windows and Linux. The search field and its popover come
+// from TopBar unchanged. See FORK.md.
 import type { ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { FontSizeButton } from './FontSizeButton'
 import { IconEye, IconLayoutWidth, IconMoon, IconPencil, IconSidebar, IconSplitPreview, IconSun } from './icons'
-import { IconShare } from './plusIcons'
+import { IconMenu, IconShare } from './plusIcons'
+import { openPlusAppMenu } from '../lib/plusMenu'
 import type { TopBarProps } from './TopBar'
 
 export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.Element {
@@ -15,6 +18,23 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
   const name = edited ? props.title.slice(t('app.modifiedMarker').length).trimStart() : props.title
 
   return (
+    <>
+    {/* Rendered last in <body>: the window drag regions are resolved in document order on
+        Windows and Linux, so a no-drag button placed before the sidebar and toolbar (which drag)
+        would have its clicks taken by the window. */}
+    {window.api.platform !== 'darwin' && createPortal(
+      <button
+        className="iconbtn plus-app-menu-button"
+        type="button"
+        onClick={(event) => openPlusAppMenu(event.currentTarget)}
+        title={t('plus.menu.appMenu')}
+        aria-label={t('plus.menu.appMenu')}
+        aria-haspopup="menu"
+      >
+        <IconMenu />
+      </button>,
+      document.body
+    )}
     <header className="topbar plus-toolbar">
       <button
         className={`iconbtn ${props.outlineVisible && props.canToggleOutline ? 'iconbtn--active' : ''}`}
@@ -118,5 +138,6 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
 
       {props.search}
     </header>
+    </>
   )
 }

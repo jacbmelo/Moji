@@ -82,10 +82,12 @@ export function installEditContextMenu(win: BrowserWindow): void {
 }
 
 /** Pops up a menu the renderer described; resolves with the chosen item's id, or null. */
-export function popupRendererMenu(value: unknown, win: BrowserWindow): Promise<string | null> {
+export function popupRendererMenu(value: unknown, win: BrowserWindow, position?: unknown): Promise<string | null> {
+  const at = position as { x?: unknown; y?: unknown } | undefined
+  const point = at && Number.isFinite(at.x) && Number.isFinite(at.y) ? { x: Number(at.x), y: Number(at.y) } : {}
   return new Promise((resolve) => {
     let chosen: string | null = null
     const menu = Menu.buildFromTemplate(toTemplate(sanitizeMenu(value), (id) => (chosen = id)))
-    menu.popup({ window: win, callback: () => setImmediate(() => resolve(chosen)) })
+    menu.popup({ window: win, ...point, callback: () => setImmediate(() => resolve(chosen)) })
   })
 }

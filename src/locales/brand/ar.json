@@ -106,7 +106,9 @@
       "bringAllToFront": "إحضار الكل إلى المقدمة",
       "help": "مساعدة",
       "guide": "دليل Markdown",
-      "repository": "{{name}} على GitHub"
+      "repository": "{{name}} على GitHub",
+      "exit": "خروج",
+      "appMenu": "القائمة"
     },
     "context": {
       "copyLink": "نسخ الرابط",

@@ -202,7 +202,8 @@ const api = {
     return () => ipcRenderer.removeListener(IPC.menuCommand, listener)
   },
   /** Moji Plus: native context menu; resolves with the chosen item's id, or null. */
-  showContextMenu: (items: PlusMenuItem[]): Promise<string | null> => ipcRenderer.invoke(IPC.showContextMenu, items),
+  showContextMenu: (items: PlusMenuItem[], position?: { x: number; y: number }): Promise<string | null> =>
+    ipcRenderer.invoke(IPC.showContextMenu, items, position),
   setContextMenuLabels: (labels: Record<string, string>): void => ipcRenderer.send(IPC.setContextMenuLabels, labels),
   /** Moji Plus: native alert (a sheet on macOS); resolves with the index of the button pressed. */
   showMessageBox: (box: PlusMessageBox): Promise<number> => ipcRenderer.invoke(IPC.showMessageBox, box),

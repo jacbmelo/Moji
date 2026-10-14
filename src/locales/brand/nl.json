@@ -106,7 +106,9 @@
       "bringAllToFront": "Alles op voorgrond",
       "help": "Help",
       "guide": "Markdown-handleiding",
-      "repository": "{{name}} op GitHub"
+      "repository": "{{name}} op GitHub",
+      "exit": "Afsluiten",
+      "appMenu": "Menu"
     },
     "context": {
       "copyLink": "Kopieer link",

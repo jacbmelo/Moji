@@ -106,7 +106,9 @@
       "bringAllToFront": "將此程式所有視窗移至最前",
       "help": "輔助說明",
       "guide": "Markdown 指南",
-      "repository": "GitHub 上的{{name}}"
+      "repository": "GitHub 上的{{name}}",
+      "exit": "結束",
+      "appMenu": "選單"
     },
     "context": {
       "copyLink": "拷貝連結",

@@ -106,7 +106,9 @@
       "bringAllToFront": "Bring All to Front",
       "help": "Help",
       "guide": "Markdown Guide",
-      "repository": "{{name}} on GitHub"
+      "repository": "{{name}} on GitHub",
+      "exit": "Exit",
+      "appMenu": "Menu"
     },
     "context": {
       "copyLink": "Copy Link",

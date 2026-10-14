@@ -814,9 +814,10 @@ function windowBackgroundColor(): string {
 
 /** Windows/Linux window controls overlay: `--chrome-bg` and `--text-muted` of the resolved theme. */
 function titleBarOverlay(): { color: string; symbolColor: string; height: number } {
+  // Moji Plus: as tall as the single-row toolbar, on the content background it sits on.
   return nativeTheme.shouldUseDarkColors
-    ? { color: '#202021', symbolColor: '#9aa0a6', height: 38 }
-    : { color: '#f3f4f6', symbolColor: '#656d76', height: 38 }
+    ? { color: '#1e1e1e', symbolColor: '#c8c8c8', height: 52 }
+    : { color: '#ffffff', symbolColor: '#5c5c5c', height: 52 }
 }
 
 /**
@@ -889,7 +890,7 @@ function registerIpc(): void {
     if (!box || !mainWindow || mainWindow.isDestroyed()) return box?.cancelId ?? 0
     return (await dialog.showMessageBox(mainWindow, { ...box, noLink: true })).response
   })
-  handleFromRenderer(IPC.showContextMenu, (_e, value: unknown) => (mainWindow ? popupRendererMenu(value, mainWindow) : null))
+  handleFromRenderer(IPC.showContextMenu, (_e, value: unknown, position: unknown) => (mainWindow ? popupRendererMenu(value, mainWindow, position) : null))
 
   for (const channel of [IPC.getSettings, IPC.setSettings, IPC.getAccentColor]) {
     SETTINGS_WINDOW_CHANNELS.add(channel)

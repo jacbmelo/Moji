@@ -2504,7 +2504,8 @@ export function App(): JSX.Element {
       setAppearance: (appearance) => changeSettings({ appearance }),
       nextTab: () => selectAdjacentDocument(1),
       previousTab: () => selectAdjacentDocument(-1),
-      guide: () => void doGuide()
+      guide: () => void doGuide(),
+      about: openAbout
     }
   )
 

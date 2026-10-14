@@ -106,7 +106,9 @@
       "bringAllToFront": "Все окна — на передний план",
       "help": "Справка",
       "guide": "Руководство по Markdown",
-      "repository": "{{name}} на GitHub"
+      "repository": "{{name}} на GitHub",
+      "exit": "Выход",
+      "appMenu": "Меню"
     },
     "context": {
       "copyLink": "Скопировать ссылку",

@@ -106,7 +106,9 @@
       "bringAllToFront": "Traer todo al frente",
       "help": "Ayuda",
       "guide": "Guía de Markdown",
-      "repository": "{{name}} en GitHub"
+      "repository": "{{name}} en GitHub",
+      "exit": "Salir",
+      "appMenu": "Menú"
     },
     "context": {
       "copyLink": "Copiar enlace",

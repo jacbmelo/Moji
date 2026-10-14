@@ -106,7 +106,9 @@
       "bringAllToFront": "前置全部窗口",
       "help": "帮助",
       "guide": "Markdown 指南",
-      "repository": "GitHub 上的{{name}}"
+      "repository": "GitHub 上的{{name}}",
+      "exit": "退出",
+      "appMenu": "菜单"
     },
     "context": {
       "copyLink": "拷贝链接",

@@ -234,8 +234,8 @@ export const TopBar = memo(function TopBar(props: TopBarProps): JSX.Element {
     </div>
   )
 
-  // Moji Plus: single-row unified toolbar on macOS, where the menu bar carries the rest.
-  if (window.api.platform === 'darwin') return <PlusMacToolbar {...props} search={searchGroup} />
+  // Moji Plus: the single-row toolbar on every platform; the app menu carries the rest.
+  return <PlusMacToolbar {...props} search={searchGroup} />
 
   return (
     <header className="topbar">

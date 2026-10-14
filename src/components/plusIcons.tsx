@@ -21,3 +21,10 @@ export const IconShare = (p: IconProps): JSX.Element => (
     <path d="M8.5 10H7a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-1.5" />
   </svg>
 )
+
+/* line.3.horizontal: the app menu button on Windows and Linux */
+export const IconMenu = (p: IconProps): JSX.Element => (
+  <svg {...base} {...p}>
+    <path d="M4 7h16M4 12h16M4 17h16" />
+  </svg>
+)

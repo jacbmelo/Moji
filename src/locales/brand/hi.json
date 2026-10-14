@@ -106,7 +106,9 @@
       "bringAllToFront": "सभी को सामने लाएँ",
       "help": "सहायता",
       "guide": "Markdown मार्गदर्शिका",
-      "repository": "GitHub पर {{name}}"
+      "repository": "GitHub पर {{name}}",
+      "exit": "बाहर निकलें",
+      "appMenu": "मेनू"
     },
     "context": {
       "copyLink": "लिंक कॉपी करें",

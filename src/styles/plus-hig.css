@@ -1,8 +1,10 @@
-/* Moji Plus: interface aligned with Apple's Human Interface Guidelines.
+/* Moji Plus: interface aligned with Apple's Human Interface Guidelines, on every platform.
    Overrides theme.css and app.css without editing them, so upstream merges stay clean. Rules
-   scoped to [data-platform='darwin'] follow macOS conventions (system font, system colors,
-   native scrollbars, default cursor); the unscoped ones are general good practice for every
-   platform (focus rings, reduced motion, contrast, system accent). See FORK.md. */
+   under :root[data-platform] apply to the macOS, Windows and Linux window alike (data-platform
+   is always set; the attribute keeps the specificity that beats app.css). What only exists on
+   the Mac (system font, overlay scrollbars, window material, traffic lights) is scoped to
+   [data-platform='darwin']; Windows and Linux get the app menu button and the native window
+   controls on the right instead. See FORK.md. */
 
 /* --- Shared tokens -------------------------------------------------------- */
 :root {
@@ -23,12 +25,8 @@
   --scrollbar-thumb-hover: var(--text-muted);
 }
 
-/* --- macOS: system font, type scale and dynamic system colors ------------- */
-:root[data-platform='darwin'] {
-  /* SF Pro for the app chrome; the preview keeps its own font setting (markdown.css). */
-  --font-ui: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
-
+/* --- Type scale and system colors (macOS dynamic colors, used on every platform) ------ */
+:root[data-platform] {
   /* macOS type scale (HIG "Typography", macOS built-in text styles) */
   --text-title1: 22px;
   --text-title2: 17px;
@@ -67,7 +65,18 @@
   --modal-border: rgba(255, 255, 255, 0.1);
 }
 
-:root[data-platform='darwin'][data-theme='light'] {
+/* System UI font; the preview keeps its own font setting (markdown.css). Linux keeps Inter. */
+:root[data-platform='darwin'] {
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-platform='win32'] {
+  --font-ui: 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'Cascadia Mono', Consolas, monospace;
+}
+
+:root[data-platform][data-theme='light'] {
   --shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.18), 0 10px 30px rgba(0, 0, 0, 0.16);
 
   --bg: #ffffff;
@@ -94,20 +103,21 @@
   --modal-border: rgba(0, 0, 0, 0.1);
 }
 
-:root[data-platform='darwin'] body {
+:root[data-platform] body {
   font-family: var(--font-ui);
   font-size: var(--text-body);
 }
 
-/* Native overlay scrollbars. A non-auto scrollbar-width makes Chromium ignore the
-   ::-webkit-scrollbar rules in app.css, and an auto color leaves the drawing to the OS. */
+/* macOS: native overlay scrollbars. A non-auto scrollbar-width makes Chromium ignore the
+   ::-webkit-scrollbar rules in app.css, and an auto color leaves the drawing to the OS.
+   Windows and Linux use the fork's auto-hiding scrollbars (plus-scrollbars.css). */
 :root[data-platform='darwin'] * {
   scrollbar-width: thin;
   scrollbar-color: auto;
 }
 
-/* Mac controls use the arrow cursor; only links get the pointing hand. */
-:root[data-platform='darwin']
+/* Controls use the arrow cursor, as native ones do on every desktop; only links get the hand. */
+:root[data-platform]
   :is(
     .filegroup__btn,
     .segment__btn,
@@ -134,65 +144,67 @@
   cursor: default;
 }
 
-:root[data-platform='darwin'] :is(.topbar__search, .topbar__replace-input, .topbar__find-label, .topbar__replace-count) {
+:root[data-platform] :is(.topbar__search, .topbar__replace-input, .topbar__find-label, .topbar__replace-count) {
   font-size: var(--text-body);
 }
 
-:root[data-platform='darwin'] .topbar__search {
+:root[data-platform] .topbar__search {
   border-color: transparent;
   border-radius: var(--radius-sm);
 }
 
-:root[data-platform='darwin'] .segment {
+:root[data-platform] .segment {
   padding: 2px;
   border-radius: 7px;
 }
 
-:root[data-platform='darwin'] .segment__btn {
+:root[data-platform] .segment__btn {
   height: 24px;
   padding: 0 var(--space-3);
   border-radius: 5px;
 }
 
-:root[data-platform='darwin'] .segment__btn--active {
+:root[data-platform] .segment__btn--active {
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
-:root[data-platform='darwin'] .iconbtn {
+:root[data-platform] .iconbtn {
   width: 30px;
   height: 28px;
 }
 
-:root[data-platform='darwin'] .btn,
-:root[data-platform='darwin'] .select,
-:root[data-platform='darwin'] .input {
+:root[data-platform] .btn,
+:root[data-platform] .select,
+:root[data-platform] .input {
   height: 24px;
   font-size: var(--text-body);
 }
 
-:root[data-platform='darwin'] .btn {
+:root[data-platform] .btn {
   box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.12);
 }
 
-:root[data-platform='darwin'] .statusbar,
-:root[data-platform='darwin'] .statusbar__link {
+:root[data-platform] .statusbar,
+:root[data-platform] .statusbar__link {
   font-size: var(--text-footnote);
 }
 
-:root[data-platform='darwin'] :is(.about-dialog__row, .about-dialog__text, .dialog__body) {
+:root[data-platform] :is(.about-dialog__row, .about-dialog__text, .dialog__body) {
   font-size: var(--text-body);
 }
 
-/* --- macOS: window layout (macOS 26+ style, like Safari and Finder) ---------------- */
-/* The sidebar runs the full height of the window, with the traffic lights at its top; the
-   toolbar, tabs, document and status bar sit in the column beside it, on the light content
-   background. The window has a sidebar vibrancy material (electron/main.ts) that shows
-   through the sidebar only; with "Reduce transparency" macOS draws it opaque. */
-:root[data-platform='darwin'] {
-  --traffic-lights-w: 84px;
+/* --- Window layout (macOS 26+ style, like Safari and Finder) ------------------------------ */
+/* The sidebar runs the full height of the window, with the window's leading controls at its
+   top (traffic lights on the Mac, the app menu button on Windows and Linux); the toolbar,
+   tabs, document and status bar sit in the column beside it, on the light content background.
+   On the Mac the window has a sidebar vibrancy material (electron/main.ts) that shows through
+   the sidebar only; Windows and Linux have no such material, so their sidebar is opaque. */
+:root[data-platform] {
+  /* Room the leading window controls take at the top-left: the app menu button. */
+  --leading-controls-w: 56px;
   --toolbar-h: 52px;
   --chrome-bg: var(--bg);
-  --sidebar-bg: rgba(44, 44, 46, 0.72);
+  --sidebar-bg: #262628;
   --capsule-bg: rgba(255, 255, 255, 0.07);
   --capsule-border: rgba(255, 255, 255, 0.1);
   --capsule-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -201,9 +213,9 @@
   --track-active-bg: rgba(255, 255, 255, 0.14);
 }
 
-:root[data-platform='darwin'][data-theme='light'] {
+:root[data-platform][data-theme='light'] {
   --chrome-bg: var(--bg);
-  --sidebar-bg: rgba(238, 238, 240, 0.78);
+  --sidebar-bg: #eeeef0;
   --capsule-bg: #ffffff;
   --capsule-border: rgba(0, 0, 0, 0.07);
   --capsule-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 0 1px rgba(0, 0, 0, 0.08);
@@ -212,11 +224,26 @@
   --track-active-bg: #ffffff;
 }
 
+/* macOS: traffic lights and a translucent sidebar over the window material. */
+:root[data-platform='darwin'] {
+  --leading-controls-w: 84px;
+  --sidebar-bg: rgba(44, 44, 46, 0.72);
+}
+
+:root[data-platform='darwin'][data-theme='light'] {
+  --sidebar-bg: rgba(238, 238, 240, 0.78);
+}
+
+/* macOS hides the traffic lights in full screen. */
+:root[data-platform='darwin'][data-fullscreen] {
+  --leading-controls-w: var(--space-3);
+}
+
 :root[data-platform='darwin'] body {
   background: transparent;
 }
 
-:root[data-platform='darwin'] .app {
+:root[data-platform] .app {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-rows: auto auto minmax(0, 1fr) auto;
@@ -224,11 +251,11 @@
 }
 
 /* Sidebar and main become cells of the window grid. */
-:root[data-platform='darwin'] .body {
+:root[data-platform] .body {
   display: contents;
 }
 
-:root[data-platform='darwin'] .sidebar {
+:root[data-platform] .sidebar {
   position: relative;
   grid-column: 1;
   grid-row: 1 / -1;
@@ -237,8 +264,8 @@
   border-right: 1px solid var(--border);
 }
 
-/* The top of the sidebar is title bar: it holds the traffic lights and drags the window. */
-:root[data-platform='darwin'] .sidebar::before {
+/* The top of the sidebar is title bar: it holds the leading window controls and drags the window. */
+:root[data-platform] .sidebar::before {
   content: '';
   position: absolute;
   inset: 0 0 auto;
@@ -246,35 +273,35 @@
   -webkit-app-region: drag;
 }
 
-:root[data-platform='darwin'] .app > .topbar {
+:root[data-platform] .app > .topbar {
   grid-column: 2;
   grid-row: 1;
 }
 
-:root[data-platform='darwin'] .app > .document-tabs {
+:root[data-platform] .app > .document-tabs {
   grid-column: 2;
   grid-row: 2;
 }
 
-:root[data-platform='darwin'] .main {
+:root[data-platform] .main {
   grid-column: 2;
   grid-row: 3;
   background: var(--bg);
 }
 
-:root[data-platform='darwin'] .app > .statusbar {
+:root[data-platform] .app > .statusbar {
   grid-column: 2;
   grid-row: 4;
 }
 
 /* SF Symbols-like weight for the line icons. */
-:root[data-platform='darwin'] :is(.topbar, .sidebar, .statusbar, .document-tabs) svg {
+:root[data-platform] :is(.topbar, .sidebar, .statusbar, .document-tabs) svg {
   stroke-width: 1.5;
 }
 
-/* --- macOS: toolbar (PlusMacToolbar.tsx) -------------------------------------------- */
+/* --- Toolbar (PlusMacToolbar.tsx) ------------------------------------------------------- */
 /* Controls float as capsules on the content background, grouped as in Safari's toolbar. */
-:root[data-platform='darwin'] .plus-toolbar {
+:root[data-platform] .plus-toolbar {
   flex-direction: row;
   align-items: center;
   gap: var(--space-2);
@@ -283,9 +310,41 @@
   background: var(--chrome-bg);
 }
 
-/* Without the sidebar the traffic lights sit on the toolbar itself. */
-:root[data-platform='darwin']:not([data-fullscreen]) .app:not(:has(.sidebar)) .plus-toolbar {
-  padding-left: var(--traffic-lights-w);
+/* Without the sidebar the leading window controls sit on the toolbar itself. */
+:root[data-platform] .app:not(:has(.sidebar)) .plus-toolbar {
+  padding-left: var(--leading-controls-w);
+}
+
+/* Windows and Linux: the native minimize/maximize/close overlay (titleBarOverlay in
+   electron/main.ts) covers the right end of the toolbar; its width comes from the Window
+   Controls Overlay variables, and without an overlay (full screen) nothing is reserved. */
+:root[data-platform]:not([data-platform='darwin']) .plus-toolbar {
+  padding-right: max(
+    var(--space-3),
+    calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + var(--space-2))
+  );
+}
+
+/* Windows and Linux: the app menu button, where the Mac has its traffic lights (as in the
+   Claude desktop app). Fixed to the window corner, over the sidebar or the toolbar. */
+:root[data-platform] .plus-app-menu-button {
+  position: fixed;
+  top: calc((var(--toolbar-h) - 34px) / 2);
+  left: var(--space-3);
+  z-index: 20;
+  width: 34px;
+  height: 34px;
+  color: var(--text-muted);
+  background: var(--capsule-bg);
+  border: 0.5px solid var(--capsule-border);
+  border-radius: 999px;
+  box-shadow: var(--capsule-shadow);
+  -webkit-app-region: no-drag;
+}
+
+:root[data-platform] .plus-app-menu-button:hover {
+  color: var(--text);
+  background: var(--capsule-bg);
 }
 
 .plus-toolbar__title {
@@ -353,22 +412,22 @@
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .plus-toolbar .iconbtn:hover:not(:disabled) {
+:root[data-platform] .plus-toolbar .iconbtn:hover:not(:disabled) {
   background: var(--capsule-hover);
 }
 
-:root[data-platform='darwin'] .plus-toolbar .iconbtn--active {
+:root[data-platform] .plus-toolbar .iconbtn--active {
   color: var(--accent);
   background: var(--capsule-hover);
 }
 
-/* The sidebar button shows no on/off state on the Mac; the sidebar itself is the state. */
-:root[data-platform='darwin'] .plus-toolbar > .iconbtn:first-child.iconbtn--active {
+/* The sidebar button shows no on/off state; the sidebar itself is the state. */
+:root[data-platform] .plus-toolbar > .iconbtn:first-child.iconbtn--active {
   color: var(--text-muted);
   background: var(--capsule-bg);
 }
 
-:root[data-platform='darwin'] .plus-toolbar .segment {
+:root[data-platform] .plus-toolbar .segment {
   height: 34px;
   align-items: center;
   padding: 2px;
@@ -376,19 +435,27 @@
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .plus-toolbar .segment__btn {
+:root[data-platform] .plus-toolbar .segment__btn {
   height: 30px;
   padding: 0 var(--space-4);
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .plus-toolbar .segment__btn--active {
+:root[data-platform] .plus-toolbar .segment__btn--active {
   background: var(--track-active-bg);
   box-shadow: var(--capsule-shadow);
 }
 
+/* The search field gives way first when the window is narrow. */
+.plus-toolbar .topbar__search-group {
+  flex: 0 1 220px;
+  min-width: 120px;
+}
+
 .plus-toolbar .topbar__search {
-  width: 180px;
+  width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
   height: 30px;
   padding-left: 24px;
   background: transparent
@@ -402,13 +469,13 @@
   outline-offset: -1px;
 }
 
-/* --- macOS: content under a translucent toolbar ---------------------------------------- */
+/* --- Content under a translucent toolbar ---------------------------------------- */
 /* As in Safari, the document runs to the top of the window and scrolls under the toolbar and
    tab bar, which are glass; just below them a short band blurs and dissolves the text
    progressively instead of a hard edge. Each scroller reserves the toolbar's height as padding
    and `scroll-padding-top`; plusScrollInset.ts reads it wherever upstream code measures "the
    top of the visible document" (outline jumps, active heading, split sync, reading position). */
-:root[data-platform='darwin'] {
+:root[data-platform] {
   --chrome-glass: color-mix(in srgb, var(--bg) 72%, transparent);
   --tabs-row-h: 42px;
   --plus-top-inset: var(--toolbar-h);
@@ -417,18 +484,18 @@
   --chrome-blur: blur(8px) saturate(1.5);
 }
 
-:root[data-platform='darwin'] .app:has(.document-tab + .document-tab) {
+:root[data-platform] .app:has(.document-tab + .document-tab) {
   --plus-top-inset: calc(var(--toolbar-h) + var(--tabs-row-h));
 }
 
 /* The document spans the toolbar and tab rows; they are drawn over it. */
-:root[data-platform='darwin'] .main {
+:root[data-platform] .main {
   position: relative;
   grid-row: 1 / 4;
 }
 
-:root[data-platform='darwin'] .app > .plus-toolbar,
-:root[data-platform='darwin'] .app > .document-tabs {
+:root[data-platform] .app > .plus-toolbar,
+:root[data-platform] .app > .document-tabs {
   position: relative;
   z-index: 10;
   background: var(--chrome-glass);
@@ -436,20 +503,20 @@
   backdrop-filter: var(--chrome-blur);
 }
 
-:root[data-platform='darwin'] .app > .document-tabs {
+:root[data-platform] .app > .document-tabs {
   height: var(--tabs-row-h);
 }
 
 /* Scrollers: the preview (and Welcome) pane and the editor's CodeMirror scroller. */
-:root[data-platform='darwin'] .main .pane:not(.editor-pane),
-:root[data-platform='darwin'] .main .editor-pane .cm-scroller {
+:root[data-platform] .main .pane:not(.editor-pane),
+:root[data-platform] .main .editor-pane .cm-scroller {
   /* The edge band is part of the inset, so jumps land on clear text below it. */
   padding-top: calc(var(--plus-top-inset) + var(--scroll-edge-h));
   scroll-padding-top: calc(var(--plus-top-inset) + var(--scroll-edge-h));
 }
 
 /* Progressive edge right below the toolbar (or the tab bar). */
-:root[data-platform='darwin'] .main::before {
+:root[data-platform] .main::before {
   content: '';
   position: absolute;
   top: var(--plus-top-inset);
@@ -466,22 +533,22 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :root[data-platform='darwin'] .app > .plus-toolbar,
-  :root[data-platform='darwin'] .app > .document-tabs {
+  :root[data-platform] .app > .plus-toolbar,
+  :root[data-platform] .app > .document-tabs {
     background: var(--bg);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 
-  :root[data-platform='darwin'] .main::before {
+  :root[data-platform] .main::before {
     display: none;
   }
 }
 
-/* --- macOS: tabs ------------------------------------------------------------------- */
+/* --- Tabs ------------------------------------------------------------------- */
 /* Safari's tab bar: equal-width capsules on a track below the toolbar, shown only with two
    or more documents. The close button sits on the left and appears on hover. */
-:root[data-platform='darwin'] .document-tabs {
+:root[data-platform] .document-tabs {
   position: relative;
   isolation: isolate;
   padding: 2px calc(var(--space-3) + 2px) calc(var(--space-2) + 2px);
@@ -492,7 +559,7 @@
 }
 
 /* The rounded track, drawn behind the tabs so the row keeps the content background. */
-:root[data-platform='darwin'] .document-tabs::before {
+:root[data-platform] .document-tabs::before {
   content: '';
   position: absolute;
   inset: 0 var(--space-3) var(--space-2);
@@ -501,11 +568,11 @@
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .document-tabs:not(:has(> .document-tab + .document-tab)) {
+:root[data-platform] .document-tabs:not(:has(> .document-tab + .document-tab)) {
   display: none;
 }
 
-:root[data-platform='darwin'] .document-tab {
+:root[data-platform] .document-tab {
   width: auto;
   min-width: 120px;
   max-width: none;
@@ -516,26 +583,26 @@
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .document-tab::before {
+:root[data-platform] .document-tab::before {
   display: none;
 }
 
-:root[data-platform='darwin'] .document-tab:hover:not(.document-tab--active) {
+:root[data-platform] .document-tab:hover:not(.document-tab--active) {
   background: var(--capsule-hover);
 }
 
-:root[data-platform='darwin'] .document-tab--active {
+:root[data-platform] .document-tab--active {
   background: var(--track-active-bg);
   box-shadow: var(--capsule-shadow);
 }
 
-:root[data-platform='darwin'] .document-tab__label {
+:root[data-platform] .document-tab__label {
   justify-content: center;
   padding: 0 30px;
   font-size: var(--text-body);
 }
 
-:root[data-platform='darwin'] .document-tab__close {
+:root[data-platform] .document-tab__close {
   position: absolute;
   left: 6px;
   width: 20px;
@@ -544,92 +611,91 @@
   border-radius: 999px;
 }
 
-:root[data-platform='darwin'] .document-tab--active .document-tab__close {
+:root[data-platform] .document-tab--active .document-tab__close {
   opacity: 0;
 }
 
-:root[data-platform='darwin'] .document-tab:hover .document-tab__close,
-:root[data-platform='darwin'] .document-tab__close:focus-visible {
+:root[data-platform] .document-tab:hover .document-tab__close,
+:root[data-platform] .document-tab__close:focus-visible {
   opacity: 1;
 }
 
-:root[data-platform='darwin'] .document-tab__dirty {
+:root[data-platform] .document-tab__dirty {
   color: var(--text-muted);
 }
 
-/* --- macOS: sidebar ------------------------------------------------------------------- */
-:root[data-platform='darwin'] .sidebar__body {
+/* --- Sidebar ------------------------------------------------------------------- */
+:root[data-platform] .sidebar__body {
   padding: 0 var(--space-3) var(--space-3);
 }
 
-:root[data-platform='darwin'] .outline-head {
+:root[data-platform] .outline-head {
   border-bottom: 0;
   margin-bottom: 0;
 }
 
-:root[data-platform='darwin'] .outline-head__title {
+:root[data-platform] .outline-head__title {
   padding: 2px var(--space-2);
 }
 
-:root[data-platform='darwin'] .outline-head__title svg {
+:root[data-platform] .outline-head__title svg {
   display: none;
 }
 
-:root[data-platform='darwin'] .outline-head__label {
+:root[data-platform] .outline-head__label {
   font-size: var(--text-footnote);
   font-weight: 600;
   letter-spacing: 0;
   text-transform: none;
 }
 
-:root[data-platform='darwin'] .outline-head__toggle {
+:root[data-platform] .outline-head__toggle {
   width: 22px;
   height: 22px;
 }
 
-:root[data-platform='darwin'] .outline-item {
+:root[data-platform] .outline-item {
   color: var(--text);
   border-radius: 8px;
 }
 
-:root[data-platform='darwin'] .outline-item__label {
+:root[data-platform] .outline-item__label {
   padding-top: 5px;
   padding-bottom: 5px;
 }
 
-:root[data-platform='darwin'] .outline-item--active {
+:root[data-platform] .outline-item--active {
   color: var(--text);
   box-shadow: none;
 }
 
-:root[data-platform='darwin'] .outline-item--root > .outline-item__label,
-:root[data-platform='darwin'] .outline-item--requirement > .outline-item__label {
+:root[data-platform] .outline-item--root > .outline-item__label,
+:root[data-platform] .outline-item--requirement > .outline-item__label {
   font-weight: 500;
 }
 
-:root[data-platform='darwin'] .outline-tree__children {
+:root[data-platform] .outline-tree__children {
   border-left-color: transparent;
 }
 
-/* --- macOS: status bar --------------------------------------------------------- */
-:root[data-platform='darwin'] {
+/* --- Status bar --------------------------------------------------------- */
+:root[data-platform] {
   --statusbar-h: 26px;
 }
 
-:root[data-platform='darwin'] .statusbar {
+:root[data-platform] .statusbar {
   padding: 0 var(--space-4);
   background: var(--bg);
   border-top: 1px solid var(--border);
 }
 
-/* The app name already heads the menu bar and the About panel. */
-:root[data-platform='darwin'] .statusbar__left {
+/* The app name already heads the menu (bar or button) and the About panel. */
+:root[data-platform] .statusbar__left {
   visibility: hidden;
 }
 
 /* --- Sheets (Export) ---------------------------------------------------------- */
-/* A modal panel over the document. Centered on Windows and Linux; on macOS it hangs just
-   below the toolbar, as a sheet does. */
+/* A modal panel over the document that hangs just below the toolbar, as a sheet does. */
 .plus-sheet-backdrop {
   position: fixed;
   inset: 0;
@@ -655,74 +721,74 @@
   }
 }
 
-:root[data-platform='darwin'] .plus-sheet-backdrop {
+:root[data-platform] .plus-sheet-backdrop {
   align-items: flex-start;
   padding-top: 60px;
   background: rgba(0, 0, 0, 0.12);
 }
 
-:root[data-platform='darwin'] .plus-sheet-backdrop .export-dialog {
+:root[data-platform] .plus-sheet-backdrop .export-dialog {
   max-height: calc(100vh - 76px);
   border: 0;
   box-shadow: var(--shadow);
 }
 
 /* Sheets close with Cancel or Esc, not with a close box. */
-:root[data-platform='darwin'] .plus-sheet-backdrop .export-dialog__header .iconbtn {
+:root[data-platform] .plus-sheet-backdrop .export-dialog__header .iconbtn {
   display: none;
 }
 
-:root[data-platform='darwin'] .export-dialog__header {
+:root[data-platform] .export-dialog__header {
   padding: var(--space-3) var(--space-5);
   border-bottom: 0;
 }
 
-:root[data-platform='darwin'] .export-dialog__title {
+:root[data-platform] .export-dialog__title {
   font-size: var(--text-title3);
   font-weight: 600;
 }
 
-:root[data-platform='darwin'] .export-dialog__title svg {
+:root[data-platform] .export-dialog__title svg {
   display: none;
 }
 
-:root[data-platform='darwin'] .export-dialog__heading {
+:root[data-platform] .export-dialog__heading {
   margin-bottom: var(--space-3);
   font-size: var(--text-body);
   font-weight: 600;
 }
 
-:root[data-platform='darwin'] .export-format {
+:root[data-platform] .export-format {
   min-height: 56px;
   padding: var(--space-2) var(--space-3);
   background: var(--bg);
   border-color: var(--border);
 }
 
-:root[data-platform='darwin'] .export-format__title {
+:root[data-platform] .export-format__title {
   font-size: var(--text-body);
 }
 
-:root[data-platform='darwin'] .export-format__description {
+:root[data-platform] .export-format__description {
   font-size: var(--text-footnote);
 }
 
-:root[data-platform='darwin'] .export-dialog__footer {
+:root[data-platform] .export-dialog__footer {
   padding: var(--space-3) var(--space-5) var(--space-4);
   background: none;
   border-top: 0;
 }
 
-:root[data-platform='darwin'] .export-dialog__footer .btn {
+:root[data-platform] .export-dialog__footer .btn {
   min-width: 80px;
 }
 
-:root[data-platform='darwin'] .export-dialog__footer .btn svg {
+:root[data-platform] .export-dialog__footer .btn svg {
   display: none;
 }
 
-/* --- macOS: popovers (search, text size) ---------------------------------------- */
-:root[data-platform='darwin'] :is(.topbar__replace-popover, .font-size-popover) {
+/* --- Popovers (search, text size) ---------------------------------------- */
+:root[data-platform] :is(.topbar__replace-popover, .font-size-popover) {
   background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
   border: 0;
   border-radius: var(--radius);
@@ -732,19 +798,19 @@
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  :root[data-platform='darwin'] :is(.topbar__replace-popover, .font-size-popover) {
+  :root[data-platform] :is(.topbar__replace-popover, .font-size-popover) {
     background: var(--bg-elevated);
     backdrop-filter: none;
   }
 }
 
 /* --- Remaining HTML modals (Mermaid viewer) ------------------------------------- */
-:root[data-platform='darwin'] :is(.dialog, .diagram-modal) {
+:root[data-platform] :is(.dialog, .diagram-modal) {
   border: 0;
   box-shadow: var(--shadow);
 }
 
-:root[data-platform='darwin'] .diagram-modal__title {
+:root[data-platform] .diagram-modal__title {
   font-size: var(--text-body);
 }
 
@@ -783,7 +849,8 @@
   gap: var(--space-4);
 }
 
-/* macOS: hidden title bar over a window material; the title row is drawn here. */
+/* macOS: hidden title bar over a window material; the title row is drawn here. Windows and
+   Linux keep the native frame of the Settings window. */
 :root[data-platform='darwin'][data-window='settings'] .plus-settings-window .export-dialog__header {
   display: flex;
   justify-content: center;
@@ -797,12 +864,12 @@
   background: transparent;
 }
 
-:root[data-platform='darwin'] .plus-settings-window .export-dialog__header .iconbtn,
-:root[data-platform='darwin'] .plus-settings-window .export-dialog__title svg {
+:root[data-platform] .plus-settings-window .export-dialog__header .iconbtn,
+:root[data-platform] .plus-settings-window .export-dialog__title svg {
   display: none;
 }
 
-:root[data-platform='darwin'] .plus-settings-window .export-dialog__title {
+:root[data-platform] .plus-settings-window .export-dialog__title {
   font-size: var(--text-body);
   font-weight: 600;
 }
@@ -815,30 +882,30 @@
   align-self: center;
 }
 
-:root[data-platform='darwin'] .settings-tabs {
+:root[data-platform] .settings-tabs {
   padding: 2px;
   border-radius: 7px;
 }
 
-:root[data-platform='darwin'] .settings-tabs__button {
+:root[data-platform] .settings-tabs__button {
   height: 24px;
   padding: 0 var(--space-3);
   border-radius: 5px;
   font-size: var(--text-body);
 }
 
-:root[data-platform='darwin'] .settings-tabs__button--active {
+:root[data-platform] .settings-tabs__button--active {
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 /* Grouped form, as in System Settings: no uppercase section bar. */
-:root[data-platform='darwin'] .settings-section {
+:root[data-platform] .settings-section {
   background: var(--bg-inset);
   border: 0;
   border-radius: var(--radius);
 }
 
-:root[data-platform='darwin'] .settings-section__heading {
+:root[data-platform] .settings-section__heading {
   padding: var(--space-3) var(--space-4) var(--space-1);
   font-size: var(--text-body);
   font-weight: 600;
@@ -849,15 +916,15 @@
   border-bottom: 0;
 }
 
-:root[data-platform='darwin'] .settings-field {
+:root[data-platform] .settings-field {
   padding: var(--space-2) var(--space-4);
 }
 
-:root[data-platform='darwin'] .settings-field__control {
+:root[data-platform] .settings-field__control {
   height: 24px;
 }
 
-:root[data-platform='darwin'] .settings-shortcut__key {
+:root[data-platform] .settings-shortcut__key {
   font-family: var(--font-ui);
   font-size: var(--text-callout);
 }
@@ -882,15 +949,15 @@
   background: color-mix(in srgb, var(--accent) 34%, transparent);
 }
 
-/* macOS: one content background for the editor and the preview. */
-:root[data-platform='darwin'] .cm-editor,
-:root[data-platform='darwin'] .cm-editor .cm-gutters,
-:root[data-platform='darwin'] .cm-editor .cm-panels {
+/* One content background for the editor and the preview. */
+:root[data-platform] .cm-editor,
+:root[data-platform] .cm-editor .cm-gutters,
+:root[data-platform] .cm-editor .cm-panels {
   background-color: var(--bg);
 }
 
-:root[data-platform='darwin'] .cm-editor .cm-activeLine,
-:root[data-platform='darwin'] .cm-editor .cm-activeLineGutter {
+:root[data-platform] .cm-editor .cm-activeLine,
+:root[data-platform] .cm-editor .cm-activeLineGutter {
   background-color: var(--nav-hover-bg);
 }
 

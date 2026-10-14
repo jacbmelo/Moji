@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Windows and Linux get the same interface and layout as macOS: the full-height sidebar, the single-row toolbar with its controls in capsules, Safari-style tabs, the document scrolling under the toolbar, and the same colors. The app menu (File, Edit, View, Window, Help) opens from a ☰ button in the top-left corner, as in the Claude desktop app, and the native minimize, maximize and close buttons sit at the right of the toolbar. The UI font is Segoe UI on Windows.
+
 ## [1.2.0] - 2026-10-14 — based on Moji 1.0.7
 
 ### Changed

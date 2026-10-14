@@ -106,7 +106,9 @@
       "bringAllToFront": "すべてを手前に移動",
       "help": "ヘルプ",
       "guide": "Markdown ガイド",
-      "repository": "GitHub の{{name}}"
+      "repository": "GitHub の{{name}}",
+      "exit": "終了",
+      "appMenu": "メニュー"
     },
     "context": {
       "copyLink": "リンクをコピー",
