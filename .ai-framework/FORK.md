@@ -56,14 +56,14 @@ Ganchos no upstream, a rever em cada sync:
 
 ## Creditos (obrigatorio)
 
-- Manter sempre a referencia ao Moji, ao autor Alex Ishida e ao repositorio original: secao "Baseado em" no painel Sobre, bloco no topo do `README.md`, `CREDITS.md`, `LICENSE` (o aviso de copyright original e exigido pela licenca MIT), metainfo e `electron-builder.yml`.
+- Manter sempre a referencia ao Moji, ao autor Alex Ishida e ao repositorio original: secao "Baseado em" no painel Sobre, secao "History and the original Moji" e "Credits and license" no fim do `README.md` (o README apresenta a app como independente e deixa a historia e as diferencas para o fim), `CREDITS.md`, `LICENSE` (o aviso de copyright original e exigido pela licenca MIT), metainfo e `electron-builder.yml`.
 - Os links para o projeto original nos guias de `samples/` sao creditos corretos e ficam como estao.
 - Nao divulgar emails no codigo, configuracao ou documentacao do fork. O autor do Moji Plus e identificado pelo perfil do GitHub (https://github.com/jacbmelo) e pelo repositorio; o autor original por https://github.com/alexishida. O check-branding falha se encontrar um endereco de email.
 
 ## Versao
 
 - `version` do `package.json` e a versao do Moji Plus, independente da do Moji. `upstreamVersion` regista a versao do Moji em que o build se baseia e e atualizada pelo script de sincronizacao.
-- Ao preparar versao: atualizar `version` em `package.json` e `package-lock.json`, o titulo em `src/index.html`, a versao no `README.md`, uma entrada no `CHANGELOG.md` (`## [x.y.z] - AAAA-MM-DD — based on Moji <upstreamVersion>`) e a `<release>` no metainfo do fork.
+- Ao preparar versao: atualizar `version` em `package.json` e `package-lock.json`, o titulo em `src/index.html`, no `README.md` a linha "Current version" e os links diretos de download (Windows `Moji-Plus.Setup.x.y.z.exe`, macOS `Moji-Plus-x.y.z-universal.dmg`, Linux `Moji-Plus-x.y.z-x86_64.AppImage` e `Moji-Plus-x.y.z-amd64.deb`, em `releases/download/vx.y.z/`, com o link para a pagina de GitHub Releases por baixo), uma entrada no `CHANGELOG.md` (`## [x.y.z] - AAAA-MM-DD — based on Moji <upstreamVersion>`) e a `<release>` no metainfo do fork.
 
 ## Sincronizacao com o upstream
 

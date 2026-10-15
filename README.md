@@ -4,13 +4,11 @@
 
 <h1 align="center">Moji+</h1>
 
-<p align="center">A lightweight, clean desktop app for opening, reading, editing, and exporting Markdown files.</p>
+<p align="center"><em>In Japanese, <strong>moji</strong> (文字) means "character", "letter" or "written symbol".</em></p>
 
-<p align="center"><strong>Current version:</strong> v1.3.0 · based on Moji v1.0.7</p>
+<p align="center">A lightweight, clean desktop app for opening, reading, editing, and exporting Markdown files, on macOS, Windows, and Linux.</p>
 
-> **Moji+ is a derivative of [Moji](https://github.com/alexishida/Moji), created by [Alex Ishida](https://github.com/alexishida) and distributed under the MIT License.**
-> It keeps receiving the changes made to the original project and adds its own changes, maintained independently.
-> All credit for the original application goes to its author. See [CREDITS.md](CREDITS.md).
+<p align="center"><strong>Current version:</strong> v1.3.0</p>
 
 <p align="center">
   <picture>
@@ -21,43 +19,62 @@
 </p>
 
 <p align="center">
-  <strong>Download:</strong>
-  <a href="https://github.com/jacbmelo/Moji/releases/latest">GitHub Releases (jacbmelo/Moji)</a>
+  <strong>Download v1.3.0:</strong>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus.Setup.1.3.0.exe">Windows</a>
+  ·
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-universal.dmg">macOS (DMG)</a>
+  ·
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-x86_64.AppImage">Linux (AppImage)</a>
+  ·
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-amd64.deb">Linux (DEB)</a>
 </p>
 
-## Differences from the original Moji
-
-Moji+ (officially **Moji Plus**, the name the installers and the app bundle use) has its own name, version, and releases, and installs next to the original Moji without sharing settings or recovery drafts.
-
-| | Moji | Moji+ |
-|---|---|---|
-| Repository | [alexishida/Moji](https://github.com/alexishida/Moji) | [jacbmelo/Moji](https://github.com/jacbmelo/Moji) |
-| App ID | `com.alexishida.moji` | `com.jacbmelo.mojiplus` |
-| Settings directory | `moji` | `moji-plus` |
-| Updates | alexishida/Moji releases | jacbmelo/Moji releases |
-
-Features added in Moji+, on top of the original:
-
-- **App-wide light and dark themes**: chrome, editor, dialogs, and preview follow the OS theme by default. The toolbar toggle (also View > Appearance on macOS) switches between light and dark, and Settings > General has a Theme option (System / Light / Dark). Exports always use the light theme.
-- **YAML front matter**: a `---` … `---` block at the top of a document renders as a highlighted YAML code block in the preview and in exports.
-- **macOS interface following Apple's Human Interface Guidelines**: the layout of Safari and Finder, with a translucent sidebar running the full height of the window, a single-row toolbar with its controls in capsules and the document scrolling under it, Safari-style tabs shown only with two or more documents, the system font, colors, and accent color, and native overlay scrollbars.
-- **Native menus and dialogs**: a full macOS menu bar (File, Edit, View, Window, Help) with every command and its shortcut; native context menus in the editor, the preview, and the tabs, with spelling suggestions; native alerts for unsaved and external changes; Export as a sheet over the document; and Settings in a window of its own. On macOS, Find and Replace is ⌥⌘F and leaving the editor with the keyboard is ⌃M, so ⌘H and ⌘M keep hiding and minimizing the app.
-- **Keyboard and accessibility**: a visible focus ring, arrow-key navigation in the outline, the system accent color on macOS and Windows, and support for reduced motion and increased contrast.
-- **Same interface on Windows and Linux**: the layout and look of the macOS version, with the app menu behind a ☰ button in the top-left corner (as in the Claude desktop app) and the native window controls at the right of the toolbar.
-- **Session restore**: on launch, Moji+ reopens the tabs from last time, in the same order. Unsaved changes to files are kept like untitled documents, so quitting does not ask and they come back as they were. Settings > General has separate options for keeping new documents and unsaved changes between sessions, and for reopening files without changes.
-- **Layout restore**: the app reopens in preview or editor mode as it was left, with the outline, full width, and maximized window as they were. Each document also returns to where it was read, after switching tabs or restarting.
-- **Unsaved-changes mark follows the text**: undoing every edit, so the text matches the saved version again, clears the mark.
-- **External change detection**: when another app changes an open file, Moji+ reloads it automatically if it has no unsaved edits; otherwise, or when the file is deleted, it offers to reload, save under another name, or keep your version. Saving never overwrites a change made elsewhere without asking.
-
-Every change specific to Moji+ is listed in [CHANGELOG.md](CHANGELOG.md).
+<p align="center">
+  <a href="https://github.com/jacbmelo/Moji/releases">Other downloads and earlier versions on GitHub Releases</a>
+</p>
 
 ## Features
 
-Moji+ includes every feature of the original Moji: split preview and editing, outline navigation, search and replace, Mermaid diagrams, KaTeX math, a localized UI in 15 languages, and export to PDF, HTML, and PNG. The full description of the original application and its screenshots are in the original README, kept in [docs/upstream/README.md](docs/upstream/README.md).
+### Reading and writing
+
+- **Preview**: sanitized Markdown with tables, task lists, footnotes, definition lists, subscript and superscript, highlight and insert marks, emoji shortcodes, KaTeX math (`$…$` and `$$…$$`), linkified URLs, syntax-highlighted code with copy buttons, and YAML front matter shown as a highlighted block.
+- **Mermaid diagrams and images**: every fenced `mermaid` block renders as a diagram (flowcharts, sequence, Gantt, class, ER, state, journey). Click a diagram or image to inspect it with zoom, drag, a minimap, and PNG export.
+- **Editor**: CodeMirror 6 with line numbers, undo history, wrapping, and Markdown formatting shortcuts.
+- **Live preview**: a resizable split view keeps the rendered document beside the source while you edit, scrolling both panes together.
+- **Outline**: a collapsible heading tree in preview and editor, which follows your reading position and can be navigated with the arrow keys.
+- **Search and replace** across the visible text, with the active match and the match count.
+- **Markdown guide**: a localized reference opened from the status bar, with each example's source beside its result.
+
+### Documents and sessions
+
+- **Tabs** for several documents, with close others, close to the right, close saved, and close all.
+- **Session restore**: Moji+ reopens the tabs from last time, in the same order, each at the place where it was read, in the mode and layout you left.
+- **Nothing lost**: new documents and unsaved changes are kept as recovery drafts between sessions; undoing every edit clears the unsaved-changes mark.
+- **Changes made by other apps**: an open file changed elsewhere reloads automatically, or, when it has unsaved edits or was deleted, Moji+ asks what to do. Saving never overwrites a change made elsewhere without asking.
+- **Large files** stream in and render incrementally; very large documents keep only the visible part on screen.
+- **Recent files** on the Welcome screen.
+
+### Export
+
+- **PDF, HTML, and PNG**, with page size and orientation for PDF. Diagrams are embedded as SVG; exports can be cancelled and never leave a partial file.
+
+### Interface
+
+- **A native Mac interface, on every platform**: following Apple's Human Interface Guidelines, with the layout of Safari and Finder: a full-height sidebar, a single-row translucent toolbar with its controls in capsules and the document scrolling under it, Safari-style tabs shown with two or more documents, and the system font, colors, and accent color.
+- **macOS**: a full menu bar with every command and its shortcut, native overlay scrollbars, and the standard About panel. Find and Replace is ⌥⌘F and leaving the editor with the keyboard is ⌃M, so ⌘H and ⌘M keep hiding and minimizing the app.
+- **Windows and Linux**: the same layout, with the app menu behind a ☰ button in the top-left corner and the native window controls at the right of the toolbar.
+- **Native dialogs and menus**: context menus with spelling suggestions, native alerts for unsaved and external changes, Export as a sheet over the document, and Settings in a window of its own.
+- **Light and dark themes** for the whole app, following the system or chosen in Settings; exports are always light.
+- **15 languages**: English (US and UK), Portuguese (Portugal and Brazil), Spanish, French, German, Italian, Dutch, Arabic, Hindi, Japanese, Chinese (Simplified and Traditional), and Russian.
+- **Keyboard and accessibility**: shortcuts for every common action (listed in Settings), a visible focus ring, and support for reduced motion and increased contrast.
+
+### Security
+
+- Sandboxed renderer with context isolation, sanitized HTML, local images limited to the folders of documents you opened, and external links opened in your browser.
 
 ## Installation
 
-Download the file for your system from [GitHub Releases](https://github.com/jacbmelo/Moji/releases/latest). Moji+ installs next to the original Moji: the two apps use separate settings and never overwrite each other.
+Download the file for your system from the links above or from [GitHub Releases](https://github.com/jacbmelo/Moji/releases/latest).
 
 | System | File |
 |---|---|
@@ -135,7 +152,7 @@ The folder contains:
 - `drafts/`: recovery copies of untitled documents that were never saved to a file, and of unsaved changes to files.
 - Electron and Chromium caches (`Cache`, `GPUCache`, `Local Storage`, and others).
 
-> **Deleting the folder permanently removes the recovered drafts.** Save any untitled document, and any file with unsaved changes, that you want to keep before you delete it. The folder of the original Moji is `moji`, not `moji-plus`: leave it alone unless you also want to reset the original app.
+> **Deleting the folder permanently removes the recovered drafts.** Save any untitled document, and any file with unsaved changes, that you want to keep before you delete it.
 
 Quit Moji+ first, then:
 
@@ -174,10 +191,34 @@ npm run dev
 npm run verify
 ```
 
-- `npm run verify`: TypeScript checks plus `scripts/check-branding.cjs`, which flags texts or links that still identify the app as the original Moji outside the credits.
+- `npm run verify`: TypeScript checks plus `scripts/check-branding.cjs`, which checks how the app is named in its texts and links.
 - `npm run dist`, `dist:win`, `dist:linux`, `dist:mac`: package the app into `release/`.
 
-## Keeping up with the original Moji
+## History and the original Moji
+
+Moji+ began as a fork of **[Moji](https://github.com/alexishida/Moji)**, created by **[Alex Ishida](https://github.com/alexishida)** and distributed under the MIT License. Almost all of its code, design, and translations come from the original application, and Moji+ keeps merging the changes made there. Its official name is **Moji Plus**, written Moji+; the “+” stands for the changes it maintains on top of Moji. All credit for the original application goes to its author; see [CREDITS.md](CREDITS.md).
+
+Moji+ has its own name, version, and releases, and installs next to the original Moji without sharing settings or recovery drafts:
+
+| | Moji | Moji+ |
+|---|---|---|
+| Repository | [alexishida/Moji](https://github.com/alexishida/Moji) | [jacbmelo/Moji](https://github.com/jacbmelo/Moji) |
+| App ID | `com.alexishida.moji` | `com.jacbmelo.mojiplus` |
+| Settings folder | `moji` | `moji-plus` |
+| Updates | alexishida/Moji releases | jacbmelo/Moji releases |
+
+The current version is based on Moji v1.0.7. On top of it, Moji+ adds:
+
+- An interface following Apple's Human Interface Guidelines, the same on macOS, Windows, and Linux, with a native menu bar on macOS and an app menu button on Windows and Linux.
+- Native context menus, alerts, an Export sheet, and a Settings window.
+- App-wide light and dark themes, and YAML front matter.
+- Session and layout restore, recovery of unsaved changes to files, and per-document reading positions.
+- Detection of changes made to open files by other applications.
+- Keyboard and accessibility improvements, and its own icon.
+
+Every change is listed in [CHANGELOG.md](CHANGELOG.md); the original README and changelog are kept in [docs/upstream/](docs/upstream/).
+
+### Keeping up with the original Moji
 
 The original repository is configured as the `upstream` remote:
 
@@ -188,9 +229,11 @@ scripts/sync-upstream.sh
 
 The script merges `upstream/main` into a `sync/upstream-<date>` branch, refreshes the copies in `docs/upstream/`, records the base version in `package.json` (`upstreamVersion`), and runs `npm run verify`. The full workflow, including how to publish a Moji+ release, is in [.ai-framework/FORK.md](.ai-framework/FORK.md).
 
+The settings folder of the original Moji is `moji`, not `moji-plus`: removing Moji+ data never touches it.
+
 ## Credits and license
 
+- Moji+: João Melo, [github.com/jacbmelo/Moji](https://github.com/jacbmelo/Moji)
 - Original application: **Moji** by **Alex Ishida**, [github.com/alexishida/Moji](https://github.com/alexishida/Moji)
-- Moji+ modifications: João Melo, [github.com/jacbmelo/Moji](https://github.com/jacbmelo/Moji)
 
 MIT © Alex Ishida (Moji) · MIT © João Melo (Moji Plus modifications). See [LICENSE](LICENSE) and [CREDITS.md](CREDITS.md).
