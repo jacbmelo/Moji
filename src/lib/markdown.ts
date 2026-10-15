@@ -48,7 +48,7 @@ export function sanitizeMarkdownHtml(rawHtml: string): string {
     ALLOWED_URI_REGEXP:
       /^(?:(?:(?:f|ht)tps?|file|mailto|tel|callto|sms|cid|xmpp):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
     ADD_TAGS: ['eq', 'eqn'],
-    ADD_ATTR: ['target', 'rel', 'id', 'src', 'data-local-asset', 'loading', 'decoding']
+    ADD_ATTR: ['target', 'rel', 'id', 'src', 'data-local-asset', 'data-local-srcset', 'loading', 'decoding']
   })
 }
 

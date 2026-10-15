@@ -236,6 +236,8 @@ function localImageAttrs(source: string, context: MarkdownRenderEnvironment): Ar
 }
 
 const HTML_IMG_TAG = /<img\b[^>]*>/gi
+const HTML_SOURCE_TAG = /<source\b[^>]*>/gi
+const HTML_SRCSET_ATTR = /(\ssrcset\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i
 const HTML_SRC_ATTR = /(\ssrc\s*=\s*)(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/i
 const HTML_LAZY_ATTRS = /\s(?:loading|decoding)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s"'=<>`]+)/gi
 
@@ -248,7 +250,42 @@ function decodeHtmlAttr(value: string): string {
     .replace(/&amp;/g, '&')
 }
 
+/**
+ * `srcset` of a `<source>` in `<picture>`, with every local candidate pointed at its file.
+ * Returns `null` when nothing in it is local.
+ */
+function resolveLocalSrcset(srcset: string, context: MarkdownRenderEnvironment): string | null {
+  let changed = false
+  const candidates = srcset.split(',').map((candidate) => {
+    const [url, ...descriptors] = candidate.trim().split(/\s+/)
+    const attrs = url ? localImageAttrs(url, context) : null
+    const local = attrs?.find(([name]) => name === (context.assetMode === 'app' ? 'data-local-asset' : 'src'))?.[1]
+    if (!local) return candidate.trim()
+    changed = true
+    return [local, ...descriptors].join(' ')
+  })
+  return changed ? candidates.join(', ') : null
+}
+
+/**
+ * `<picture>` sources pick the image before `<img>` does, so their local `srcset` needs the same
+ * resolution. In the app it waits in `data-local-srcset` until Preview loads the `<img>`.
+ */
+function resolveRawHtmlSources(html: string, context: MarkdownRenderEnvironment): string {
+  if (!/<source\b/i.test(html)) return html
+  return html.replace(HTML_SOURCE_TAG, (tag) => {
+    const match = HTML_SRCSET_ATTR.exec(tag)
+    if (!match) return tag
+    const resolved = resolveLocalSrcset(decodeHtmlAttr(match[2] ?? match[3] ?? match[4] ?? ''), context)
+    if (!resolved) return tag
+    const name = context.assetMode === 'app' ? 'data-local-srcset' : 'srcset'
+    const rewritten = tag.slice(0, match.index) + tag.slice(match.index + match[0].length)
+    return rewritten.replace(/^<source\b/i, `<source ${name}="${escapeHtmlAttr(resolved)}"`)
+  })
+}
+
 function resolveRawHtmlImages(html: string, context: MarkdownRenderEnvironment): string {
+  html = resolveRawHtmlSources(html, context)
   if (!/<img\b/i.test(html)) return html
   return html.replace(HTML_IMG_TAG, (tag) => {
     const match = HTML_SRC_ATTR.exec(tag)

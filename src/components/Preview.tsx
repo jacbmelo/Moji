@@ -448,6 +448,12 @@ export function Preview({
         inFlight += 1
         loadingImage.addEventListener('load', onComplete, { once: true })
         loadingImage.addEventListener('error', onComplete, { once: true })
+        // Sources of a <picture> get their local srcset with the image, so the browser can pick one.
+        if (loadingImage.parentElement?.tagName === 'PICTURE') {
+          for (const source of loadingImage.parentElement.querySelectorAll<HTMLSourceElement>('source[data-local-srcset]')) {
+            source.srcset = source.dataset.localSrcset ?? ''
+          }
+        }
         loadingImage.src = assetUrl
 
         function onComplete(): void {
