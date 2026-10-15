@@ -12,7 +12,7 @@
 
 <p align="center">A lightweight, clean desktop app for opening, reading, editing, and exporting Markdown files, on macOS, Windows, and Linux.</p>
 
-<p align="center"><strong>Current version:</strong> v1.3.0</p>
+<p align="center"><strong>Current version:</strong> v1.4.0</p>
 
 <p align="center">
   <picture>
@@ -27,14 +27,14 @@
 </p>
 
 <p align="center">
-  <strong>Download v1.3.0:</strong>
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus.Setup.1.3.0.exe">Windows</a>
+  <strong>Download v1.4.0:</strong>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.4.0/Moji-Plus.Setup.1.4.0.exe">Windows</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-universal.dmg">macOS (DMG)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.4.0/Moji-Plus-1.4.0-universal.dmg">macOS (DMG)</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-x86_64.AppImage">Linux (AppImage)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.4.0/Moji-Plus-1.4.0-x86_64.AppImage">Linux (AppImage)</a>
   ·
-  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.3.0/Moji-Plus-1.3.0-amd64.deb">Linux (DEB)</a>
+  <a href="https://github.com/jacbmelo/Moji/releases/download/v1.4.0/Moji-Plus-1.4.0-amd64.deb">Linux (DEB)</a>
 </p>
 
 <p align="center">

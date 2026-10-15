@@ -6,9 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-10-15 — based on Moji 1.0.7
+
 ### Changed
 
 - Saving a new document suggests a file name based on its content: a slug of the front matter title, the first heading or the first line (for example `# Relatório de Março` suggests `relatorio-de-marco.md`) instead of “Untitled.md”.
+- The rendered Markdown has a more minimal style: headings without underlines, and tables that take the full column width with smaller text and horizontal rules only. Tables wider than the column overflow evenly on both sides in the preview; PDF and PNG exports scale them down to the page instead of cutting them off, and landscape uses the full width of the sheet.
 - Headings are larger in the preview and in exports, so the hierarchy reads clearly without underlines.
 - The DMG and the Windows installer have their own icon: the app icon with an orange install badge. The Windows uninstaller shows a grey remove badge.
 - Showing and hiding the sidebar slides it in and out, as macOS apps do, and the selection of the Preview/Editor switch and of the tabs slides to the item you choose. The switch sits in the centre of the toolbar. On Windows and Linux the app menu button is a plain icon on the window.

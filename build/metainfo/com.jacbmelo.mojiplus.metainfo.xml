@@ -55,6 +55,19 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.4.0" date="2026-10-15">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>The Settings window looks like the settings of current macOS apps.</li>
+          <li>The sidebar slides in and out, and the selection of the view switch and of the tabs slides between items.</li>
+          <li>Saving a new document suggests a file name based on its content.</li>
+          <li>A minimal preview style with larger headings, and wide tables that fit the exported page.</li>
+          <li>Local images inside picture elements, as GitHub READMEs use, now show in the preview.</li>
+          <li>The DMG and the Windows installer have their own icon.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.3.0" date="2026-10-14">
       <description>
         <p>Based on Moji 1.0.7.</p>
