@@ -56,6 +56,7 @@ import { usePlusMenu } from './lib/plusMenu'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
 import { usePlusSettingsSync } from './lib/plusSettings'
 import { plusScrollInset } from './lib/plusScrollInset'
+import { suggestedSlugName } from './lib/plusFileName'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -1128,10 +1129,11 @@ export function App(): JSX.Element {
         return false
       }
 
-      const suggested = markdownFileName(documentName(doc, 'untitled'))
       const savedText = doc.id === stateRef.current.activeDocId
         ? materializeEditorContent() ?? doc.content
         : doc.content
+      // Moji Plus: a new document suggests a slug of its title (see FORK.md).
+      const suggested = (!doc.path && suggestedSlugName(savedText)) || markdownFileName(documentName(doc, 'untitled'))
       const savedRevision = doc.revision
       const res = await window.api.saveAs(savedText, suggested)
       if (res.ok) {

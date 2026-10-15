@@ -6,6 +6,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Saving a new document suggests a file name based on its content: a slug of the front matter title, the first heading or the first line (for example `# Relatório de Março` suggests `relatorio-de-marco.md`) instead of “Untitled.md”.
+
 ## [1.3.0] - 2026-10-14 — based on Moji 1.0.7
 
 ### Changed
