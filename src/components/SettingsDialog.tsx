@@ -152,6 +152,7 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
               type="button"
               role="tab"
               aria-selected={activeTab === tab}
+              data-tab={tab}
               onClick={() => setActiveTab(tab)}
             >
               {t(`settingsDialog.${tab}`)}

@@ -255,10 +255,25 @@
   display: contents;
 }
 
-:root[data-platform] .sidebar {
-  position: relative;
+/* The sidebar's column (PlusSidebarSlot.tsx): its width slides between zero and the sidebar
+   width, as in Finder, while the sidebar inside keeps its own width. */
+:root[data-platform] .plus-sidebar-slot {
   grid-column: 1;
   grid-row: 1 / -1;
+  width: 0;
+  min-height: 0;
+  overflow: hidden;
+  transition: width 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-platform] .plus-sidebar-slot--open {
+  width: var(--sidebar-w);
+}
+
+:root[data-platform] .sidebar {
+  position: relative;
+  width: var(--sidebar-w);
+  height: 100%;
   padding-top: var(--toolbar-h);
   background: var(--sidebar-bg);
   border-right: 1px solid var(--border);
@@ -278,7 +293,7 @@
   grid-row: 1;
 }
 
-:root[data-platform] .app > .document-tabs {
+:root[data-platform] .app .document-tabs {
   grid-column: 2;
   grid-row: 2;
 }
@@ -302,7 +317,11 @@
 /* --- Toolbar (PlusMacToolbar.tsx) ------------------------------------------------------- */
 /* Controls float as capsules on the content background, grouped as in Safari's toolbar. */
 :root[data-platform] .plus-toolbar {
-  flex-direction: row;
+  /* Three zones: the view switch is centred in the toolbar. When the window is too narrow for
+     the trailing controls to fit in their half, they keep their room and the switch moves left
+     instead of being covered; the title gives way first. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(min-content, 1fr);
   align-items: center;
   gap: var(--space-2);
   height: var(--toolbar-h);
@@ -310,18 +329,23 @@
   background: var(--chrome-bg);
 }
 
-/* Without the sidebar the leading window controls sit on the toolbar itself. */
-:root[data-platform] .app:not(:has(.sidebar)) .plus-toolbar {
-  padding-left: var(--leading-controls-w);
+/* Without the sidebar the leading window controls sit on the toolbar itself. Their room goes
+   inside the leading zone, so the three-zone grid still centres the view switch in the window. */
+:root[data-platform] .plus-toolbar__leading {
+  transition: margin-left 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-platform] .app:not(:has(.plus-sidebar-slot--open)) .plus-toolbar__leading {
+  margin-left: calc(var(--leading-controls-w) - var(--space-3));
 }
 
 /* Windows and Linux: the native minimize/maximize/close overlay (titleBarOverlay in
    electron/main.ts) covers the right end of the toolbar; its width comes from the Window
    Controls Overlay variables, and without an overlay (full screen) nothing is reserved. */
-:root[data-platform]:not([data-platform='darwin']) .plus-toolbar {
-  padding-right: max(
-    var(--space-3),
-    calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + var(--space-2))
+:root[data-platform]:not([data-platform='darwin']) .plus-toolbar__trailing {
+  margin-right: max(
+    0px,
+    calc(100vw - env(titlebar-area-x, 0px) - env(titlebar-area-width, 100vw) + var(--space-2) - var(--space-3))
   );
 }
 
@@ -334,17 +358,30 @@
   z-index: 20;
   width: 34px;
   height: 34px;
+  /* A plain icon on the window, like the menu button of the Claude desktop app: no capsule. */
   color: var(--text-muted);
-  background: var(--capsule-bg);
-  border: 0.5px solid var(--capsule-border);
-  border-radius: 999px;
-  box-shadow: var(--capsule-shadow);
+  background: none;
+  border: 0;
+  border-radius: 6px;
+  box-shadow: none;
   -webkit-app-region: no-drag;
 }
 
 :root[data-platform] .plus-app-menu-button:hover {
   color: var(--text);
-  background: var(--capsule-bg);
+  background: var(--nav-hover-bg);
+}
+
+.plus-toolbar__leading,
+.plus-toolbar__trailing {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.plus-toolbar__trailing {
+  justify-content: flex-end;
 }
 
 .plus-toolbar__title {
@@ -373,7 +410,7 @@
 
 /* Every control group is excluded from the window drag region as a whole: a no-drag button
    inside a plain box of the drag area can lose its clicks to the window on macOS. */
-.plus-toolbar > .iconbtn,
+.plus-toolbar__leading > .iconbtn,
 .plus-toolbar__items,
 .plus-toolbar__items > *,
 .plus-toolbar .segment,
@@ -382,7 +419,7 @@
 }
 
 /* Capsules: the sidebar button, the button group, the view switch and the search field. */
-.plus-toolbar > .iconbtn,
+.plus-toolbar__leading > .iconbtn,
 .plus-toolbar__items,
 .plus-toolbar .topbar__search-group {
   height: 34px;
@@ -392,7 +429,7 @@
   box-shadow: var(--capsule-shadow);
 }
 
-.plus-toolbar > .iconbtn {
+.plus-toolbar__leading > .iconbtn {
   width: 34px;
 }
 
@@ -422,7 +459,7 @@
 }
 
 /* The sidebar button shows no on/off state; the sidebar itself is the state. */
-:root[data-platform] .plus-toolbar > .iconbtn:first-child.iconbtn--active {
+:root[data-platform] .plus-toolbar__leading > .iconbtn:first-child.iconbtn--active {
   color: var(--text-muted);
   background: var(--capsule-bg);
 }
@@ -444,6 +481,48 @@
 :root[data-platform] .plus-toolbar .segment__btn--active {
   background: var(--track-active-bg);
   box-shadow: var(--capsule-shadow);
+}
+
+/* The selected pill is one element that slides between the segments (PlusMacToolbar.tsx);
+   once it is placed, the buttons themselves stay transparent. */
+:root[data-platform] .plus-toolbar .segment {
+  position: relative;
+  isolation: isolate;
+}
+
+:root[data-platform] .plus-toolbar .segment::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  z-index: -1;
+  width: var(--pill-w, 0);
+  transform: translateX(var(--pill-x, 0));
+  background: var(--track-active-bg);
+  border-radius: 999px;
+  box-shadow: var(--capsule-shadow);
+  opacity: 0;
+}
+
+:root[data-platform] .plus-toolbar .segment[data-pill='on']::before {
+  opacity: 1;
+}
+
+:root[data-platform] .plus-toolbar .segment[data-pill-ready]::before {
+  transition:
+    transform 0.26s cubic-bezier(0.32, 0.72, 0, 1),
+    width 0.26s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.15s ease;
+}
+
+:root[data-platform] .plus-toolbar .segment[data-pill] .segment__btn--active {
+  background: transparent;
+  box-shadow: none;
+}
+
+:root[data-platform] .plus-toolbar .segment__btn {
+  transition: color 0.2s ease;
 }
 
 /* The search field gives way first when the window is narrow. */
@@ -495,7 +574,7 @@
 }
 
 :root[data-platform] .app > .plus-toolbar,
-:root[data-platform] .app > .document-tabs {
+:root[data-platform] .app .document-tabs {
   position: relative;
   z-index: 10;
   background: var(--chrome-glass);
@@ -503,8 +582,13 @@
   backdrop-filter: var(--chrome-blur);
 }
 
-:root[data-platform] .app > .document-tabs {
+:root[data-platform] .app .document-tabs {
   height: var(--tabs-row-h);
+}
+
+/* The toolbar's popovers (search, text size) open over the tab bar below it. */
+:root[data-platform] .app > .plus-toolbar {
+  z-index: 11;
 }
 
 /* Scrollers: the preview (and Welcome) pane and the editor's CodeMirror scroller. */
@@ -534,7 +618,7 @@
 
 @media (prefers-reduced-transparency: reduce) {
   :root[data-platform] .app > .plus-toolbar,
-  :root[data-platform] .app > .document-tabs {
+  :root[data-platform] .app .document-tabs {
     background: var(--bg);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
@@ -594,6 +678,49 @@
 :root[data-platform] .document-tab--active {
   background: var(--track-active-bg);
   box-shadow: var(--capsule-shadow);
+}
+
+/* The host of the tab strip (PlusTabsPill.tsx) takes no box: the strip stays a grid cell. */
+.plus-tabs-host {
+  display: contents;
+}
+
+/* The active capsule is one element that slides to the selected tab; once it is placed, the
+   tabs themselves stay transparent and sit above it. */
+:root[data-platform] .document-tabs::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 0;
+  z-index: 0;
+  width: var(--pill-w, 0);
+  height: 30px;
+  transform: translateX(var(--pill-x, 0));
+  background: var(--track-active-bg);
+  border-radius: 999px;
+  box-shadow: var(--capsule-shadow);
+  opacity: 0;
+  pointer-events: none;
+}
+
+:root[data-platform] .document-tabs[data-pill='on']::after {
+  opacity: 1;
+}
+
+:root[data-platform] .document-tabs[data-pill-ready]::after {
+  transition:
+    transform 0.26s cubic-bezier(0.32, 0.72, 0, 1),
+    width 0.26s cubic-bezier(0.32, 0.72, 0, 1),
+    opacity 0.15s ease;
+}
+
+:root[data-platform] .document-tabs[data-pill] .document-tab {
+  z-index: 1;
+}
+
+:root[data-platform] .document-tabs[data-pill] .document-tab--active {
+  background: transparent;
+  box-shadow: none;
 }
 
 :root[data-platform] .document-tab__label {
@@ -788,20 +915,12 @@
 }
 
 /* --- Popovers (search, text size) ---------------------------------------- */
+/* Opaque, so neither the tab bar nor the document reads through their fields. */
 :root[data-platform] :is(.topbar__replace-popover, .font-size-popover) {
-  background: color-mix(in srgb, var(--bg-elevated) 82%, transparent);
+  background: var(--bg-elevated);
   border: 0;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  -webkit-backdrop-filter: blur(24px) saturate(1.6);
-  backdrop-filter: blur(24px) saturate(1.6);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  :root[data-platform] :is(.topbar__replace-popover, .font-size-popover) {
-    background: var(--bg-elevated);
-    backdrop-filter: none;
-  }
 }
 
 /* --- Remaining HTML modals (Mermaid viewer) ------------------------------------- */
@@ -814,98 +933,236 @@
   font-size: var(--text-body);
 }
 
-/* --- Settings window (PlusSettingsWindow.tsx) --------------------------------- */
+/* --- Settings window (PlusSettingsWindow.tsx) ------------------------------------ */
+/* Laid out like the settings of current macOS apps (Safari, Mail): the title is the name of
+   the selected pane, a toolbar of icon tabs under it, and a form with right-aligned labels,
+   pop-up buttons and checkboxes beside their text. Same layout on Windows and Linux, where
+   the title sits in the native frame. */
+:root[data-window='settings'] body {
+  background: var(--bg);
+}
+
 .plus-settings-window {
   height: 100vh;
   display: flex;
+  flex-direction: column;
+  background: var(--bg);
+}
+
+.plus-settings-titlebar {
+  flex: none;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 80px;
+  overflow: hidden;
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -webkit-app-region: drag;
 }
 
 .plus-settings-window .settings-dialog {
+  flex: 1 1 auto;
+  min-height: 0;
   width: 100%;
   max-height: none;
-  height: 100%;
+  height: auto;
+  background: transparent;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
 
-/* The OS draws the title and the close button of this window. */
+/* The window frame carries the title and the close button. */
 .plus-settings-window .export-dialog__header {
   display: none;
 }
 
 .plus-settings-window .settings-dialog__body {
   flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
-.plus-settings-window .export-dialog__header {
+/* Toolbar of panes: an icon above each name; the selected one in the accent color. */
+:root[data-platform] .plus-settings-window .settings-tabs {
   flex: none;
-}
-
-/* The window is narrower than upstream's 720px breakpoint; keep label and control side by side. */
-.plus-settings-window .settings-field {
-  grid-template-columns: minmax(0, 1fr) minmax(160px, 220px);
-  align-items: center;
-  gap: var(--space-4);
-}
-
-/* macOS: hidden title bar over a window material; the title row is drawn here. Windows and
-   Linux keep the native frame of the Settings window. */
-:root[data-platform='darwin'][data-window='settings'] .plus-settings-window .export-dialog__header {
+  align-self: stretch;
   display: flex;
   justify-content: center;
-  height: 52px;
-  padding: 0 var(--space-4);
-  border-bottom: 0;
+  gap: 2px;
+  padding: 2px var(--space-3) var(--space-2);
+  background: none;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border);
   -webkit-app-region: drag;
 }
 
-:root[data-platform='darwin'][data-window='settings'] .settings-dialog {
-  background: transparent;
+:root[data-platform] .plus-settings-window .settings-tabs__button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 72px;
+  height: auto;
+  padding: 6px 10px 5px;
+  font-size: var(--text-footnote);
+  color: var(--text-muted);
+  background: none;
+  border-radius: 8px;
+  box-shadow: none;
+  -webkit-app-region: no-drag;
 }
 
-:root[data-platform] .plus-settings-window .export-dialog__header .iconbtn,
-:root[data-platform] .plus-settings-window .export-dialog__title svg {
+.plus-settings-window .settings-tabs__button::before {
+  content: '';
+  width: 26px;
+  height: 26px;
+  background-color: currentColor;
+  -webkit-mask: var(--pane-icon) center / 24px 24px no-repeat;
+  mask: var(--pane-icon) center / 24px 24px no-repeat;
+}
+
+.plus-settings-window .settings-tabs__button[data-tab='general'] { --pane-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3Cpath d=%22M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9.4A1.7 1.7 0 0 0 10.6 3V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 17 4.6l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z%22/%3E%3C/svg%3E"); }
+.plus-settings-window .settings-tabs__button[data-tab='preview'] { --pane-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z%22/%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3C/svg%3E"); }
+.plus-settings-window .settings-tabs__button[data-tab='editor'] { --pane-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16v4Z%22/%3E%3Cpath d=%22m13.5 6.5 4 4%22/%3E%3C/svg%3E"); }
+.plus-settings-window .settings-tabs__button[data-tab='shortcuts'] { --pane-icon: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%221.5%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 6v12M15 6v12M6 9h12M6 15h12%22/%3E%3Cpath d=%22M9 6a3 3 0 1 0-3 3M15 6a3 3 0 1 1 3 3M9 18a3 3 0 1 1-3-3M15 18a3 3 0 1 0 3-3%22/%3E%3C/svg%3E"); }
+
+:root[data-platform] .plus-settings-window .settings-tabs__button:hover {
+  color: var(--text);
+}
+
+:root[data-platform] .plus-settings-window .settings-tabs__button--active,
+:root[data-platform] .plus-settings-window .settings-tabs__button--active:hover {
+  color: var(--accent);
+  background: var(--nav-hover-bg);
+  box-shadow: none;
+}
+
+/* The selected pane scrolls under the toolbar. */
+.plus-settings-window .settings-dialog__body > :not(.settings-tabs) {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+/* Form panes: no box and no heading (the toolbar names the pane). */
+.plus-settings-window .settings-dialog__body > .settings-section {
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.plus-settings-window .settings-dialog__body > .settings-section > .settings-section__heading {
   display: none;
 }
 
-:root[data-platform] .plus-settings-window .export-dialog__title {
+/* Two columns: labels right-aligned with a colon, controls left-aligned. */
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field-list {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.4fr);
+  column-gap: 10px;
+  row-gap: 12px;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field {
+  display: contents;
+}
+
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field__label {
+  justify-self: end;
+  text-align: right;
   font-size: var(--text-body);
-  font-weight: 600;
+  color: var(--text);
 }
 
-:root[data-platform='darwin'] .plus-settings-window .settings-dialog__body {
-  padding-top: 0;
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field:not(:has(.settings-checkbox)) > .settings-field__label::after {
+  content: ':';
 }
 
-.plus-settings-window .settings-tabs {
-  align-self: center;
+/* Checkboxes sit in the control column, before their text. */
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field:has(.settings-checkbox) {
+  grid-column: 2;
+  padding: 0;
+  border-top: 0;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 8px;
 }
 
-:root[data-platform] .settings-tabs {
-  padding: 2px;
-  border-radius: 7px;
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field:has(.settings-checkbox) > .settings-field__label {
+  justify-self: auto;
+  text-align: left;
+  line-height: 1.35;
 }
 
-:root[data-platform] .settings-tabs__button {
-  height: 24px;
-  padding: 0 var(--space-3);
-  border-radius: 5px;
+.plus-settings-window .settings-dialog__body > .settings-section .settings-field:has(.settings-checkbox) + .settings-field:has(.settings-checkbox) {
+  margin-top: -2px;
+}
+
+:root[data-platform] .plus-settings-window .settings-checkbox {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  margin: 2px 0 0;
+  accent-color: var(--accent);
+}
+
+/* Pop-up buttons and fields, as macOS draws them. */
+:root[data-platform] .plus-settings-window .settings-field__control {
+  width: 100%;
+  max-width: 300px;
+  height: 26px;
+  padding: 0 var(--space-2);
   font-size: var(--text-body);
+  color: var(--text);
+  background-color: var(--bg-inset);
+  border: 0;
+  border-radius: 6px;
 }
 
-:root[data-platform] .settings-tabs__button--active {
-  box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.12);
+:root[data-platform] .plus-settings-window select.settings-field__control {
+  padding-right: 26px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 10 16%22 fill=%22none%22 stroke=%22%23888%22 stroke-width=%221.6%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22m2 6 3-3 3 3M2 10l3 3 3-3%22/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 9px center;
+  background-size: 8px 13px;
 }
 
-/* Grouped form, as in System Settings: no uppercase section bar. */
-:root[data-platform] .settings-section {
+:root[data-platform] .plus-settings-window input[type='number'].settings-field__control {
+  max-width: 88px;
+}
+
+/* Shortcuts: grouped lists, as in System Settings. */
+.plus-settings-window .settings-shortcuts {
+  align-content: start;
+  /* Rows keep their content height and the pane scrolls, instead of squeezing the lists. */
+  grid-auto-rows: max-content;
+}
+
+:root[data-platform] .plus-settings-window .settings-shortcuts .settings-section {
   background: var(--bg-inset);
   border: 0;
   border-radius: var(--radius);
 }
 
-:root[data-platform] .settings-section__heading {
+:root[data-platform] .plus-settings-window .settings-shortcuts .settings-section__heading {
   padding: var(--space-3) var(--space-4) var(--space-1);
   font-size: var(--text-body);
   font-weight: 600;
@@ -916,15 +1173,7 @@
   border-bottom: 0;
 }
 
-:root[data-platform] .settings-field {
-  padding: var(--space-2) var(--space-4);
-}
-
-:root[data-platform] .settings-field__control {
-  height: 24px;
-}
-
-:root[data-platform] .settings-shortcut__key {
+:root[data-platform] .plus-settings-window .settings-shortcut__key {
   font-family: var(--font-ui);
   font-size: var(--text-callout);
 }

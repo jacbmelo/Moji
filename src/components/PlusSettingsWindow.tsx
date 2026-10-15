@@ -1,6 +1,6 @@
 // Moji Plus: the Settings window (electron/plusSettingsWindow.ts). It reuses SettingsDialog; every
 // change is written at once, with no Save button, and main relays it to the main window.
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SettingsDialog } from './SettingsDialog'
 import { applyDocumentTheme } from '../hooks/useAppState'
@@ -9,6 +9,9 @@ import type { Settings } from '../../electron/shared'
 export function PlusSettingsWindow(): JSX.Element | null {
   const { t, i18n } = useTranslation()
   const [settings, setSettings] = useState<Settings | null>(null)
+  const rootRef = useRef<HTMLDivElement>(null)
+  // Like macOS settings windows, the title is the name of the selected pane.
+  const [paneTitle, setPaneTitle] = useState('')
 
   const adopt = useCallback(
     (next: Settings) => {
@@ -31,9 +34,20 @@ export function PlusSettingsWindow(): JSX.Element | null {
     return () => query.removeEventListener('change', onChange)
   }, [])
 
+  // SettingsDialog keeps the selected pane to itself; read it from the selected tab.
   useEffect(() => {
-    document.title = t('settingsDialog.title')
-  }, [t])
+    const root = rootRef.current
+    if (!root) return
+    const read = (): void => setPaneTitle(root.querySelector('.settings-tabs__button--active')?.textContent?.trim() ?? '')
+    read()
+    const observer = new MutationObserver(read)
+    observer.observe(root, { subtree: true, attributes: true, attributeFilter: ['class'], childList: true, characterData: true })
+    return () => observer.disconnect()
+  }, [settings !== null])
+
+  useEffect(() => {
+    document.title = paneTitle || t('settingsDialog.title')
+  }, [paneTitle, t])
 
   // Esc and Cmd/Ctrl+W close the window, as in any settings window.
   useEffect(() => {
@@ -58,7 +72,9 @@ export function PlusSettingsWindow(): JSX.Element | null {
 
   if (!settings) return null
   return (
-    <div className="plus-settings-window">
+    <div className="plus-settings-window" ref={rootRef}>
+      {/* The Mac window has a hidden title bar; Windows and Linux show the title natively. */}
+      {window.api.platform === 'darwin' && <div className="plus-settings-titlebar">{paneTitle}</div>}
       <SettingsDialog settings={settings} onChange={change} onClose={() => window.close()} />
     </div>
   )

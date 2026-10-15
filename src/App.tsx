@@ -53,6 +53,8 @@ import {
 import packageJson from '../package.json'
 import { usePlusWindowDocument } from './lib/plusWindow'
 import { usePlusMenu } from './lib/plusMenu'
+import { PlusSidebarSlot } from './components/PlusSidebarSlot'
+import { PlusTabsPill } from './components/PlusTabsPill'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
 import { usePlusSettingsSync } from './lib/plusSettings'
 import { plusScrollInset } from './lib/plusScrollInset'
@@ -2590,6 +2592,8 @@ export function App(): JSX.Element {
       />
 
       {hasDoc && (
+        // Moji Plus: the active tab's capsule slides between tabs (see FORK.md).
+        <PlusTabsPill>
         <DocumentTabs
           tabs={tabs}
           activeId={activeDocId}
@@ -2600,10 +2604,12 @@ export function App(): JSX.Element {
           onCloseSaved={closeSavedDocuments}
           onCloseAll={closeAllDocuments}
         />
+        </PlusTabsPill>
       )}
 
       <div className="body">
-        {hasDoc && !settingsOpen && !aboutOpen && outlineVisible && (
+        {/* Moji Plus: the slot animates the sidebar in and out (see FORK.md). */}
+        <PlusSidebarSlot show={hasDoc && !settingsOpen && !aboutOpen && outlineVisible}>
           <Sidebar
             hasDoc={hasDoc}
             outline={outline}
@@ -2611,7 +2617,7 @@ export function App(): JSX.Element {
             showOutline
             onSelectHeading={scrollToHeading}
           />
-        )}
+        </PlusSidebarSlot>
 
         <main className="main" ref={mainRef}>
           <div className="workspace">

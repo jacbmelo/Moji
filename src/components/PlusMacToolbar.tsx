@@ -2,7 +2,7 @@
 // live in the app menu (New, Open, Save, Settings, About) leave the toolbar: the menu bar on
 // the Mac, the app menu button on Windows and Linux. The search field and its popover come
 // from TopBar unchanged. See FORK.md.
-import type { ReactNode } from 'react'
+import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { FontSizeButton } from './FontSizeButton'
@@ -12,8 +12,32 @@ import { openPlusAppMenu } from '../lib/plusMenu'
 import type { TopBarProps } from './TopBar'
 
 export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.Element {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const panelOpen = props.exportOpen || props.settingsOpen || props.aboutOpen
+  const segmentRef = useRef<HTMLDivElement>(null)
+
+  // The selected segment's pill is one element that slides between Preview and Editor, as the
+  // macOS segmented control does; it follows the selected button's position and width.
+  useLayoutEffect(() => {
+    const segment = segmentRef.current
+    if (!segment) return
+    const place = (): void => {
+      const active = segment.querySelector<HTMLElement>('.segment__btn--active')
+      segment.dataset.pill = active ? 'on' : 'off'
+      if (!active) return
+      segment.style.setProperty('--pill-x', `${active.offsetLeft}px`)
+      segment.style.setProperty('--pill-w', `${active.offsetWidth}px`)
+    }
+    place()
+    // Animate only changes made after the first placement.
+    const ready = requestAnimationFrame(() => segment.setAttribute('data-pill-ready', ''))
+    const observer = new ResizeObserver(place)
+    observer.observe(segment)
+    return () => {
+      cancelAnimationFrame(ready)
+      observer.disconnect()
+    }
+  }, [props.mode, panelOpen, props.hasDoc, i18n.language])
   const edited = props.title.startsWith(t('app.modifiedMarker'))
   const name = edited ? props.title.slice(t('app.modifiedMarker').length).trimStart() : props.title
 
@@ -36,6 +60,7 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
       document.body
     )}
     <header className="topbar plus-toolbar">
+      <div className="plus-toolbar__leading">
       <button
         className={`iconbtn ${props.outlineVisible && props.canToggleOutline ? 'iconbtn--active' : ''}`}
         type="button"
@@ -52,8 +77,9 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
         {name && <span className="plus-toolbar__name">{name}</span>}
         {edited && <span className="plus-toolbar__subtitle">{t('plus.edited')}</span>}
       </div>
+      </div>
 
-      <div className="segment" role="radiogroup" aria-label={t('toolbar.viewMode')}>
+      <div className="segment" ref={segmentRef} role="radiogroup" aria-label={t('toolbar.viewMode')}>
         {(['view', 'edit'] as const).map((mode) => {
           const selected = !panelOpen && props.mode === mode
           return (
@@ -73,6 +99,7 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
         })}
       </div>
 
+      <div className="plus-toolbar__trailing">
       <div className="plus-toolbar__items">
         <button
           className={`iconbtn ${props.splitView && props.canToggleSplit ? 'iconbtn--active' : ''}`}
@@ -137,6 +164,7 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
       </div>
 
       {props.search}
+      </div>
     </header>
     </>
   )

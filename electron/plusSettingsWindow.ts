@@ -31,7 +31,7 @@ export function openSettingsWindow(options: { preload: string; icon?: string; lo
     fullscreenable: false,
     autoHideMenuBar: true,
     backgroundColor: mac ? '#00000000' : nativeTheme.shouldUseDarkColors ? '#202021' : '#f3f4f6',
-    ...(mac ? { titleBarStyle: 'hidden' as const, trafficLightPosition: { x: 20, y: 18 }, vibrancy: 'sidebar' as const } : {}),
+    ...(mac ? { titleBarStyle: 'hidden' as const, trafficLightPosition: { x: 14, y: 11 }, vibrancy: 'sidebar' as const } : {}),
     webPreferences: {
       preload: options.preload,
       nodeIntegration: false,
