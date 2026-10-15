@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Moji Plus: gera os PNG do icone e do logotipo a partir dos SVG em build/plus/.
 // Uso: npm run icons   (corre este ficheiro dentro do Electron do projeto, sem janela visivel)
-const { readFileSync, writeFileSync, mkdirSync } = require('node:fs')
+const { readFileSync, writeFileSync, mkdirSync, rmSync } = require('node:fs')
 const { join, dirname } = require('node:path')
 
 const root = join(__dirname, '..')
@@ -67,7 +67,62 @@ async function main() {
     writeFileSync(path, await rasterize(window.webContents, output))
     console.log(`${output.file} (${output.width}x${output.height})`)
   }
+  // Instalador (DMG e setup do Windows) e desinstalador: icone da app com um selo.
+  const installer = source('installer.svg')
+  const uninstaller = source('uninstaller.svg')
+  await writeIco(window.webContents, installer, 'build/plus/installer.ico')
+  await writeIco(window.webContents, uninstaller, 'build/plus/uninstaller.ico')
+  await writeIcns(window.webContents, installer, 'build/plus/installer.icns')
   app.quit()
+}
+
+const ICO_SIZES = [16, 24, 32, 48, 64, 128, 256]
+
+/** .ico com uma imagem PNG por tamanho (formato aceite desde o Windows Vista). */
+async function writeIco(webContents, svg, file) {
+  const images = []
+  for (const size of ICO_SIZES) images.push({ size, png: await rasterize(webContents, { svg, width: size, height: size }) })
+  const header = Buffer.alloc(6)
+  header.writeUInt16LE(0, 0)
+  header.writeUInt16LE(1, 2)
+  header.writeUInt16LE(images.length, 4)
+  const entries = []
+  let offset = 6 + 16 * images.length
+  for (const { size, png } of images) {
+    const entry = Buffer.alloc(16)
+    entry.writeUInt8(size >= 256 ? 0 : size, 0)
+    entry.writeUInt8(size >= 256 ? 0 : size, 1)
+    entry.writeUInt16LE(1, 4)
+    entry.writeUInt16LE(32, 6)
+    entry.writeUInt32LE(png.length, 8)
+    entry.writeUInt32LE(offset, 12)
+    offset += png.length
+    entries.push(entry)
+  }
+  writeFileSync(join(root, file), Buffer.concat([header, ...entries, ...images.map((image) => image.png)]))
+  console.log(`${file} (${ICO_SIZES.join(', ')})`)
+}
+
+/** .icns do volume do DMG, pelo iconutil do macOS; noutros sistemas fica o ficheiro do repositorio. */
+async function writeIcns(webContents, svg, file) {
+  if (process.platform !== 'darwin') {
+    console.log(`${file}: iconutil so existe no macOS, mantido o ficheiro atual`)
+    return
+  }
+  const { execFileSync } = require('node:child_process')
+  const iconset = join(root, 'build/plus/installer.iconset')
+  rmSync(iconset, { recursive: true, force: true })
+  mkdirSync(iconset, { recursive: true })
+  for (const base of [16, 32, 128, 256, 512]) {
+    for (const scale of [1, 2]) {
+      const size = base * scale
+      const name = scale === 1 ? `icon_${base}x${base}.png` : `icon_${base}x${base}@2x.png`
+      writeFileSync(join(iconset, name), await rasterize(webContents, { svg, width: size, height: size }))
+    }
+  }
+  execFileSync('iconutil', ['-c', 'icns', iconset, '-o', join(root, file)])
+  rmSync(iconset, { recursive: true, force: true })
+  console.log(`${file} (16-1024)`)
 }
 
 if (process.versions.electron) {

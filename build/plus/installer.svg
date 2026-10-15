@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Moji+ installer icon: the app icon with an orange "install" badge. Used for the DMG volume and the Windows setup (npm run icons). -->
+  <rect x="100" y="100" width="824" height="824" rx="186" fill="#f6f4f1" stroke="#e4e0da" stroke-width="4"/>
+  <rect x="196" y="332" width="632" height="360" rx="60" fill="none" stroke="#343436" stroke-width="44"/>
+<path d="M278 612 V412 H334 L384 478 L434 412 H490 V612 H434 V500 L384 562 L334 500 V612 Z" fill="#343436"/>
+<path d="M648 412 V612 M548 512 H748" fill="none" stroke="#ee7a12" stroke-width="56"/>
+  <circle cx="784" cy="784" r="190" fill="#ffffff"/>
+<circle cx="784" cy="784" r="162" fill="#ee7a12"/>
+  <path d="M784 690 V866 M710 796 L784 870 L858 796" fill="none" stroke="#ffffff" stroke-width="46" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

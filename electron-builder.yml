@@ -51,6 +51,8 @@ mac:
         - universal
 dmg:
   artifactName: Moji-Plus-${version}-${arch}.${ext}
+  # Volume icon of the mounted DMG: the app icon with an install badge (npm run icons).
+  icon: build/plus/installer.icns
 win:
   icon: build/plus/icon.png
   artifactName: Moji-Plus.Setup.${version}.${ext}
@@ -60,6 +62,10 @@ win:
         - x64
 nsis:
   oneClick: false
+  # Setup and uninstaller icons: the app icon with an install or remove badge (npm run icons).
+  installerIcon: build/plus/installer.ico
+  installerHeaderIcon: build/plus/installer.ico
+  uninstallerIcon: build/plus/uninstaller.ico
   perMachine: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
