@@ -13,7 +13,7 @@ Alterar o minimo possivel em ficheiros vindos do upstream, para que cada merge d
 - Textos traduzidos que nomeiam a app sao sobrepostos em `src/locales/brand/<idioma>.json` (carregados em `src/i18n.ts`). Nao editar os JSON de `src/locales/` do upstream para mudar o nome; strings novas do fork tambem vao para o overlay.
 - `npm run verify` corre `scripts/check-branding.cjs`, que falha com textos ou links do Moji original fora das chaves de credito. Corrigir sobrepondo a chave ou usando `brand.ts`, nunca desligando a verificacao.
 - Pasta de dados `moji-plus`, `appId` `com.jacbmelo.mojiplus` e `moji-plus.desktop` permitem instalar o Moji Plus ao lado do Moji original. Nao os alterar sem migracao de definicoes.
-- Icone e logotipo do fork (D-P1): a marca Markdown "M+" com o M reto a tinta (`#343436`) e o "+" laranja (`#ee7a12`; `#f7953f` no logotipo do tema escuro). Fontes vetoriais em `build/plus/` (`icon.svg`, `icon-small.svg` para 16-32 px, `logo-mark.svg` para o tema escuro, `logo-mark-on-light.svg` para o tema claro, trocado por CSS em `app.css`). Depois de alterar um SVG, correr `npm run icons` para regenerar `build/plus/icon.png`, `build/plus/icons/` e `src/assets/brand/logo-mark*.png`, e fazer commit dos PNG. Os icones do upstream (`build/icon.png`, `build/icons/`, `src/assets/logo-mark-light.png`) ficam sem uso.
+- Icone e logotipo do fork (D-P1): a marca Markdown "M+" com o M reto a tinta (`#343436`) e o "+" laranja (`#ee7a12`; `#f7953f` no logotipo do tema escuro). Fontes vetoriais em `build/plus/` (`icon.svg`, `icon-small.svg` para 16-32 px, `logo-mark.svg` para o tema escuro, `logo-mark-on-light.svg` para o tema claro, trocado por CSS em `app.css`). O DMG (icone do volume) e o instalador do Windows usam `installer.svg` (o icone com um selo laranja de instalar) e o desinstalador `uninstaller.svg` (selo cinzento com ×), configurados em `dmg.icon` e `nsis.installerIcon`/`installerHeaderIcon`/`uninstallerIcon` do `electron-builder.yml`. Depois de alterar um SVG, correr `npm run icons` para regenerar `build/plus/icon.png`, `build/plus/icons/`, `src/assets/brand/logo-mark*.png`, `build/plus/installer.ico`, `uninstaller.ico` e `installer.icns` (este so no macOS, com o `iconutil`), e fazer commit dos ficheiros gerados. Os icones do upstream (`build/icon.png`, `build/icons/`, `src/assets/logo-mark-light.png`) ficam sem uso.
 - `build/linux/moji.desktop` e `build/metainfo/com.alexishida.moji.metainfo.xml` pertencem ao upstream e nao sao usados; os do fork sao `moji-plus.desktop` e `com.jacbmelo.mojiplus.metainfo.xml`.
 
 ## Comportamento proprio do fork
@@ -41,8 +41,9 @@ O layout e o aspeto sao os mesmos em macOS, Windows e Linux: as regras do `plus-
 - `electron/plusMenu.ts` + `src/lib/plusMenu.ts`: barra de menus do macOS. O renderer descreve o menu (traduzido) e o main constroi-o; os atalhos que o handler de teclas do `App.tsx` ja trata usam `registerAccelerator: false`, para nao mudar o comportamento. Procurar e substituir usa ⌥⌘F (⌘H e Ocultar) e sair do editor usa ⌃M no Mac (⌘M e Minimizar).
 - `electron/plusContextMenu.ts` + `src/lib/plusContextMenu.ts`: menus de contexto nativos (editor, preview, separadores).
 - `src/lib/plusDialogs.ts`: alertas nativos de alteracoes por guardar e de alteracoes externas.
-- `electron/plusSettingsWindow.ts` + `src/components/PlusSettingsWindow.tsx` + `src/lib/plusSettings.ts`: Settings numa janela propria (`#settings` no mesmo renderer). So pode usar os canais em `SETTINGS_WINDOW_CHANNELS`; cada escrita de settings e reenviada as outras janelas (`IPC.settingsChanged`).
+- `electron/plusSettingsWindow.ts` + `src/components/PlusSettingsWindow.tsx` + `src/lib/plusSettings.ts`: Settings numa janela propria (`#settings` no mesmo renderer), no estilo das definicoes das apps atuais do macOS: titulo com o nome do painel, barra de icones, formulario com rotulos a direita e botoes de popup. So pode usar os canais em `SETTINGS_WINDOW_CHANNELS`; cada escrita de settings e reenviada as outras janelas (`IPC.settingsChanged`).
 - `src/lib/plusOutlineKeys.ts`: navegacao por setas no outline.
+- `src/components/PlusSidebarSlot.tsx`: anima o mostrar e esconder da sidebar (a coluna desliza, como no Finder), mantendo-a montada enquanto fecha. O seletor Preview/Editor tem uma pastilha unica que desliza entre os botoes (`PlusMacToolbar.tsx`), e as tabs tambem (`src/components/PlusTabsPill.tsx`, que envolve o `DocumentTabs` num `div` com `display: contents` e so observa a propria barra).
 - Textos novos em `plus.*` nos overlays de `src/locales/brand/`.
 
 Ganchos no upstream, a rever em cada sync:
@@ -50,12 +51,13 @@ Ganchos no upstream, a rever em cada sync:
 - `src/main.tsx`: imports dos pesos 500-700 da Inter e de `plus-hig.css`, `installSystemAccentColor()`, e o ramo `#settings`.
 - `electron/main.ts`: `vibrancy` e `trafficLightPosition` no macOS, `windowBackgroundColor()` transparente no macOS, `isTrustedSender(event, channel)`, os handlers `plus:*` em `registerIpc()`, `installEditContextMenu`, `configureAboutPanel()`, o broadcast em `setSettings` e `loadRenderer()`.
 - `electron/shared.ts` / `electron/preload.ts`: canais e metodos `plus:*`.
-- `src/App.tsx`: `usePlusSettingsSync`, `usePlusWindowDocument`, `usePlusMenu`; `askUnsaved` e `askExternalChange` chamam os alertas nativos (o `ConfirmDialog` e o `ExternalChangeDialog` ficam por usar); `openSettings` abre a janela; o Export e uma sheet (`.plus-sheet-backdrop`) em vez de substituir o documento.
+- `src/App.tsx`: `usePlusSettingsSync`, `usePlusWindowDocument`, `usePlusMenu`; `askUnsaved` e `askExternalChange` chamam os alertas nativos (o `ConfirmDialog` e o `ExternalChangeDialog` ficam por usar); a `Sidebar` esta dentro de `PlusSidebarSlot` e o `DocumentTabs` dentro de `PlusTabsPill`; `openSettings` abre a janela; o Export e uma sheet (`.plus-sheet-backdrop`) em vez de substituir o documento.
 - `src/components/TopBar.tsx`: o bloco de procura passou para `searchGroup` e o componente devolve sempre `PlusMacToolbar` (a barra de duas linhas do upstream fica por usar).
 - `electron/main.ts`: `titleBarOverlay()` com 52 px de altura e as cores do fundo do conteudo.
 - `src/components/DocumentTabs.tsx`: o `onContextMenu` chama o menu nativo (o menu HTML fica por usar).
 - Geometria de scroll com `plusScrollInset()` (0 fora do macOS): `src/lib/previewScroll.ts` (`getHeadingTopInScroller` e `getActivePreviewHeadingId`), `src/App.tsx` (`origin` das ancoras do split) e `src/components/Editor.tsx` (`topVisibleLine`, `scrollLineToTop` e `EditorView.scrollMargins`). Codigo novo do upstream que meca "o topo do documento visivel" tem de descontar o mesmo inset.
-- `src/components/Sidebar.tsx` (`onKeyDown` do `nav`), `Editor.tsx` (`mac: 'Ctrl-m'`), `ExportDialog.tsx` (botao Cancelar, `autoFocus` no Exportar) e `SettingsDialog.tsx` (`macKeys` e simbolos ⌘⇧⌥⌃).
+- Imagens locais em `<picture>`: `src/lib/markdownCore.ts` (`resolveRawHtmlSources`, que converte o `srcset` dos `<source>`), `src/components/Preview.tsx` (o carregador de imagens passa o `data-local-srcset` aos `<source>` ao carregar o `<img>`) e `src/lib/markdown.ts` (`data-local-srcset` no `ADD_ATTR`). Correcao que tambem serve o Moji original: candidata a PR para o upstream.
+- `src/components/Sidebar.tsx` (`onKeyDown` do `nav`), `Editor.tsx` (`mac: 'Ctrl-m'`), `ExportDialog.tsx` (botao Cancelar, `autoFocus` no Exportar) e `SettingsDialog.tsx` (`macKeys`, simbolos ⌘⇧⌥⌃ e `data-tab` em cada separador, que da o icone na janela de Settings).
 
 ## Creditos (obrigatorio)
 
@@ -66,7 +68,7 @@ Ganchos no upstream, a rever em cada sync:
 ## Versao
 
 - `version` do `package.json` e a versao do Moji Plus, independente da do Moji. `upstreamVersion` regista a versao do Moji em que o build se baseia e e atualizada pelo script de sincronizacao.
-- Ao preparar versao: atualizar `version` em `package.json` e `package-lock.json`, o titulo em `src/index.html`, no `README.md` a linha "Current version" e os links diretos de download (Windows `Moji-Plus.Setup.x.y.z.exe`, macOS `Moji-Plus-x.y.z-universal.dmg`, Linux `Moji-Plus-x.y.z-x86_64.AppImage` e `Moji-Plus-x.y.z-amd64.deb`, em `releases/download/vx.y.z/`, com o link para a pagina de GitHub Releases por baixo), uma entrada no `CHANGELOG.md` (`## [x.y.z] - AAAA-MM-DD — based on Moji <upstreamVersion>`) e a `<release>` no metainfo do fork.
+- Ao preparar versao: atualizar `version` em `package.json` e `package-lock.json`, o titulo em `src/index.html`, no `README.md` a linha "Current version" e os links diretos de download (Windows `Moji-Plus.Setup.x.y.z.exe`, macOS `Moji-Plus-x.y.z-universal.dmg`, Linux `Moji-Plus-x.y.z-x86_64.AppImage` e `Moji-Plus-x.y.z-amd64.deb`, em `releases/download/vx.y.z/`, com o icone do instalador por cima e o link para a pagina de GitHub Releases por baixo), uma entrada no `CHANGELOG.md` (`## [x.y.z] - AAAA-MM-DD — based on Moji <upstreamVersion>`) e a `<release>` no metainfo do fork.
 
 ## Sincronizacao com o upstream
 

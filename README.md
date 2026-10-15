@@ -1,5 +1,9 @@
 <p align="center">
-  <img src="build/plus/icons/256x256.png" alt="Moji+" width="128" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="src/assets/brand/logo-mark.png" />
+    <source media="(prefers-color-scheme: light)" srcset="src/assets/brand/logo-mark-on-light.png" />
+    <img src="src/assets/brand/logo-mark-on-light.png" alt="Moji+" width="200" />
+  </picture>
 </p>
 
 <h1 align="center">Moji+</h1>
@@ -16,6 +20,10 @@
     <source media="(prefers-color-scheme: light)" srcset="docs/plus/screenshot-light.png" />
     <img src="docs/plus/screenshot-light.png" alt="Moji+ showing the Markdown guide in preview mode, with the outline open" width="100%" />
   </picture>
+</p>
+
+<p align="center">
+  <img src="build/plus/installer.svg" alt="Moji+ installer" width="72" />
 </p>
 
 <p align="center">
