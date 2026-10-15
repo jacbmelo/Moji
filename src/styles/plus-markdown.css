@@ -1,0 +1,70 @@
+/* Moji Plus: a cleaner, more minimal reading style for the rendered Markdown. Overrides
+   markdown.css without editing it, so upstream merges stay clean; loaded after it in
+   main.tsx and inlined after it in exports (exportHtml.ts). See FORK.md. */
+
+/* Headings stand on size and weight alone, without an underline. */
+.markdown-body h1,
+.markdown-body h2 {
+  padding-bottom: 0;
+  border-bottom: none;
+  letter-spacing: -0.01em;
+}
+
+/* Tables: full page width, smaller text, horizontal rules only (no grid, header fill or
+   zebra stripes). markdown.css makes the table a scrolling block sized to its content;
+   a real table box is needed for the columns to stretch, so columns wrap instead. */
+.markdown-body table {
+  display: table;
+  width: 100%;
+  max-width: none;
+  font-size: 0.875em;
+}
+
+/* A table wider than the text column overflows evenly on both sides instead of only to the
+   right. Its offset is C/2 - W/2 (C column, W table), clamped at C/2 - P/2 plus the text's
+   side padding so it never starts left of the preview pane (P, its container width): there,
+   a table wider than the pane keeps the text's gutter and the rest scrolls. A table that fits
+   gets offset 0.
+   Outside the app (HTML export) cqw falls back to the viewport, which the body is centred in. */
+.pane:has(> .markdown-body) {
+  container-type: inline-size;
+}
+
+.markdown-body table {
+  margin-left: 50%;
+  transform: translateX(max(-50%, calc(var(--space-5) - 50cqw)));
+}
+
+.markdown-body th,
+.markdown-body td {
+  padding: 8px 12px 8px 0;
+  border: none;
+  border-bottom: 1px solid var(--border);
+}
+
+.markdown-body th:last-child,
+.markdown-body td:last-child {
+  padding-right: 0;
+}
+
+/* GFM column alignment comes as an inline style, so it still wins over this. */
+.markdown-body th {
+  font-weight: 600;
+  text-align: left;
+  background: none;
+  border-bottom-color: var(--border-strong);
+}
+
+.markdown-body tr:nth-child(2n) {
+  background: none;
+}
+
+.markdown-body tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Landscape PDF/PNG export: the text takes the full width of the sheet instead of the 820px
+   reading column, so wide tables need less scaling (electron/plusExportFit.ts). */
+html.plus-export-landscape .markdown-body {
+  max-width: none;
+}

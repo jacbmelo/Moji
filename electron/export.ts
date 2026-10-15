@@ -16,6 +16,7 @@ import { getSettings, updateSettings } from './settings'
 import { sanitizeFileNameComponent } from './ipcInput'
 import { createPngFileWriter } from './png'
 import { beginMainMeasure, captureMainMemory, captureWebContentsMemory } from './performance'
+import { fitExportLayout, printableWidth } from './plusExportFit'
 
 const FILTERS: Record<ExportFormat, Electron.FileFilter> = {
   html: { name: 'HTML', extensions: ['html'] },
@@ -442,6 +443,7 @@ async function htmlToPdf(
     const finishMeasure = beginMainMeasure('export:pdf-render', { htmlChars: html.length })
     try {
       session.report({ phase: 'capture' })
+      await fitExportLayout(win, pageOrientation, printableWidth(pagePixels(pageSize, pageOrientation).width))
       // Omitting `margins` keeps Electron's 1cm (~0.4in) default on all sides. The old
       // `marginType: 'default'` spelling was dropped when printToPDF moved to CDP.
       return await win.webContents.printToPDF({
@@ -480,6 +482,8 @@ async function htmlToPngFile(
       // sections), whose `scrollHeight` depends on the viewport height, not just its width, and
       // the class toggle just above can itself change what that layout looks like.
       win.setContentSize(size.width, size.height)
+      await waitForPaint(win)
+      await fitExportLayout(win, pageOrientation)
       await waitForPaint(win)
       const documentHeight = (await win.webContents.executeJavaScript(
         'Math.ceil(Math.max(document.body.scrollHeight, document.documentElement.scrollHeight))'

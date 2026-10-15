@@ -1,5 +1,6 @@
 import themeCss from '../styles/theme.css?inline'
 import markdownCss from '../styles/markdown.css?inline'
+import plusMarkdownCss from '../styles/plus-markdown.css?inline'
 import katexCss from 'virtual:katex-fonts-css'
 import type { Theme } from '../../electron/shared'
 
@@ -83,7 +84,7 @@ export function buildStandaloneHtml(
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>${escapeHtml(title)}</title>
-<style>${katexCss}\n${themeCss}\n${markdownCss}\n${PRINT_CSS}\n${typographyCss(typography)}</style>
+<style>${katexCss}\n${themeCss}\n${markdownCss}\n${plusMarkdownCss}\n${PRINT_CSS}\n${typographyCss(typography)}</style>
 </head>
 <body>
 <article class="markdown-body">
