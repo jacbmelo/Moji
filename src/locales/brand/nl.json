@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Nieuwe documenten en niet-opgeslagen wijzigingen tussen sessies bewaren",
-    "reopenFiles": "Geopende bestanden opnieuw openen bij het starten"
+    "reopenFiles": "Geopende bestanden opnieuw openen bij het starten",
+    "alwaysShowTabs": "Toon altijd de tabbladbalk"
   },
   "plus": {
     "edited": "Gewijzigd",

@@ -11,6 +11,8 @@ import { useContextMenuLabels } from './plusContextMenu'
 export interface PlusMenuState {
   hasDoc: boolean
   readOnly: boolean
+  /** The active document has changes to save. */
+  dirty: boolean
   mode: 'view' | 'edit'
   documentCount: number
   splitView: boolean
@@ -78,6 +80,11 @@ export async function openPlusAppMenu(anchor: HTMLElement): Promise<void> {
   if (id) dispatchMenuCommand(id)
 }
 
+/** Runs a menu command from elsewhere in the window (the toolbar's close button). */
+export function runPlusMenuCommand(id: string): void {
+  dispatchMenuCommand(id)
+}
+
 export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): void {
   const appName = BRAND_NAME
   const mac = window.api.platform === 'darwin'
@@ -110,7 +117,8 @@ export function usePlusMenu(state: PlusMenuState, actions: PlusMenuActions): voi
       },
       sep,
       { id: 'close', label: m('close'), accelerator: key('Mod+W'), ...shown, enabled: doc },
-      { id: 'save', label: m('save'), accelerator: key('Mod+S'), ...shown, enabled: doc && !state.readOnly },
+      // Only enabled with something to save, as in macOS document apps; Save As stays available.
+      { id: 'save', label: m('save'), accelerator: key('Mod+S'), ...shown, enabled: doc && !state.readOnly && state.dirty },
       { id: 'saveAs', label: m('saveAs'), accelerator: key('Shift+Mod+S'), ...shown, enabled: doc },
       sep,
       {

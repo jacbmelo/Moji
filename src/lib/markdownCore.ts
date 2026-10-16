@@ -11,6 +11,7 @@ import deflist from 'markdown-it-deflist'
 import abbr from 'markdown-it-abbr'
 import { full as emoji } from 'markdown-it-emoji'
 import hljs from 'highlight.js/lib/core'
+import { renderFrontMatterProperties } from './plusFrontMatter'
 import type { LanguageFn } from 'highlight.js'
 import bash from 'highlight.js/lib/languages/bash'
 import c from 'highlight.js/lib/languages/c'
@@ -345,8 +346,11 @@ function frontMatterRule(state: StateBlock, startLine: number, endLine: number, 
   return true
 }
 
-/** Shown as YAML source, highlighted like a fenced ```yaml block. */
-function renderFrontMatter(content: string): string {
+/** Moji Plus: a properties panel (plusFrontMatter.ts); YAML source when it is not a map. */
+function renderFrontMatter(content: string, escape: (value: string) => string): string {
+  const highlightYaml = (value: string): string => hljs.highlight(value, { language: 'yaml' }).value
+  const properties = renderFrontMatterProperties(content, escape, highlightYaml)
+  if (properties) return properties
   return `<pre class="hljs front-matter"><code>${hljs.highlight(content, { language: 'yaml' }).value}</code></pre>\n`
 }
 
@@ -373,7 +377,7 @@ function createMarkdownRenderer(): MarkdownIt {
 
   renderer.block.ruler.before('hr', 'front_matter', frontMatterRule)
   renderer.renderer.rules.front_matter = (tokens, index): string => (
-    renderFrontMatter(tokens[index].content)
+    renderFrontMatter(tokens[index].content, renderer.utils.escapeHtml)
   )
 
   renderer.use(anchor, {

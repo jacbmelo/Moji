@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "新規ドキュメントと未保存の変更をセッション間で保持",
-    "reopenFiles": "起動時に開いていたファイルを再度開く"
+    "reopenFiles": "起動時に開いていたファイルを再度開く",
+    "alwaysShowTabs": "タブバーを常に表示"
   },
   "plus": {
     "edited": "編集済み",

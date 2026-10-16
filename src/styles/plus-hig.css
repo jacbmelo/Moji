@@ -180,8 +180,23 @@
   font-size: var(--text-body);
 }
 
+/* Buttons are capsules, as in macOS 26 alerts: a grey fill for secondary actions and the
+   accent for the default one. */
 :root[data-platform] .btn {
-  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.12);
+  height: 28px;
+  padding: 0 var(--space-4);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+:root[data-platform] .btn:not(.btn--primary) {
+  background: var(--bg-inset);
+  border-color: transparent;
+}
+
+:root[data-platform] .btn:not(.btn--primary):hover:not(:disabled) {
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+  border-color: transparent;
 }
 
 :root[data-platform] .statusbar,
@@ -336,7 +351,8 @@
 }
 
 :root[data-platform] .app:not(:has(.plus-sidebar-slot--open)) .plus-toolbar__leading {
-  margin-left: calc(var(--leading-controls-w) - var(--space-3));
+  /* Room for the leading window controls and the sidebar button beside them. */
+  margin-left: calc(var(--leading-controls-w) + 34px + var(--space-2) - var(--space-3));
 }
 
 /* Windows and Linux: the native minimize/maximize/close overlay (titleBarOverlay in
@@ -408,9 +424,15 @@
   color: var(--text-muted);
 }
 
+/* With a single document the tab bar is hidden, so its close button joins the document
+   actions; while the tab bar shows, each tab has its own. */
+:root[data-always-tabs] .plus-toolbar__close,
+.app:has(.document-tab + .document-tab) .plus-toolbar__close {
+  display: none;
+}
+
 /* Every control group is excluded from the window drag region as a whole: a no-drag button
    inside a plain box of the drag area can lose its clicks to the window on macOS. */
-.plus-toolbar__leading > .iconbtn,
 .plus-toolbar__items,
 .plus-toolbar__items > *,
 .plus-toolbar .segment,
@@ -418,8 +440,7 @@
   -webkit-app-region: no-drag;
 }
 
-/* Capsules: the sidebar button, the button group, the view switch and the search field. */
-.plus-toolbar__leading > .iconbtn,
+/* Capsules: the button groups, the view switch and the search field. */
 .plus-toolbar__items,
 .plus-toolbar .topbar__search-group {
   height: 34px;
@@ -429,8 +450,8 @@
   box-shadow: var(--capsule-shadow);
 }
 
-.plus-toolbar__leading > .iconbtn {
-  width: 34px;
+.plus-toolbar__doc-actions {
+  flex: none;
 }
 
 .plus-toolbar__items,
@@ -458,9 +479,32 @@
   background: var(--capsule-hover);
 }
 
-/* The sidebar button shows no on/off state; the sidebar itself is the state. */
-:root[data-platform] .plus-toolbar__leading > .iconbtn:first-child.iconbtn--active {
+/* The sidebar button (PlusMacToolbar.tsx): a capsule on the top-right of the open sidebar, as
+   in Finder and Safari; when the sidebar closes it slides next to the window's leading
+   controls (traffic lights, or the app menu button). It shows no on/off state: the sidebar
+   itself is the state. */
+:root[data-platform] .plus-sidebar-toggle {
+  position: fixed;
+  top: calc((var(--toolbar-h) - 34px) / 2);
+  left: var(--leading-controls-w);
+  z-index: 20;
+  width: 34px;
+  height: 34px;
   color: var(--text-muted);
+  background: var(--capsule-bg);
+  border: 0.5px solid var(--capsule-border);
+  border-radius: 999px;
+  box-shadow: var(--capsule-shadow);
+  -webkit-app-region: no-drag;
+  transition: left 0.26s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+:root[data-platform]:has(.plus-sidebar-slot--open) .plus-sidebar-toggle {
+  left: calc(var(--sidebar-w) - 34px - var(--space-3));
+}
+
+:root[data-platform] .plus-sidebar-toggle:hover:not(:disabled) {
+  color: var(--text);
   background: var(--capsule-bg);
 }
 
@@ -563,7 +607,8 @@
   --chrome-blur: blur(8px) saturate(1.5);
 }
 
-:root[data-platform] .app:has(.document-tab + .document-tab) {
+:root[data-platform] .app:has(.document-tab + .document-tab),
+:root[data-platform][data-always-tabs] .app:has(.document-tab) {
   --plus-top-inset: calc(var(--toolbar-h) + var(--tabs-row-h));
 }
 
@@ -652,7 +697,7 @@
   border-radius: 999px;
 }
 
-:root[data-platform] .document-tabs:not(:has(> .document-tab + .document-tab)) {
+:root[data-platform]:not([data-always-tabs]) .document-tabs:not(:has(> .document-tab + .document-tab)) {
   display: none;
 }
 
@@ -725,17 +770,30 @@
 
 :root[data-platform] .document-tab__label {
   justify-content: center;
-  padding: 0 30px;
+  padding: 0 32px;
   font-size: var(--text-body);
 }
 
 :root[data-platform] .document-tab__close {
   position: absolute;
-  left: 6px;
-  width: 20px;
-  height: 20px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
   margin: 0;
   border-radius: 999px;
+}
+
+/* A larger close mark, as in Safari's tabs (DocumentTabs draws it at 14px). */
+:root[data-platform] .document-tab__close svg {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+:root[data-platform] .document-tab__close:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--text) 10%, transparent);
 }
 
 :root[data-platform] .document-tab--active .document-tab__close {
@@ -747,8 +805,23 @@
   opacity: 1;
 }
 
+/* Unsaved changes: a round dot in the accent color, drawn instead of the "•" glyph so its
+   size does not depend on the font. */
 :root[data-platform] .document-tab__dirty {
-  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  flex: 0 0 8px;
+  font-size: 0;
+}
+
+:root[data-platform] .document-tab__dirty:not(:empty)::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
 }
 
 /* --- Sidebar ------------------------------------------------------------------- */

@@ -56,7 +56,7 @@ import { usePlusMenu } from './lib/plusMenu'
 import { PlusSidebarSlot } from './components/PlusSidebarSlot'
 import { PlusTabsPill } from './components/PlusTabsPill'
 import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
-import { usePlusSettingsSync } from './lib/plusSettings'
+import { usePlusAlwaysShowTabs, usePlusSettingsSync } from './lib/plusSettings'
 import { plusScrollInset } from './lib/plusScrollInset'
 import { suggestedSlugName } from './lib/plusFileName'
 
@@ -308,6 +308,7 @@ export function App(): JSX.Element {
 
   const { settings, setSettings, mdTheme } = useSettingsState()
   usePlusSettingsSync(setSettings)
+  usePlusAlwaysShowTabs(settings.alwaysShowTabs)
   const { documents, setDocuments, activeDocId, setActiveDocId, mode, setMode, activeDoc } = useDocumentState()
   // `documents` gets a new array reference on every keystroke (content/revision changes), but
   // the *set* of open ids rarely does. Editor's cache-eviction effect keys off this array, so
@@ -2234,7 +2235,8 @@ export function App(): JSX.Element {
           return
         }
         if (event.shiftKey) void saveDocumentAs(doc.id)
-        else void saveDocument(doc.id)
+        // Moji Plus: like the disabled Save menu item, nothing happens without changes to save.
+        else if (doc.revision !== doc.savedRevision) void saveDocument(doc.id)
         return
       }
       if (key === 'w') {
@@ -2464,6 +2466,7 @@ export function App(): JSX.Element {
     {
       hasDoc,
       readOnly: activeDoc?.readOnly === true,
+      dirty,
       mode,
       documentCount: documents.length,
       splitView: settings.splitView,

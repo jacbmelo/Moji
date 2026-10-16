@@ -6,6 +6,25 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- Buttons are capsules, as in macOS 26: the default action in the accent color, the others on a grey fill.
+- Export has a capsule of its own in the toolbar, apart from the view options.
+- The toolbar opens with a capsule of document actions before the title: New (a plus sign), Close and Save (a checkmark, the HIG's standard icon for Save), which is only enabled when there are changes to save. Close is there only with a single document, while the tab bar is hidden; with more documents each tab has its own.
+- The close button of a tab is larger, as in Safari.
+- The unsaved-changes mark on a tab is a small round dot in the accent color.
+- Save is only enabled, in the menu and with ⌘S (Ctrl+S), when the document has changes to save; Save As stays available.
+- The sidebar button sits on the top-right of the sidebar, as in Finder and Safari, and slides next to the window controls when the sidebar is hidden.
+
+### Added
+
+- Front matter is shown as a properties panel at the top of the document instead of a YAML code block: one row per key, lists as tags, links you can click and dates in short form, the same in the HTML, PDF and PNG exports. Front matter that is not a list of keys stays as YAML.
+- A setting to always show the tab bar, even with a single document (off by default).
+
+### Fixed
+
+- On macOS the app menu, the Dock and Launchpad show the name as Moji+, like the rest of the app.
+
 ## [1.4.0] - 2026-10-15 — based on Moji 1.0.7
 
 ### Changed

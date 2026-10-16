@@ -27,7 +27,7 @@ export interface WorkspaceDocument {
 export function useSettingsState() {
   const [settings, setSettings] = useState<Settings>({
     appearance: 'system', language: 'en', previewFontFamily: 'Inter', previewFontSize: 16, editorFontSize: 14,
-    previewLineHeight: 1.7, previewFluidWidth: false, splitView: false, splitRatio: SPLIT_RATIO_DEFAULT, previewWidth: PREVIEW_WIDTH_DEFAULT, autoSave: true, reopenFiles: true, viewMode: 'view', outlineVisible: true, recentFiles: []
+    previewLineHeight: 1.7, previewFluidWidth: false, splitView: false, splitRatio: SPLIT_RATIO_DEFAULT, previewWidth: PREVIEW_WIDTH_DEFAULT, autoSave: true, reopenFiles: true, alwaysShowTabs: false, viewMode: 'view', outlineVisible: true, recentFiles: []
   })
   const mdTheme = useResolvedTheme()
   return { settings, setSettings, mdTheme }

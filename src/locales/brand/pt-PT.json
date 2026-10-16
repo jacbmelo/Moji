@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Manter documentos novos e alterações por guardar entre sessões",
-    "reopenFiles": "Reabrir os ficheiros abertos ao iniciar"
+    "reopenFiles": "Reabrir os ficheiros abertos ao iniciar",
+    "alwaysShowTabs": "Mostrar sempre a barra de separadores"
   },
   "plus": {
     "edited": "Editado",

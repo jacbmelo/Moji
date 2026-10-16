@@ -69,6 +69,8 @@ export interface Settings {
   autoSave: boolean
   /** Reopen the files that were open at quit, not just the ones with unsaved edits. */
   reopenFiles: boolean
+  /** Moji Plus: keep the tab bar visible with a single document. */
+  alwaysShowTabs: boolean
   /** Tabs open when the app was last used, so the next launch can restore them in order. */
   session?: SessionState
   /** Preview or editor, as it was when the app was last used; restored with the session. */

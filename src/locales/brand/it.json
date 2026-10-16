@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Mantieni i nuovi documenti e le modifiche non salvate tra le sessioni",
-    "reopenFiles": "Riapri i file aperti all'avvio"
+    "reopenFiles": "Riapri i file aperti all'avvio",
+    "alwaysShowTabs": "Mostra sempre la barra dei pannelli"
   },
   "plus": {
     "edited": "Modificato",

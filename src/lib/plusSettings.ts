@@ -14,3 +14,10 @@ export function usePlusSettingsSync(setSettings: Dispatch<SetStateAction<Setting
     [setSettings]
   )
 }
+
+/** Mirrors "Always show the tab bar" on the root element, for plus-hig.css. */
+export function usePlusAlwaysShowTabs(on: boolean): void {
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-always-tabs', on)
+  }, [on])
+}

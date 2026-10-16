@@ -85,3 +85,79 @@
 html.plus-export-landscape .markdown-body {
   max-width: none;
 }
+
+/* Front matter as a properties panel (src/lib/plusFrontMatter.ts): a list of keys and values
+   above the document, the same in the preview and in exports. */
+.markdown-body .front-matter--properties {
+  margin: 0 0 1.5em;
+  padding: 0.25em 0.875em;
+  font-size: 0.875em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.markdown-body .front-matter__list {
+  margin: 0;
+  padding: 0;
+}
+
+.markdown-body .front-matter__row {
+  display: grid;
+  line-height: 1.5;
+  grid-template-columns: minmax(6em, max-content) 1fr;
+  gap: 1.25em;
+  padding: 0.4em 0;
+}
+
+.markdown-body .front-matter__row + .front-matter__row {
+  border-top: 1px solid var(--border);
+}
+
+.markdown-body .front-matter__row > dt {
+  margin: 0;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--text-muted);
+  overflow-wrap: anywhere;
+}
+
+.markdown-body .front-matter__row > dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.markdown-body .front-matter__empty {
+  color: var(--text-muted);
+}
+
+.markdown-body .front-matter__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3em;
+}
+
+.markdown-body .front-matter__tag {
+  padding: 0.05em 0.6em;
+  white-space: nowrap;
+  background: var(--code-bg);
+  border-radius: 999px;
+}
+
+/* The preview wraps code blocks in .code-block (with a copy button). */
+.markdown-body .front-matter__row .code-block {
+  margin: 0;
+}
+
+.markdown-body pre.front-matter__yaml {
+  margin: 0;
+  padding: 0;
+  font-size: 0.95em;
+  line-height: 1.5;
+  white-space: pre;
+  background: none;
+  border: none;
+  box-shadow: none;
+}

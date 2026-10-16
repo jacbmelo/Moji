@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Conservar los documentos nuevos y los cambios sin guardar entre sesiones",
-    "reopenFiles": "Volver a abrir los archivos abiertos al iniciar"
+    "reopenFiles": "Volver a abrir los archivos abiertos al iniciar",
+    "alwaysShowTabs": "Mostrar siempre la barra de pestañas"
   },
   "plus": {
     "edited": "Editado",

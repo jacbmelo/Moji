@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Keep new documents and unsaved changes between sessions",
-    "reopenFiles": "Reopen open files on startup"
+    "reopenFiles": "Reopen open files on startup",
+    "alwaysShowTabs": "Always show the tab bar"
   },
   "plus": {
     "edited": "Edited",

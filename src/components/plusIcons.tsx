@@ -28,3 +28,10 @@ export const IconMenu = (p: IconProps): JSX.Element => (
     <path d="M4 7h16M4 12h16M4 17h16" />
   </svg>
 )
+
+/* checkmark: Save, as in the HIG's standard icons (shared with Done) */
+export const IconCheck = (p: IconProps): JSX.Element => (
+  <svg {...base} {...p}>
+    <path d="M5 12.5l4.5 4.5L19 7.5" />
+  </svg>
+)

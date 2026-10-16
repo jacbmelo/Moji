@@ -219,6 +219,17 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                   onChange={(e) => onChange({ reopenFiles: e.currentTarget.checked })}
                 />
               </label>
+
+              {/* Moji Plus: keep the tab bar with a single document (see FORK.md). */}
+              <label className="settings-field">
+                <span className="settings-field__label">{t('settingsDialog.alwaysShowTabs')}</span>
+                <input
+                  className="settings-checkbox"
+                  type="checkbox"
+                  checked={settings.alwaysShowTabs}
+                  onChange={(e) => onChange({ alwaysShowTabs: e.currentTarget.checked })}
+                />
+              </label>
             </div>
           </section>
         )}

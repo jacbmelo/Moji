@@ -6,9 +6,9 @@ import { useLayoutEffect, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { FontSizeButton } from './FontSizeButton'
-import { IconEye, IconLayoutWidth, IconMoon, IconPencil, IconSidebar, IconSplitPreview, IconSun } from './icons'
-import { IconMenu, IconShare } from './plusIcons'
-import { openPlusAppMenu } from '../lib/plusMenu'
+import { IconEye, IconLayoutWidth, IconMoon, IconPencil, IconPlus, IconSidebar, IconSplitPreview, IconSun, IconX } from './icons'
+import { IconCheck, IconMenu, IconShare } from './plusIcons'
+import { openPlusAppMenu, runPlusMenuCommand } from '../lib/plusMenu'
 import type { TopBarProps } from './TopBar'
 
 export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.Element {
@@ -59,10 +59,11 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
       </button>,
       document.body
     )}
-    <header className="topbar plus-toolbar">
-      <div className="plus-toolbar__leading">
+    {/* The sidebar button sits on the sidebar's top edge, as in Finder and Safari, and slides
+        next to the window controls when the sidebar closes. Also rendered last in <body>. */}
+    {createPortal(
       <button
-        className={`iconbtn ${props.outlineVisible && props.canToggleOutline ? 'iconbtn--active' : ''}`}
+        className="iconbtn plus-sidebar-toggle"
         type="button"
         onClick={props.onToggleOutline}
         disabled={!props.canToggleOutline}
@@ -71,7 +72,44 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
         aria-pressed={props.outlineVisible}
       >
         <IconSidebar />
-      </button>
+      </button>,
+      document.body
+    )}
+    <header className="topbar plus-toolbar">
+      <div className="plus-toolbar__leading">
+      {/* Document actions. Close only shows while the tab bar is hidden (one document); Save
+          follows the menu: only enabled with changes to save. */}
+      <div className="plus-toolbar__items plus-toolbar__doc-actions">
+        <button
+          className="iconbtn"
+          type="button"
+          onClick={props.onNew}
+          title={t('toolbar.newDocument')}
+          aria-label={t('toolbar.newDocument')}
+        >
+          <IconPlus />
+        </button>
+        <button
+          className="iconbtn plus-toolbar__close"
+          type="button"
+          onClick={() => runPlusMenuCommand('close')}
+          disabled={!props.hasDoc}
+          title={t('plus.menu.close')}
+          aria-label={t('plus.menu.close')}
+        >
+          <IconX />
+        </button>
+        <button
+          className="iconbtn"
+          type="button"
+          onClick={props.onSave}
+          disabled={!props.hasDoc || props.readOnly || !edited}
+          title={props.readOnly ? t('notice.readOnlyGuide') : t('toolbar.save')}
+          aria-label={t('toolbar.save')}
+        >
+          <IconCheck />
+        </button>
+      </div>
 
       <div className="plus-toolbar__title">
         {name && <span className="plus-toolbar__name">{name}</span>}
@@ -149,7 +187,10 @@ export function PlusMacToolbar(props: TopBarProps & { search: ReactNode }): JSX.
         >
           {props.theme === 'dark' ? <IconSun /> : <IconMoon />}
         </button>
+      </div>
 
+      {/* Export is an action, not a view option: a capsule of its own. */}
+      <div className="plus-toolbar__items">
         <button
           className={`iconbtn ${props.exportOpen ? 'iconbtn--active' : ''}`}
           type="button"

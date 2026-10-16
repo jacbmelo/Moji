@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "在会话之间保留新文档和未保存的更改",
-    "reopenFiles": "启动时重新打开已打开的文件"
+    "reopenFiles": "启动时重新打开已打开的文件",
+    "alwaysShowTabs": "始终显示标签页栏"
   },
   "plus": {
     "edited": "已编辑",

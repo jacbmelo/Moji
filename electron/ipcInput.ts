@@ -89,6 +89,7 @@ export function sanitizeSettingsPatch(value: unknown): Partial<Settings> {
   if (typeof raw['previewWidth'] === 'number') patch.previewWidth = raw['previewWidth']
   if (typeof raw['autoSave'] === 'boolean') patch.autoSave = raw['autoSave']
   if (typeof raw['reopenFiles'] === 'boolean') patch.reopenFiles = raw['reopenFiles']
+  if (typeof raw['alwaysShowTabs'] === 'boolean') patch.alwaysShowTabs = raw['alwaysShowTabs']
   if (raw['viewMode'] === 'view' || raw['viewMode'] === 'edit') patch.viewMode = raw['viewMode']
   if (typeof raw['outlineVisible'] === 'boolean') patch.outlineVisible = raw['outlineVisible']
   const session = sanitizeSession(raw['session'])

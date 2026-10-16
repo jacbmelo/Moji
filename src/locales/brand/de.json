@@ -39,7 +39,8 @@
   },
   "settingsDialog": {
     "autoSave": "Neue Dokumente und nicht gespeicherte Änderungen zwischen Sitzungen behalten",
-    "reopenFiles": "Geöffnete Dateien beim Start wieder öffnen"
+    "reopenFiles": "Geöffnete Dateien beim Start wieder öffnen",
+    "alwaysShowTabs": "Tableiste immer anzeigen"
   },
   "plus": {
     "edited": "Bearbeitet",
