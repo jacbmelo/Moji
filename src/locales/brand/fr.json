@@ -8,7 +8,8 @@
     "tokenEstimate": "Estimation : environ 4 caractères par jeton. Le nombre réel dépend du modèle et de la langue."
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "ou déposez un fichier Markdown ou texte n’importe où dans cette fenêtre"
   },
   "aboutDialog": {
     "updateCurrent": "Moji+ {{version}} est à jour.",
@@ -124,5 +125,8 @@
       "unsavedDetail": "Vos modifications seront perdues si vous ne les enregistrez pas.",
       "dontSave": "Ne pas enregistrer"
     }
+  },
+  "notice": {
+    "unsupported": "Type de fichier non pris en charge. Seuls les fichiers Markdown (.md, .markdown, .mdx…) et texte brut (.txt) peuvent être ouverts."
   }
 }

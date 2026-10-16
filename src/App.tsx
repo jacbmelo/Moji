@@ -59,6 +59,7 @@ import { askExternalChangeNative, askUnsavedNative } from './lib/plusDialogs'
 import { usePlusAlwaysShowTabs, usePlusSettingsSync } from './lib/plusSettings'
 import { plusScrollInset } from './lib/plusScrollInset'
 import { suggestedSlugName } from './lib/plusFileName'
+import { hasPlusDocumentExtension, isPlainTextPath } from '../electron/plusDocumentTypes'
 
 const loadEditor = (): Promise<typeof import('./components/Editor')> => import('./components/Editor')
 const loadExportDialog = (): Promise<typeof import('./components/ExportDialog')> => import('./components/ExportDialog')
@@ -258,7 +259,8 @@ function documentName(doc: Pick<DocumentState, 'path' | 'title'>, fallback: stri
 }
 
 function markdownFileName(name: string): string {
-  return /\.(md|markdown)$/i.test(name) ? name : `${name}.md`
+  // Moji Plus: a .txt (or another supported type) keeps its extension (see FORK.md).
+  return hasPlusDocumentExtension(name) ? name : `${name}.md`
 }
 
 /**
@@ -441,9 +443,10 @@ export function App(): JSX.Element {
     : EMPTY_MARKDOWN_RESULT
   const html = preview.html
   const outline = useMemo(() => {
-    if (!outlineVisible) return []
+    // Moji Plus: plain text has no headings, even where a line starts with # (see FORK.md).
+    if (!outlineVisible || isPlainTextPath(activeDoc?.path)) return []
     return mode === 'view' ? preview.outline : editorOutline
-  }, [editorOutline, mode, outlineVisible, preview.outline])
+  }, [activeDoc?.path, editorOutline, mode, outlineVisible, preview.outline])
   const outlineRef = useRef(outline)
   outlineRef.current = outline
   const stats = activeDoc?.stats ?? { length: 0, lines: 0, tokens: 0, words: 0 }

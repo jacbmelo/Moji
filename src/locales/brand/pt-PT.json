@@ -8,7 +8,8 @@
     "tokenEstimate": "Estimativa: cerca de 4 caracteres por token. O valor real depende do modelo e do idioma."
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "ou largue um ficheiro Markdown ou de texto em qualquer ponto desta janela"
   },
   "aboutDialog": {
     "updateCurrent": "O Moji+ {{version}} está atualizado.",
@@ -124,5 +125,8 @@
       "unsavedDetail": "As alterações serão perdidas se não as guardar.",
       "dontSave": "Não guardar"
     }
+  },
+  "notice": {
+    "unsupported": "Tipo de ficheiro não suportado. Apenas podem ser abertos ficheiros Markdown (.md, .markdown, .mdx…) e de texto simples (.txt)."
   }
 }

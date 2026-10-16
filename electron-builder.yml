@@ -44,6 +44,17 @@ mac:
   gatekeeperAssess: false
   entitlements: build/entitlements.mac.plist
   entitlementsInherit: build/entitlements.mac.plist
+  # Moji Plus: the other types it opens are offered in "Open With" without claiming them
+  # (rank Alternate). Not on Windows, where NSIS would make the app the handler of .txt.
+  fileAssociations:
+    - ext: [mdown, mkd, mkdn, markdn, mdx]
+      name: Markdown Document
+      role: Editor
+      rank: Alternate
+    - ext: txt
+      name: Plain Text Document
+      role: Editor
+      rank: Alternate
   target:
     - target: dmg
       arch:
@@ -96,6 +107,7 @@ linux:
   category: Office
   mimeTypes:
     - text/markdown
+    - text/plain
 appImage:
   artifactName: Moji-Plus-${version}-${arch}.${ext}
   desktop:

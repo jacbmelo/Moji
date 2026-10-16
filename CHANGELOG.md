@@ -6,6 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Plain text files (`.txt`) open in Moji+ and are shown exactly as written, in a monospaced font, without Markdown formatting or an outline. Save As keeps the `.txt` extension.
+- More Markdown extensions open as Markdown: `.mdown`, `.mkd`, `.mkdn`, `.markdn`, and `.mdx`.
+- On macOS and Linux, these files list Moji+ under Open With without making it their default app.
+
 ## [1.5.1] - 2026-10-16 — based on Moji 1.0.7
 
 ### Fixed

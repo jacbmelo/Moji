@@ -8,7 +8,8 @@
     "tokenEstimate": "估算值：约每 4 个字符计 1 个 token。实际数量取决于模型和语言。"
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "或将 Markdown 或文本文件拖入此窗口任意位置"
   },
   "aboutDialog": {
     "updateCurrent": "Moji+ {{version}} 已是最新版本。",
@@ -124,5 +125,8 @@
       "unsavedDetail": "如果不存储，你的更改将会丢失。",
       "dontSave": "不存储"
     }
+  },
+  "notice": {
+    "unsupported": "不支持的文件类型。只能打开 Markdown（.md、.markdown、.mdx 等）和纯文本（.txt）文件。"
   }
 }

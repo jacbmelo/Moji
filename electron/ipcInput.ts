@@ -1,7 +1,6 @@
 import { extname } from 'node:path'
 import { isDraft, isDraftId } from './draftStore'
 import {
-  MARKDOWN_EXTENSIONS,
   MAX_SESSION_DOCUMENTS,
   SUPPORTED_LANGUAGES,
   isThemePreference,
@@ -12,6 +11,7 @@ import {
   type Settings,
   type WindowBounds
 } from './shared'
+import { isPlusDocumentExtension } from './plusDocumentTypes'
 
 /**
  * Normalization of values that arrive from the renderer over IPC.
@@ -33,7 +33,8 @@ export function isWindowBounds(value: unknown): value is WindowBounds {
 
 export function isMarkdown(filePath: unknown): filePath is string {
   if (typeof filePath !== 'string') return false
-  return (MARKDOWN_EXTENSIONS as readonly string[]).includes(extname(filePath).toLowerCase())
+  // Moji Plus: also Markdown variants and plain text (see FORK.md).
+  return isPlusDocumentExtension(extname(filePath))
 }
 
 /** Far past any real document; only bounds what settings.json can carry. */

@@ -8,7 +8,8 @@
     "tokenEstimate": "अनुमान: लगभग 4 वर्ण प्रति टोकन। वास्तविक संख्या मॉडल और भाषा पर निर्भर करती है।"
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "या इस विंडो में कहीं भी Markdown या टेक्स्ट फ़ाइल छोड़ें"
   },
   "aboutDialog": {
     "updateCurrent": "Moji+ {{version}} नवीनतम है।",
@@ -124,5 +125,8 @@
       "unsavedDetail": "यदि आप इन्हें नहीं सहेजते, तो आपके बदलाव खो जाएँगे।",
       "dontSave": "न सहेजें"
     }
+  },
+  "notice": {
+    "unsupported": "असमर्थित फ़ाइल प्रकार। केवल Markdown (.md, .markdown, .mdx…) और सादा पाठ (.txt) फ़ाइलें खोली जा सकती हैं।"
   }
 }

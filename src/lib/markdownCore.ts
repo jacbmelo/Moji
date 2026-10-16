@@ -38,6 +38,8 @@ import swift from 'highlight.js/lib/languages/swift'
 import typescript from 'highlight.js/lib/languages/typescript'
 import yaml from 'highlight.js/lib/languages/yaml'
 import type { OutlineItem } from './outline'
+import { renderPlainTextRaw } from './plusPlainText'
+import { isPlainTextPath } from '../../electron/plusDocumentTypes'
 
 export interface RenderMarkdownOptions {
   documentPath?: string | null
@@ -626,6 +628,8 @@ export async function renderMarkdownDocumentRawAsync(
   source: string,
   options: RenderMarkdownOptions = {}
 ): Promise<RawMarkdownRenderResult> {
+  // Moji Plus: plain-text documents are not Markdown (see FORK.md).
+  if (isPlainTextPath(options.documentPath)) return renderPlainTextRaw(source, options)
   // Both of these have to settle before parsing: markdown-it's `highlight` hook is
   // synchronous, so a language that is not registered by the time it runs falls back to
   // escaped text for this render.

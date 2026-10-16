@@ -29,6 +29,7 @@ import { areDraftEditBatches } from './draftJournal'
 import { assetContentType, assetPathFromUrl, authorizedAsset } from './assetPaths'
 import { FileCapabilities } from './fileCapabilities'
 import { isMarkdown, sanitizeDraft, sanitizeSettingsPatch, suggestedMarkdownName } from './ipcInput'
+import { plusOpenDialogFilters, plusSaveDialogFilters } from './plusDocumentTypes'
 import { cancelExport, exportDiagramPng, exportDocument } from './export'
 import { benchmarkRequested, recordBenchmark } from './benchmark'
 import { createUpdateController, type UpdateController } from './updater'
@@ -965,7 +966,7 @@ function registerIpc(): void {
   handleFromRenderer(IPC.openDialog, async (event): Promise<OpenDialogResult> => {
     const options: Electron.OpenDialogOptions = {
       properties: ['openFile', 'multiSelections'],
-      filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }],
+      filters: plusOpenDialogFilters(),
       defaultPath: lastDialogDirectory()
     }
     const { canceled, filePaths } = mainWindow
@@ -1048,7 +1049,7 @@ function registerIpc(): void {
     const fileName = suggestedMarkdownName(suggestedName)
     const options: Electron.SaveDialogOptions = {
       defaultPath: dialogDefaultPath(fileName),
-      filters: [{ name: 'Markdown', extensions: ['md', 'markdown'] }]
+      filters: plusSaveDialogFilters(fileName)
     }
     const { canceled, filePath } = mainWindow
       ? await dialog.showSaveDialog(mainWindow, options)

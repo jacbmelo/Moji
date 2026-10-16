@@ -8,7 +8,8 @@
     "tokenEstimate": "推定値: 1 トークンあたり約 4 文字。実際の数はモデルと言語によって異なります。"
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "または、このウィンドウのどこかに Markdown またはテキストファイルをドロップ"
   },
   "aboutDialog": {
     "updateCurrent": "Moji+ {{version}} は最新です。",
@@ -124,5 +125,8 @@
       "unsavedDetail": "保存しないと、変更内容は失われます。",
       "dontSave": "保存しない"
     }
+  },
+  "notice": {
+    "unsupported": "未対応のファイル形式です。Markdown（.md、.markdown、.mdx など）とプレーンテキスト（.txt）のファイルのみ開けます。"
   }
 }

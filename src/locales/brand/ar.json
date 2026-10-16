@@ -8,7 +8,8 @@
     "tokenEstimate": "تقدير: نحو 4 أحرف لكل رمز. يعتمد العدد الفعلي على النموذج واللغة."
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "أو أفلت ملف Markdown أو ملفًا نصيًا في أي مكان في هذه النافذة"
   },
   "aboutDialog": {
     "updateCurrent": "Moji+ {{version}} محدّث.",
@@ -124,5 +125,8 @@
       "unsavedDetail": "ستفقد تغييراتك إذا لم تحفظها.",
       "dontSave": "عدم الحفظ"
     }
+  },
+  "notice": {
+    "unsupported": "نوع ملف غير مدعوم. يمكن فتح ملفات Markdown (.md و.markdown و.mdx…) والنص العادي (.txt) فقط."
   }
 }

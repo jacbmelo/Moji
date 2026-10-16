@@ -8,7 +8,8 @@
     "tokenEstimate": "Оценка: примерно 4 символа на токен. Точное число зависит от модели и языка."
   },
   "welcome": {
-    "title": "Moji+ v{{version}}"
+    "title": "Moji+ v{{version}}",
+    "dropHint": "или перетащите файл Markdown или текстовый файл в это окно"
   },
   "aboutDialog": {
     "updateCurrent": "Установлена актуальная версия Moji+ {{version}}.",
@@ -124,5 +125,8 @@
       "unsavedDetail": "Если не сохранить изменения, они будут потеряны.",
       "dontSave": "Не сохранять"
     }
+  },
+  "notice": {
+    "unsupported": "Неподдерживаемый тип файла. Можно открывать только файлы Markdown (.md, .markdown, .mdx…) и обычный текст (.txt)."
   }
 }

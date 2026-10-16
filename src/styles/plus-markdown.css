@@ -161,3 +161,14 @@ html.plus-export-landscape .markdown-body {
   border: none;
   box-shadow: none;
 }
+
+/* Plain-text documents (.txt): the text exactly as written, in the code font, wrapping long
+   lines. Rendered by src/lib/plusPlainText.ts; in virtualized previews each block is one of these. */
+.markdown-body .plus-plain-text {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}

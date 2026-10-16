@@ -56,6 +56,7 @@
 ### Documents and sessions
 
 - **Tabs** for several documents, with close others, close to the right, close saved, and close all.
+- **Markdown and plain text**: besides `.md` and `.markdown`, Moji+ opens `.mdown`, `.mkd`, `.mkdn`, `.markdn`, and `.mdx` as Markdown, and `.txt` files exactly as written, without Markdown formatting.
 - **Session restore**: Moji+ reopens the tabs from last time, in the same order, each at the place where it was read, in the mode and layout you left.
 - **Nothing lost**: new documents and unsaved changes are kept as recovery drafts between sessions; undoing every edit clears the unsaved-changes mark.
 - **Changes made by other apps**: an open file changed elsewhere reloads automatically, or, when it has unsaved edits or was deleted, Moji+ asks what to do. Saving never overwrites a change made elsewhere without asking.
@@ -222,6 +223,7 @@ The current version is based on Moji v1.0.7. On top of it, Moji+ adds:
 - App-wide light and dark themes, and YAML front matter.
 - Session and layout restore, recovery of unsaved changes to files, and per-document reading positions.
 - Detection of changes made to open files by other applications.
+- Plain text (`.txt`) and more Markdown extensions (`.mdown`, `.mkd`, `.mkdn`, `.markdn`, `.mdx`).
 - Keyboard and accessibility improvements, and its own icon.
 
 Every change is listed in [CHANGELOG.md](CHANGELOG.md); the original README and changelog are kept in [docs/upstream/](docs/upstream/).
