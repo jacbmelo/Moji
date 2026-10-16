@@ -35,12 +35,8 @@ mac:
   icon: build/plus/icon.png
   category: public.app-category.productivity
   darkModeSupport: true
-  # The bold app menu title, the Dock and Launchpad read the bundle name: the brand spelling
-  # "Moji+". The bundle file (Moji Plus.app), productName and settings folder keep the
-  # official name.
-  extendInfo:
-    CFBundleName: Moji+
-    CFBundleDisplayName: Moji+
+  # No CFBundleName override: Electron finds its helper apps by the bundle name
+  # ("<CFBundleName> Helper.app"), so "Moji+" there makes the app crash at launch (1.5.0).
   artifactName: Moji-Plus-${version}-${arch}.${ext}
   # Signing is driven by electron-builder's CSC_* environment variables. Unsigned
   # local builds still run; Gatekeeper only blocks copies downloaded from the web.

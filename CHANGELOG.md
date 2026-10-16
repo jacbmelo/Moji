@@ -6,6 +6,12 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-10-16 — based on Moji 1.0.7
+
+### Fixed
+
+- Moji+ 1.5.0 crashed at launch on macOS. The menu bar shows the app name as Moji Plus again until the brand spelling can be used there safely.
+
 ## [1.5.0] - 2026-10-16 — based on Moji 1.0.7
 
 ### Changed
