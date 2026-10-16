@@ -55,6 +55,18 @@
   </keywords>
   <content_rating type="oars-1.1" />
   <releases>
+    <release version="1.5.0" date="2026-10-16">
+      <description>
+        <p>Based on Moji 1.0.7.</p>
+        <ul>
+          <li>Front matter is shown as a properties panel instead of a YAML code block, also in exports.</li>
+          <li>New, Close and Save buttons in the toolbar; Save is only enabled when there are changes.</li>
+          <li>Capsule-shaped buttons, Export in its own group, and the sidebar button on the sidebar.</li>
+          <li>A setting to always show the tab bar, a larger tab close button and an accent-coloured unsaved mark.</li>
+          <li>On macOS the menu bar and the Dock show the name as Moji+.</li>
+        </ul>
+      </description>
+    </release>
     <release version="1.4.0" date="2026-10-15">
       <description>
         <p>Based on Moji 1.0.7.</p>

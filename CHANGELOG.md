@@ -6,6 +6,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2026-10-16 — based on Moji 1.0.7
+
 ### Changed
 
 - Buttons are capsules, as in macOS 26: the default action in the accent color, the others on a grey fill.
