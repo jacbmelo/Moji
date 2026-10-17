@@ -12,6 +12,10 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - More Markdown extensions open as Markdown: `.mdown`, `.mkd`, `.mkdn`, `.markdn`, and `.mdx`.
 - On macOS and Linux, these files list Moji+ under Open With without making it their default app.
 
+### Fixed
+
+- Ticking a task list checkbox in the preview now updates the document, so the change can be saved and undone. Before, the box changed on screen only.
+
 ## [1.5.1] - 2026-10-16 — based on Moji 1.0.7
 
 ### Fixed

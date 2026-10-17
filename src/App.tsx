@@ -669,6 +669,20 @@ export function App(): JSX.Element {
     return nextContent
   }, [])
 
+  /**
+   * Moji Plus: a task checkbox clicked in the preview. The edit goes through the editor, so it is
+   * dirty, undoable and autosaved like typing; the content is materialized at once so the preview
+   * (and view mode, which reads `content`) stays in step.
+   */
+  const toggleTask = useCallback((line: number, checked: boolean): boolean => {
+    const doc = stateRef.current.activeDoc
+    if (!doc || doc.readOnly) return false
+    const nextContent = editorRef.current?.toggleTask(line, checked)
+    if (nextContent == null) return false
+    setDocuments((prev) => prev.map((item) => (item.id === doc.id ? { ...item, content: nextContent } : item)))
+    return true
+  }, [])
+
   const updateActiveRevision = useCallback((documentId: string, nextStats: EditorDocumentStats) => {
     if (stateRef.current.activeDocId !== documentId || stateRef.current.activeDoc?.readOnly) return
     setDocuments((prev) => prev.map((doc) => (
@@ -2534,6 +2548,7 @@ export function App(): JSX.Element {
       settings={settings}
       onOpenLocalPath={(fileUrl) => void openLocalPath(fileUrl)}
       onPreviewHeadingsChange={setPreviewHeadings}
+      onToggleTask={toggleTask}
       onPaneElement={setPreviewPane}
     />
   ) : null

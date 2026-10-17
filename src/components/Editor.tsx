@@ -48,7 +48,11 @@ export interface EditorHandle {
   scrollToLine: (line: number) => void
   /** Discard pending preview-driven measurements when the user takes over the editor. */
   cancelScrollSync: () => void
+  /** Flips the `[ ]`/`[x]` marker of the task item on `line` (zero-based); returns the new text, or null. */
+  toggleTask: (line: number, checked: boolean) => string | null
 }
+
+const TASK_MARKER = /^((?:\s*>)*\s*(?:[-*+]|\d+[.)])\s+\[)[ xX](\])/
 
 export interface EditorDocumentStats {
   length: number
@@ -481,6 +485,16 @@ export const Editor = forwardRef<EditorHandle, EditorProps>(function Editor({ do
     cancelScrollSync: () => {
       scrollSyncGeneration.current += 1
       window.cancelAnimationFrame(scrollToLineFrame.current)
+    },
+    toggleTask: (line: number, checked: boolean) => {
+      const view = viewRef.current
+      if (!view || view.state.readOnly || line < 0 || line >= view.state.doc.lines) return null
+      const sourceLine = view.state.doc.line(line + 1)
+      const match = TASK_MARKER.exec(sourceLine.text)
+      if (!match) return null
+      const from = sourceLine.from + match[1].length
+      view.dispatch({ changes: { from, to: from + 1, insert: checked ? 'x' : ' ' } })
+      return view.state.doc.toString()
     }
   }), [value])
 

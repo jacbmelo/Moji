@@ -33,6 +33,8 @@ interface PreviewProps {
   settings: Settings
   onOpenLocalPath: (fileUrl: string) => void
   onPreviewHeadingsChange: (headings: HTMLElement[]) => void
+  /** Writes a task checkbox click back to the source; false keeps the box as it was. */
+  onToggleTask: (line: number, checked: boolean) => boolean
   /** Publishes the scroller so the split view can follow the editor. */
   onPaneElement?: (element: HTMLDivElement | null) => void
   className?: string
@@ -90,6 +92,7 @@ export function Preview({
   settings,
   onOpenLocalPath,
   onPreviewHeadingsChange,
+  onToggleTask,
   onPaneElement,
   className
 }: PreviewProps): JSX.Element {
@@ -328,6 +331,13 @@ export function Preview({
 
   const handleClick = useCallback((e: MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement
+    // The label wrapper forwards its clicks to the checkbox, so only the input's click counts.
+    if (target instanceof HTMLInputElement && target.classList.contains('task-list-item-checkbox')) {
+      const line = Number(target.closest('[data-task-line]')?.getAttribute('data-task-line'))
+      if (!Number.isInteger(line) || !onToggleTask(line, target.checked)) e.preventDefault()
+      return
+    }
+
     const copyButton = target.closest<HTMLButtonElement>('.code-copy-button')
     if (copyButton) {
       const code = copyButton.closest('.code-block')?.querySelector('code')?.textContent ?? ''
@@ -374,7 +384,7 @@ export function Preview({
     }
     // External http(s) links carry target="_blank"; the main process opens them
     // in the OS browser via the window-open handler.
-  }, [onOpenLocalPath, openDiagramAt, t, virtualBlocks, virtualized])
+  }, [onOpenLocalPath, onToggleTask, openDiagramAt, t, virtualBlocks, virtualized])
 
   useEffect(() => {
     if (!bodyRef.current) return

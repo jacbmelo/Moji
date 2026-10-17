@@ -386,6 +386,14 @@ function createMarkdownRenderer(): MarkdownIt {
     slugify: (value) => safeHeadingId(encodeURIComponent(String(value).trim().toLowerCase().replace(/\s+/g, '-')))
   })
   renderer.use(taskLists, { enabled: true, label: true })
+  // Moji Plus: tag each task item with its source line so a click in the preview can toggle it.
+  renderer.core.ruler.after('github-task-lists', 'task_list_lines', (state) => {
+    for (const token of state.tokens) {
+      if (token.type === 'list_item_open' && token.map && token.attrGet('class')?.includes('task-list-item')) {
+        token.attrSet('data-task-line', String(token.map[0]))
+      }
+    }
+  })
   renderer.use(sub)
   renderer.use(sup)
   renderer.use(ins)
