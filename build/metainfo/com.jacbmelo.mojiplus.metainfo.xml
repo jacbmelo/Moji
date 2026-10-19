@@ -59,6 +59,8 @@
       <description>
         <p>Based on Moji 1.0.7.</p>
         <ul>
+          <li>Plain text files (.txt) open as written, and more Markdown extensions are recognised (.mdown, .mkd, .mkdn, .markdn, .mdx).</li>
+          <li>Ticking a task list checkbox in the preview updates the document.</li>
           <li>Windows: updating or uninstalling no longer fails with "cannot be closed" on PCs that block programs in the temporary folder.</li>
         </ul>
       </description>

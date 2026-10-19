@@ -8,10 +8,6 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [1.5.2] - 2026-10-19 — based on Moji 1.0.7
 
-### Fixed
-
-- Windows: installing an update or uninstalling no longer fails with "Moji Plus cannot be closed" on PCs whose policies block programs in the temporary folder. The installer now looks for the app by its process name instead of any program inside its folder, which caught the uninstaller itself. It takes effect from the update after the one that brings this fix, since an update runs the uninstaller of the version already installed.
-
 ### Added
 
 - Plain text files (`.txt`) open in Moji+ and are shown exactly as written, in a monospaced font, without Markdown formatting or an outline. Save As keeps the `.txt` extension.
@@ -20,6 +16,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- Windows: installing an update or uninstalling no longer fails with "Moji Plus cannot be closed" on PCs whose policies block programs in the temporary folder. The installer now looks for the app by its process name instead of any program inside its folder, which caught the uninstaller itself. It takes effect from the update after the one that brings this fix, since an update runs the uninstaller of the version already installed.
 - Ticking a task list checkbox in the preview now updates the document, so the change can be saved and undone. Before, the box changed on screen only.
 
 ## [1.5.1] - 2026-10-16 — based on Moji 1.0.7
