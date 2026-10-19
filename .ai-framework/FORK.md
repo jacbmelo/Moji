@@ -72,6 +72,10 @@ Ganchos no upstream, a rever em cada sync:
 - Os links para o projeto original nos guias de `samples/` sao creditos corretos e ficam como estao.
 - Nao divulgar emails no codigo, configuracao ou documentacao do fork. O autor do Moji Plus e identificado pelo perfil do GitHub (https://github.com/jacbmelo) e pelo repositorio; o autor original por https://github.com/alexishida. O check-branding falha se encontrar um endereco de email.
 
+## Instalador Windows
+
+- `build/installer.nsh` (incluido pelo electron-builder por omissao) define `customCheckAppRunning`: procura `Moji Plus.exe` pelo nome, so nos processos do utilizador (`tasklist`/`taskkill`), em vez da verificacao do electron-builder 26 por PowerShell, que apanha qualquer processo dentro da pasta de instalacao. Com politicas que bloqueiam executaveis em `%TEMP%`, o desinstalador antigo corre dentro dessa pasta, encontra-se a si proprio, mata-se, e o setup acaba em "Nao e possivel fechar o Moji Plus". Rever ao atualizar o electron-builder.
+
 ## Versao
 
 - `version` do `package.json` e a versao do Moji Plus, independente da do Moji. `upstreamVersion` regista a versao do Moji em que o build se baseia e e atualizada pelo script de sincronizacao.
