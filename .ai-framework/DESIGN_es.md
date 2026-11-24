@@ -36,37 +36,37 @@ La preferencia "settings.appearance" acepta "sistema" (predeterminado), "claro" 
 La vista previa usa `data-md-theme` igual que el tema resuelto; la exportación siempre usa `data-md-theme="light"`, que sobrescribe solo los tokens de lectura sobre la raíz oscura:
 
 - `--bg`
-- `--bg-elevado`
-- `--texto`
-- `--texto-silenciado`
-- `--frontera`
-- `--frontera-fuerte`
-- `--acento`
-- `--código-bg`
-- `--código-texto`
-- `--código-borde`
-- `--encabezado-tabla-bg`
+- `--bg-elevated`
+- `--text`
+- `--text-muted`
+- `--border`
+- `--border-strong`
+- `--accent`
+- `--code-bg`
+- `--code-text`
+- `--code-border`
+- `--table-header-bg`
 - `--table-stripe-bg`
 - `--hl-*`
 
-## Fichas
+## Tokens
 
-| Ficha | Valor actual |
+| Token | Valor actual |
 | ------- | ------------- |
 | `--font-sans` | `'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, sans-serif` |
-| `--fuente-mono` | `'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace` |
-| `--ancho de lectura` | `760px` |
-| `--ancho-de-lectura-min` | `480px` |
-| `--lectura-ancho-fluido` | `100%` |
-| `--radio` | `8px` |
+| `--font-mono` | `'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace` |
+| `--reading-width` | `760px` |
+| `--reading-width-min` | `480px` |
+| `--reading-width-fluid` | `100%` |
+| `--radius` | `8px` |
 | `--radius-sm` | `5px` |
-| `--espacio-1..6` | `4, 8, 12, 16, 24, 32 píxeles` |
-| `--barra de herramientas-h` | `44px` |
-| `--barra superior-h` | `52px` |
-| `--semáforo-w` | `68px` |
+| `--space-1..6` | `4, 8, 12, 16, 24, 32px` |
+| `--toolbar-h` | `44px` |
+| `--topbar-h` | `52px` |
+| `--traffic-lights-w` | `68px` |
 | `--statusbar-h` | `34px` |
-| `--barra lateral-w` | `260px` |
-| `--sombra` | sombra clara para ventanas emergentes y cuadros de diálogo de reemplazo |
+| `--sidebar-w` | `260px` |
+| `--shadow` | sombra leve para popover de reemplazo y diálogos |
 
 ## Colores
 
