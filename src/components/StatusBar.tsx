@@ -4,6 +4,7 @@ import { IconBook } from './icons'
 
 interface StatusBarProps {
   hasDoc: boolean
+  vimNavigation: boolean
   stats: {
     lines: number
     tokens: number
@@ -22,6 +23,11 @@ function StatusBarView(props: StatusBarProps): JSX.Element {
       </div>
 
       <div className="statusbar__right">
+        {props.vimNavigation && (
+          <span className="statusbar__count statusbar__vim" title={t('statusbar.vimNavigation')}>
+            {t('statusbar.vim')}
+          </span>
+        )}
         <button className="statusbar__link" onClick={props.onGuide}>
           <IconBook width={14} height={14} />
           {t('statusbar.guide')}
@@ -36,6 +42,7 @@ function StatusBarView(props: StatusBarProps): JSX.Element {
 
 export const StatusBar = memo(StatusBarView, (previous, next) => (
   previous.hasDoc === next.hasDoc &&
+  previous.vimNavigation === next.vimNavigation &&
   previous.onGuide === next.onGuide &&
   previous.stats.lines === next.stats.lines &&
   previous.stats.tokens === next.stats.tokens &&

@@ -71,6 +71,8 @@ export interface Settings {
   reopenFiles: boolean
   /** Moji Plus: keep the tab bar visible with a single document. */
   alwaysShowTabs: boolean
+  /** Moji Plus: enable Vim-style keyboard navigation outside the editor. */
+  vimNavigation: boolean
   /** Tabs open when the app was last used, so the next launch can restore them in order. */
   session?: SessionState
   /** Preview or editor, as it was when the app was last used; restored with the session. */

@@ -372,6 +372,8 @@ export function App(): JSX.Element {
   const editorRef = useRef<EditorHandle | null>(null)
   const mainRef = useRef<HTMLElement>(null)
   const previewPaneRef = useRef<HTMLDivElement | null>(null)
+  const vimPendingGRef = useRef(false)
+  const vimPendingTimerRef = useRef<number | null>(null)
   const [previewPaneElement, setPreviewPaneElement] = useState<HTMLDivElement | null>(null)
   /** Pane the font-size control acts on while both are visible. */
   const [splitFocus, setSplitFocus] = useState<'editor' | 'preview'>('editor')
@@ -2208,6 +2210,9 @@ export function App(): JSX.Element {
 
       if (event.key === 'Escape') {
         event.preventDefault()
+        if (vimPendingTimerRef.current !== null) window.clearTimeout(vimPendingTimerRef.current)
+        vimPendingTimerRef.current = null
+        vimPendingGRef.current = false
         closeActivePanel()
         return
       }
@@ -2223,6 +2228,106 @@ export function App(): JSX.Element {
         event.preventDefault()
         toggleFullscreen()
         return
+      }
+
+      if (settings.vimNavigation && !focusAcceptsText() && !document.activeElement?.closest('[role="dialog"]')) {
+        const clearVimSeq = (): void => {
+          if (vimPendingTimerRef.current !== null) window.clearTimeout(vimPendingTimerRef.current)
+          vimPendingTimerRef.current = null
+          vimPendingGRef.current = false
+        }
+        const armVimSeq = (): void => {
+          clearVimSeq()
+          vimPendingGRef.current = true
+          vimPendingTimerRef.current = window.setTimeout(clearVimSeq, 800)
+        }
+        const previewPane = previewPaneRef.current
+        const scrollPreview = (top: number): void => {
+          previewPane?.scrollBy({ top, behavior: 'auto' })
+        }
+        const scrollPreviewTo = (top: number): void => {
+          if (previewPane) previewPane.scrollTop = top
+        }
+
+        // Ctrl+d / Ctrl+u: half-page scroll (Vim-style), only when Vim nav is enabled.
+        if (onlyPrimary && !event.shiftKey && (key === 'd' || key === 'u')) {
+          event.preventDefault()
+          clearVimSeq()
+          const half = Math.max(40, Math.floor((previewPane?.clientHeight ?? 400) / 2))
+          scrollPreview(key === 'd' ? half : -half)
+          return
+        }
+
+        // Plain-key Vim navigation (no Ctrl/Meta/Alt/AltGr).
+        if (!primary && !event.altKey && !altGraph) {
+          const isPlainG = key === 'g' && !event.shiftKey
+          const isShiftG = (event.key === 'G' || (key === 'g' && event.shiftKey))
+          const isShiftT = (event.key === 'T' || (key === 't' && event.shiftKey))
+          const isPlainT = key === 't' && !event.shiftKey
+
+          if (vimPendingGRef.current) {
+            if (isPlainG) {
+              event.preventDefault()
+              clearVimSeq()
+              scrollPreviewTo(0)
+              return
+            }
+            if (isPlainT) {
+              event.preventDefault()
+              clearVimSeq()
+              selectAdjacentDocument(1)
+              return
+            }
+            if (isShiftT) {
+              event.preventDefault()
+              clearVimSeq()
+              selectAdjacentDocument(-1)
+              return
+            }
+            clearVimSeq()
+          }
+
+          if (isPlainG) {
+            event.preventDefault()
+            armVimSeq()
+            return
+          }
+          if (isShiftG) {
+            event.preventDefault()
+            clearVimSeq()
+            scrollPreviewTo(previewPane?.scrollHeight ?? 0)
+            return
+          }
+          if (key === 'j' && !event.shiftKey) {
+            event.preventDefault()
+            clearVimSeq()
+            scrollPreview(60)
+            return
+          }
+          if (key === 'k' && !event.shiftKey) {
+            event.preventDefault()
+            clearVimSeq()
+            scrollPreview(-60)
+            return
+          }
+          if (key === 'h' && !event.shiftKey) {
+            event.preventDefault()
+            clearVimSeq()
+            const labels = Array.from(document.querySelectorAll<HTMLElement>('.outline-item__label'))
+            const visible = labels.find((el) => el.getClientRects().length > 0)
+            if (visible) visible.focus()
+            return
+          }
+          if (key === 'l' && !event.shiftKey) {
+            event.preventDefault()
+            clearVimSeq()
+            if (previewPane && previewPane.getClientRects().length > 0) {
+              previewPane.tabIndex = -1
+              previewPane.focus({ preventScroll: true })
+            }
+            return
+          }
+        }
       }
 
       if (!onlyPrimary) return
@@ -2354,7 +2459,8 @@ export function App(): JSX.Element {
     t,
     toggleFullscreen,
     toggleMode,
-    toggleSplitView
+    toggleSplitView,
+    settings.vimNavigation
   ])
 
   // --- Wire main-process requests + pushed documents --------------------
@@ -2707,7 +2813,7 @@ export function App(): JSX.Element {
         </main>
       </div>
 
-      <StatusBar hasDoc={hasDoc} stats={stats} onGuide={doGuide} />
+      <StatusBar hasDoc={hasDoc} vimNavigation={settings.vimNavigation} stats={stats} onGuide={doGuide} />
 
       {/* Moji Plus: Export is a sheet over the document instead of replacing it (see FORK.md). */}
       {hasDoc && exportDialogFormat && !settingsOpen && !aboutOpen && (

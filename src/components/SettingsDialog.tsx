@@ -230,6 +230,17 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
                   onChange={(e) => onChange({ alwaysShowTabs: e.currentTarget.checked })}
                 />
               </label>
+
+              {/* Moji Plus: enable Vim-style keyboard navigation outside the editor. */}
+              <label className="settings-field">
+                <span className="settings-field__label">{t('settingsDialog.vimNavigation')}</span>
+                <input
+                  className="settings-checkbox"
+                  type="checkbox"
+                  checked={settings.vimNavigation}
+                  onChange={(e) => onChange({ vimNavigation: e.currentTarget.checked })}
+                />
+              </label>
             </div>
           </section>
         )}

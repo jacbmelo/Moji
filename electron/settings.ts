@@ -76,6 +76,7 @@ function defaults(): Settings {
     autoSave: true,
     reopenFiles: true,
     alwaysShowTabs: false,
+    vimNavigation: false,
     viewMode: 'view' as const,
     outlineVisible: true,
     recentFiles: []
@@ -146,6 +147,7 @@ export function getSettings(): Settings {
       autoSave: typeof raw.autoSave === 'boolean' ? raw.autoSave : base.autoSave,
       reopenFiles: typeof raw.reopenFiles === 'boolean' ? raw.reopenFiles : base.reopenFiles,
       alwaysShowTabs: typeof raw.alwaysShowTabs === 'boolean' ? raw.alwaysShowTabs : base.alwaysShowTabs,
+      vimNavigation: typeof raw.vimNavigation === 'boolean' ? raw.vimNavigation : base.vimNavigation,
       session: sanitizeSession(raw.session),
       viewMode: raw.viewMode === 'edit' ? 'edit' : base.viewMode,
       outlineVisible: typeof raw.outlineVisible === 'boolean' ? raw.outlineVisible : base.outlineVisible,
@@ -177,6 +179,7 @@ export function updateSettings(patch: Partial<Settings>): Settings {
     autoSave: typeof merged.autoSave === 'boolean' ? merged.autoSave : true,
     reopenFiles: typeof merged.reopenFiles === 'boolean' ? merged.reopenFiles : true,
     alwaysShowTabs: merged.alwaysShowTabs === true,
+    vimNavigation: merged.vimNavigation === true,
     session: sanitizeSession(merged.session),
     viewMode: merged.viewMode === 'edit' ? 'edit' : 'view',
     outlineVisible: typeof merged.outlineVisible === 'boolean' ? merged.outlineVisible : true,
