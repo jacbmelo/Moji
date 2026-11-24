@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "Tokens：~{{count}}",
-    "tokenEstimate": "估算值：约每 4 个字符计 1 个 token。实际数量取决于模型和语言。"
+    "tokenEstimate": "估算值：约每 4 个字符计 1 个 token。实际数量取决于模型和语言。",
+    "vim": "VIM",
+    "vimNavigation": "Vim 键盘导航已开启"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,8 @@
   "settingsDialog": {
     "autoSave": "在会话之间保留新文档和未保存的更改",
     "reopenFiles": "启动时重新打开已打开的文件",
-    "alwaysShowTabs": "始终显示标签页栏"
+    "alwaysShowTabs": "始终显示标签页栏",
+    "vimNavigation": "Vim 风格键盘导航"
   },
   "plus": {
     "edited": "已编辑",

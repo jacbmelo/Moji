@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "टोकन: ~{{count}}",
-    "tokenEstimate": "अनुमान: लगभग 4 वर्ण प्रति टोकन। वास्तविक संख्या मॉडल और भाषा पर निर्भर करती है।"
+    "tokenEstimate": "अनुमान: लगभग 4 वर्ण प्रति टोकन। वास्तविक संख्या मॉडल और भाषा पर निर्भर करती है।",
+    "vim": "VIM",
+    "vimNavigation": "Vim कीबोर्ड नेविगेशन चालू है"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,8 @@
   "settingsDialog": {
     "autoSave": "नए दस्तावेज़ और बिना सहेजे बदलाव सत्रों के बीच बनाए रखें",
     "reopenFiles": "शुरू होने पर खुली फ़ाइलें फिर से खोलें",
-    "alwaysShowTabs": "टैब बार हमेशा दिखाएँ"
+    "alwaysShowTabs": "टैब बार हमेशा दिखाएँ",
+    "vimNavigation": "Vim-शैली कीबोर्ड नेविगेशन"
   },
   "plus": {
     "edited": "संपादित",

@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "الرموز: ~{{count}}",
-    "tokenEstimate": "تقدير: نحو 4 أحرف لكل رمز. يعتمد العدد الفعلي على النموذج واللغة."
+    "tokenEstimate": "تقدير: نحو 4 أحرف لكل رمز. يعتمد العدد الفعلي على النموذج واللغة.",
+    "vim": "VIM",
+    "vimNavigation": "تنقل Vim بلوحة المفاتيح مفعّل"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,8 @@
   "settingsDialog": {
     "autoSave": "الاحتفاظ بالمستندات الجديدة والتغييرات غير المحفوظة بين الجلسات",
     "reopenFiles": "إعادة فتح الملفات المفتوحة عند بدء التشغيل",
-    "alwaysShowTabs": "إظهار شريط علامات التبويب دائمًا"
+    "alwaysShowTabs": "إظهار شريط علامات التبويب دائمًا",
+    "vimNavigation": "تنقل بلوحة المفاتيح بأسلوب Vim"
   },
   "plus": {
     "edited": "مُعدَّل",

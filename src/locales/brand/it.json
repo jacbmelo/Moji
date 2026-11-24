@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "Token: ~{{count}}",
-    "tokenEstimate": "Stima: circa 4 caratteri per token. Il valore reale dipende dal modello e dalla lingua."
+    "tokenEstimate": "Stima: circa 4 caratteri per token. Il valore reale dipende dal modello e dalla lingua.",
+    "vim": "VIM",
+    "vimNavigation": "Navigazione da tastiera Vim attiva"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,8 @@
   "settingsDialog": {
     "autoSave": "Mantieni i nuovi documenti e le modifiche non salvate tra le sessioni",
     "reopenFiles": "Riapri i file aperti all'avvio",
-    "alwaysShowTabs": "Mostra sempre la barra dei pannelli"
+    "alwaysShowTabs": "Mostra sempre la barra dei pannelli",
+    "vimNavigation": "Navigazione da tastiera in stile Vim"
   },
   "plus": {
     "edited": "Modificato",

@@ -16,11 +16,11 @@ Feature: navegación por teclado estilo Vim en Moji+, con setting para activar/d
 
 | ID | Specs | Route | Commit | Status | Notes |
 |---|---|---|---|---|---|
-| T1 | S1,S5 | inline | tbd | done | Setting `vimNavigation` agregado end-to-end (shared/settings/ipcInput/useAppState/SettingsDialog/brand locales). typecheck OK. |
-| T2 | S1,S2,S3,S4,S6 | inline | tbd | done | Handler Vim global en App.tsx con guardas, scroll j/k/Ctrl+d/u/gg/G, secuencias gt/gT, foco h/l. typecheck OK. |
-| T3 | S1,S2,S4 | inline | tbd | done | Integrado en preview/split/tabs/sidebar; arrow keys de outline sin conflicto. |
-| T4 | S1,S7 | inline | tbd | done | Indicador VIM en StatusBar + i18n en brand overlays. typecheck OK. |
-| T5 | S1-S7 | inline | tbd | done | `npm run typecheck` OK, `npm run verify` (typecheck+check-branding) OK. Smoke manual pendiente en GUI. |
+| T1 | S1,S5 | inline | 78e6bb7 | done | Setting `vimNavigation` agregado end-to-end (shared/settings/ipcInput/useAppState/SettingsDialog/brand locales). typecheck OK. |
+| T2 | S1,S2,S3,S4,S6 | inline | 78e6bb7 | done | Handler Vim global en App.tsx con guardas, scroll j/k/Ctrl+d/u/gg/G, secuencias gt/gT, foco h/l. typecheck OK. |
+| T3 | S1,S2,S4 | inline | 78e6bb7 | done | Integrado en preview/split/tabs/sidebar; arrow keys de outline sin conflicto. |
+| T4 | S1,S7 | inline | 78e6bb7 | done | Indicador VIM en StatusBar + i18n en brand overlays. typecheck OK. |
+| T5 | S1-S7 | inline | 78e6bb7 | done | `npm run typecheck` OK, `npm run verify` (typecheck+check-branding) OK. Smoke manual pendiente en GUI. |
 
 ## Log
 
