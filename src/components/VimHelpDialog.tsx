@@ -1,28 +1,10 @@
 import { useTranslation } from 'react-i18next'
 import { IconX } from './icons'
+import { VIM_SHORTCUTS, platformKeyLabel, platformKeys } from '../lib/vimShortcuts'
 
 interface VimHelpDialogProps {
   onClose: () => void
 }
-
-const VIM_SHORTCUTS = [
-  { action: 'vimScrollDown', keys: ['j'] },
-  { action: 'vimScrollUp', keys: ['k'] },
-  { action: 'vimTop', keys: ['g', 'g'] },
-  { action: 'vimBottom', keys: ['G'] },
-  { action: 'vimHalfDown', keys: ['Ctrl', 'D'] },
-  { action: 'vimHalfUp', keys: ['Ctrl', 'U'] },
-  { action: 'vimNextTab', keys: ['g', 't'] },
-  { action: 'vimPrevTab', keys: ['g', 'T'] },
-  { action: 'vimFocusSidebar', keys: ['Ctrl', 'H'] },
-  { action: 'vimFocusPreview', keys: ['Ctrl', 'L'] },
-  { action: 'vimOutlineCollapse', keys: ['h'] },
-  { action: 'vimOutlineExpand', keys: ['l'] },
-  { action: 'vimSearch', keys: ['/'] },
-  { action: 'vimHelp', keys: ['?'] },
-  { action: 'vimSearchNext', keys: ['Ctrl', 'J'] },
-  { action: 'vimSearchPrev', keys: ['Ctrl', 'K'] }
-] as const
 
 export function VimHelpDialog({ onClose }: VimHelpDialogProps): JSX.Element {
   const { t } = useTranslation()
@@ -45,9 +27,9 @@ export function VimHelpDialog({ onClose }: VimHelpDialogProps): JSX.Element {
               <div className="settings-shortcut" key={item.action}>
                 <span className="settings-shortcut__label">{t(`settingsDialog.shortcutActions.${item.action}`)}</span>
                 <span className="settings-shortcut__keys">
-                  {item.keys.map((key, index) => (
+                  {platformKeys(item.keys, item.macKeys).map((key, index) => (
                     <kbd className="settings-shortcut__key" key={`${item.action}-${index}`}>
-                      {key}
+                      {platformKeyLabel(key)}
                     </kbd>
                   ))}
                 </span>

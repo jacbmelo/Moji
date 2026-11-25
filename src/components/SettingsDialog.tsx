@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { LANGUAGES } from '../i18n'
 import { IconSettings, IconX } from './icons'
 import { PREVIEW_WIDTH_MAX, PREVIEW_WIDTH_MIN, PREVIEW_WIDTH_STEP, isThemePreference, type Language, type Settings, type ThemePreference } from '../../electron/shared'
+import { VIM_SHORTCUTS, platformKeyLabel, platformKeys } from '../lib/vimShortcuts'
 
 interface SettingsDialogProps {
   settings: Settings
@@ -104,50 +105,12 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
 
 const VIM_SHORTCUT_SECTION: ShortcutSection = {
   key: 'vim',
-  items: [
-    { action: 'vimScrollDown', keys: ['j'] },
-    { action: 'vimScrollUp', keys: ['k'] },
-    { action: 'vimTop', keys: ['g', 'g'] },
-    { action: 'vimBottom', keys: ['G'] },
-    { action: 'vimHalfDown', keys: ['Ctrl', 'D'], macKeys: ['Control', 'D'] },
-    { action: 'vimHalfUp', keys: ['Ctrl', 'U'], macKeys: ['Control', 'U'] },
-    { action: 'vimNextTab', keys: ['g', 't'] },
-    { action: 'vimPrevTab', keys: ['g', 'T'] },
-    { action: 'vimFocusSidebar', keys: ['Ctrl', 'H'], macKeys: ['Control', 'H'] },
-    { action: 'vimFocusPreview', keys: ['Ctrl', 'L'], macKeys: ['Control', 'L'] },
-    { action: 'vimOutlineCollapse', keys: ['h'] },
-    { action: 'vimOutlineExpand', keys: ['l'] },
-    { action: 'vimSearch', keys: ['/'] },
-    { action: 'vimHelp', keys: ['?'] },
-    { action: 'vimSearchNext', keys: ['Ctrl', 'J'], macKeys: ['Control', 'J'] },
-    { action: 'vimSearchPrev', keys: ['Ctrl', 'K'], macKeys: ['Control', 'K'] }
-  ]
+  items: VIM_SHORTCUTS
 }
 
 type SettingsTab = 'general' | 'preview' | 'editor' | 'shortcuts'
 
-// The app's own keydown handler already treats Cmd as the primary modifier on macOS
-// (`event.ctrlKey || event.metaKey`), so the shortcut list must not print "Ctrl" there too.
-const isMac = typeof navigator !== 'undefined' && /Mac/i.test(navigator.userAgent)
-
-// Moji Plus: macOS key symbols (HIG "Keyboards"); `Control` is the real Control key there.
-const MAC_KEY_SYMBOLS: Record<string, string> = { Ctrl: '⌘', Control: '⌃', Shift: '⇧', Alt: '⌥', Tab: '⇥', Esc: 'esc' }
-
-const MAC_MODIFIER_ORDER = ['Control', 'Alt', 'Shift', 'Ctrl']
-
-function platformKeyLabel(key: string): string {
-  return isMac ? (MAC_KEY_SYMBOLS[key] ?? key) : key
-}
-
-/** On macOS modifiers read ⌃⌥⇧⌘, before the key. */
-function platformKeys(keys: readonly string[], macKeys?: readonly string[]): readonly string[] {
-  if (!isMac) return keys
-  const rank = (key: string): number => {
-    const index = MAC_MODIFIER_ORDER.indexOf(key)
-    return index < 0 ? MAC_MODIFIER_ORDER.length : index
-  }
-  return [...(macKeys ?? keys)].sort((a, b) => rank(a) - rank(b))
-}
+/* platform key helpers imported from ../lib/vimShortcuts */
 
 export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogProps): JSX.Element {
   const { t } = useTranslation()

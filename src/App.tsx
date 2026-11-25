@@ -2208,7 +2208,7 @@ export function App(): JSX.Element {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.isComposing || dialogOpen || externalDialog) return
-      if (vimHelpOpen && event.key !== 'Escape') return
+      if (vimHelpOpen && !['Escape', 'Tab', 'Enter', ' '].includes(event.key)) return
 
       const key = event.key.toLowerCase()
       const primary = event.ctrlKey || event.metaKey
