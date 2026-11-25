@@ -44,7 +44,29 @@
     "autoSave": "Manter documentos novos e alterações não salvas entre sessões",
     "reopenFiles": "Reabrir os arquivos abertos ao iniciar",
     "alwaysShowTabs": "Sempre mostrar a barra de abas",
-    "vimNavigation": "Navegação por teclado no estilo Vim"
+    "vimNavigation": "Navegação por teclado no estilo Vim",
+    "shortcutSections": {
+      "vim": "Navegação Vim"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "Rolar para baixo",
+      "vimScrollUp": "Rolar para cima",
+      "vimTop": "Ir para o topo",
+      "vimBottom": "Ir para o fim",
+      "vimHalfDown": "Meia página para baixo",
+      "vimHalfUp": "Meia página para cima",
+      "vimNextTab": "Próxima aba",
+      "vimPrevTab": "Aba anterior",
+      "vimFocusSidebar": "Foco à esquerda (barra lateral)",
+      "vimFocusPreview": "Foco à direita (prévia)",
+      "vimSearch": "Focar busca",
+      "vimHelp": "Mostrar atalhos do Vim",
+      "vimSearchNext": "Próxima ocorrência (na busca)",
+      "vimSearchPrev": "Ocorrência anterior (na busca)",
+      "vimOutlineCollapse": "Recolher sumário (na barra lateral)",
+      "vimOutlineExpand": "Expandir sumário (na barra lateral)"
+    },
+    "vimHelpTitle": "Atalhos do Vim"
   },
   "plus": {
     "edited": "Editado",

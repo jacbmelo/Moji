@@ -102,6 +102,28 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
   }
 ]
 
+const VIM_SHORTCUT_SECTION: ShortcutSection = {
+  key: 'vim',
+  items: [
+    { action: 'vimScrollDown', keys: ['j'] },
+    { action: 'vimScrollUp', keys: ['k'] },
+    { action: 'vimTop', keys: ['g', 'g'] },
+    { action: 'vimBottom', keys: ['G'] },
+    { action: 'vimHalfDown', keys: ['Ctrl', 'D'], macKeys: ['Control', 'D'] },
+    { action: 'vimHalfUp', keys: ['Ctrl', 'U'], macKeys: ['Control', 'U'] },
+    { action: 'vimNextTab', keys: ['g', 't'] },
+    { action: 'vimPrevTab', keys: ['g', 'T'] },
+    { action: 'vimFocusSidebar', keys: ['Ctrl', 'H'], macKeys: ['Control', 'H'] },
+    { action: 'vimFocusPreview', keys: ['Ctrl', 'L'], macKeys: ['Control', 'L'] },
+    { action: 'vimOutlineCollapse', keys: ['h'] },
+    { action: 'vimOutlineExpand', keys: ['l'] },
+    { action: 'vimSearch', keys: ['/'] },
+    { action: 'vimHelp', keys: ['?'] },
+    { action: 'vimSearchNext', keys: ['Ctrl', 'J'], macKeys: ['Control', 'J'] },
+    { action: 'vimSearchPrev', keys: ['Ctrl', 'K'], macKeys: ['Control', 'K'] }
+  ]
+}
+
 type SettingsTab = 'general' | 'preview' | 'editor' | 'shortcuts'
 
 // The app's own keydown handler already treats Cmd as the primary modifier on macOS
@@ -348,7 +370,7 @@ export function SettingsDialog({ settings, onClose, onChange }: SettingsDialogPr
 
         {activeTab === 'shortcuts' && (
           <div className="settings-shortcuts" aria-label={t('settingsDialog.shortcuts')}>
-            {SHORTCUT_SECTIONS.map((section) => (
+            {(settings.vimNavigation ? [...SHORTCUT_SECTIONS, VIM_SHORTCUT_SECTION] : SHORTCUT_SECTIONS).map((section) => (
               <section className="settings-section" key={section.key}>
                 <h3 className="settings-section__heading">
                   {t(`settingsDialog.shortcutSections.${section.key}`)}

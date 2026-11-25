@@ -13,6 +13,7 @@ import type { ExportDialogOptions } from './components/ExportDialog'
 import type { EditorDocumentStats, EditorHandle, EditorIdleStats } from './components/Editor'
 import { SettingsDialog } from './components/SettingsDialog'
 import { AboutDialog } from './components/AboutDialog'
+import { VimHelpDialog } from './components/VimHelpDialog'
 import { UpdateNotice } from './components/UpdateNotice'
 import { ExportProgress } from './components/ExportProgress'
 import { OpenProgress } from './components/OpenProgress'
@@ -348,6 +349,7 @@ export function App(): JSX.Element {
   }, [settings.language])
 
   const { dialogOpen, setDialogOpen, exportDialogFormat, setExportDialogFormat, settingsOpen, setSettingsOpen, aboutOpen, setAboutOpen, outlineVisible, setOutlineVisible, searchFocusRequest, setSearchFocusRequest, replaceFocusRequest, setReplaceFocusRequest, topBarDismissRequest, setTopBarDismissRequest } = usePanelState()
+  const [vimHelpOpen, setVimHelpOpen] = useState(false)
   const dialogResolver = useRef<((c: ConfirmChoice) => void) | null>(null)
   const [externalDialog, setExternalDialog] = useState<{ variant: ExternalChangeVariant; name: string } | null>(null)
   const externalDialogResolver = useRef<((c: ExternalChangeChoice) => void) | null>(null)
@@ -495,6 +497,7 @@ export function App(): JSX.Element {
     exportDialogOpen: false,
     settingsOpen: false,
     aboutOpen: false,
+    vimHelpOpen: false,
     canToggleSplit,
     splitView: settings.splitView,
     splitActive,
@@ -514,6 +517,7 @@ export function App(): JSX.Element {
     exportDialogOpen: exportDialogFormat !== null,
     settingsOpen,
     aboutOpen,
+    vimHelpOpen,
     canToggleSplit,
     splitView: settings.splitView,
     splitActive,
@@ -2171,6 +2175,10 @@ export function App(): JSX.Element {
       setAboutOpen(false)
       return true
     }
+    if (s.vimHelpOpen) {
+      setVimHelpOpen(false)
+      return true
+    }
     setTopBarDismissRequest((value) => value + 1)
     return false
   }, [])
@@ -2200,6 +2208,7 @@ export function App(): JSX.Element {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.isComposing || dialogOpen || externalDialog) return
+      if (vimHelpOpen && event.key !== 'Escape') return
 
       const key = event.key.toLowerCase()
       const primary = event.ctrlKey || event.metaKey
@@ -2299,32 +2308,29 @@ export function App(): JSX.Element {
             return
           }
           if (key === 'j' && !event.shiftKey) {
+            if (document.activeElement?.closest('.sidebar')) return
             event.preventDefault()
             clearVimSeq()
             scrollPreview(60)
             return
           }
           if (key === 'k' && !event.shiftKey) {
+            if (document.activeElement?.closest('.sidebar')) return
             event.preventDefault()
             clearVimSeq()
             scrollPreview(-60)
             return
           }
-          if (key === 'h' && !event.shiftKey) {
+          if (event.key === '/' && !event.shiftKey) {
             event.preventDefault()
             clearVimSeq()
-            const labels = Array.from(document.querySelectorAll<HTMLElement>('.outline-item__label'))
-            const visible = labels.find((el) => el.getClientRects().length > 0)
-            if (visible) visible.focus()
+            focusSearch()
             return
           }
-          if (key === 'l' && !event.shiftKey) {
+          if (event.key === '?') {
             event.preventDefault()
             clearVimSeq()
-            if (previewPane && previewPane.getClientRects().length > 0) {
-              previewPane.tabIndex = -1
-              previewPane.focus({ preventScroll: true })
-            }
+            setVimHelpOpen(true)
             return
           }
         }
@@ -2379,7 +2385,22 @@ export function App(): JSX.Element {
       }
       if (key === 'h' && !event.shiftKey) {
         event.preventDefault()
-        focusReplace()
+        if (settings.vimNavigation) {
+          const labels = Array.from(document.querySelectorAll<HTMLElement>('.outline-item__label'))
+          const visible = labels.find((el) => el.getClientRects().length > 0)
+          if (visible) visible.focus()
+        } else {
+          focusReplace()
+        }
+        return
+      }
+      if (key === 'l' && !event.shiftKey && settings.vimNavigation) {
+        event.preventDefault()
+        const previewPane = previewPaneRef.current
+        if (previewPane && previewPane.getClientRects().length > 0) {
+          previewPane.tabIndex = -1
+          previewPane.focus({ preventScroll: true })
+        }
         return
       }
       // Alternate binding for the same find next/previous F3 already drives. CodeMirror's own
@@ -2390,6 +2411,14 @@ export function App(): JSX.Element {
         if (event.shiftKey) doFindPrevious()
         else doFindNext()
         return
+      }
+      if (settings.vimNavigation && (key === 'j' || key === 'k') && !event.shiftKey) {
+        if (document.activeElement?.closest('.topbar__search-group')) {
+          event.preventDefault()
+          if (key === 'j') doFindNext()
+          else doFindPrevious()
+          return
+        }
       }
       if (key === 'e' && event.shiftKey) {
         event.preventDefault()
@@ -2460,7 +2489,8 @@ export function App(): JSX.Element {
     toggleFullscreen,
     toggleMode,
     toggleSplitView,
-    settings.vimNavigation
+    settings.vimNavigation,
+    vimHelpOpen
   ])
 
   // --- Wire main-process requests + pushed documents --------------------
@@ -2855,6 +2885,11 @@ export function App(): JSX.Element {
       {dialogOpen && <ConfirmDialog onChoice={onDialogChoice} />}
       {externalDialog && (
         <ExternalChangeDialog variant={externalDialog.variant} name={externalDialog.name} onChoice={onExternalDialogChoice} />
+      )}
+      {vimHelpOpen && (
+        <div className="plus-sheet-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setVimHelpOpen(false)}>
+          <VimHelpDialog onClose={() => setVimHelpOpen(false)} />
+        </div>
       )}
     </div>
   )

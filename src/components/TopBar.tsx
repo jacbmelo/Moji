@@ -59,6 +59,10 @@ export const TopBar = memo(function TopBar(props: TopBarProps): JSX.Element {
   const [searchPanelOpen, setSearchPanelOpen] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const replaceInputRef = useRef<HTMLInputElement>(null)
+  const searchTermRef = useRef(searchTerm)
+  searchTermRef.current = searchTerm
+  const searchPanelOpenRef = useRef(searchPanelOpen)
+  searchPanelOpenRef.current = searchPanelOpen
   const canSearch = props.hasDoc && !props.exportOpen
   const canFind = canSearch && props.searchMatchCount > 0
   const canOpenReplace = props.hasDoc && props.mode === 'edit' && !props.readOnly && !props.exportOpen
@@ -121,10 +125,16 @@ export const TopBar = memo(function TopBar(props: TopBarProps): JSX.Element {
 
   useEffect(() => {
     if (props.dismissRequest === 0) return
+    if (!searchPanelOpenRef.current && searchTermRef.current.trim() !== '') {
+      setSearchTerm('')
+      setReplaceTerm('')
+      props.onSearch('')
+      return
+    }
     setSearchPanelOpen(false)
     searchInputRef.current?.blur()
     replaceInputRef.current?.blur()
-  }, [props.dismissRequest])
+  }, [props.dismissRequest, props.onSearch])
 
   useEffect(() => {
     if (props.hasDoc) return

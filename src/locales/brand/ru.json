@@ -44,7 +44,29 @@
     "autoSave": "Сохранять новые документы и несохранённые изменения между сеансами",
     "reopenFiles": "Открывать ранее открытые файлы при запуске",
     "alwaysShowTabs": "Всегда показывать панель вкладок",
-    "vimNavigation": "Навигация с клавиатуры в стиле Vim"
+    "vimNavigation": "Навигация с клавиатуры в стиле Vim",
+    "shortcutSections": {
+      "vim": "Навигация Vim"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "Прокрутить вниз",
+      "vimScrollUp": "Прокрутить вверх",
+      "vimTop": "В начало",
+      "vimBottom": "В конец",
+      "vimHalfDown": "На полстраницы вниз",
+      "vimHalfUp": "На полстраницы вверх",
+      "vimNextTab": "Следующая вкладка",
+      "vimPrevTab": "Предыдущая вкладка",
+      "vimFocusSidebar": "Фокус влево (боковая панель)",
+      "vimFocusPreview": "Фокус вправо (просмотр)",
+      "vimSearch": "Фокус на поиске",
+      "vimHelp": "Показать сочетания клавиш Vim",
+      "vimSearchNext": "Следующее совпадение (в поиске)",
+      "vimSearchPrev": "Предыдущее совпадение (в поиске)",
+      "vimOutlineCollapse": "Свернуть структуру (в боковой панели)",
+      "vimOutlineExpand": "Развернуть структуру (в боковой панели)"
+    },
+    "vimHelpTitle": "Сочетания клавиш Vim"
   },
   "plus": {
     "edited": "Изменено",

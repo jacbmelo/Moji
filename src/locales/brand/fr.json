@@ -44,7 +44,29 @@
     "autoSave": "Conserver les nouveaux documents et les modifications non enregistrées entre les sessions",
     "reopenFiles": "Rouvrir les fichiers ouverts au démarrage",
     "alwaysShowTabs": "Toujours afficher la barre d’onglets",
-    "vimNavigation": "Navigation au clavier style Vim"
+    "vimNavigation": "Navigation au clavier style Vim",
+    "shortcutSections": {
+      "vim": "Navigation Vim"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "Défiler vers le bas",
+      "vimScrollUp": "Défiler vers le haut",
+      "vimTop": "Aller en haut",
+      "vimBottom": "Aller en bas",
+      "vimHalfDown": "Demi-page vers le bas",
+      "vimHalfUp": "Demi-page vers le haut",
+      "vimNextTab": "Onglet suivant",
+      "vimPrevTab": "Onglet précédent",
+      "vimFocusSidebar": "Focus à gauche (barre latérale)",
+      "vimFocusPreview": "Focus à droite (aperçu)",
+      "vimSearch": "Activer la recherche",
+      "vimHelp": "Afficher les raccourcis Vim",
+      "vimSearchNext": "Occurrence suivante (dans la recherche)",
+      "vimSearchPrev": "Occurrence précédente (dans la recherche)",
+      "vimOutlineCollapse": "Replier le plan (dans la barre latérale)",
+      "vimOutlineExpand": "Déplier le plan (dans la barre latérale)"
+    },
+    "vimHelpTitle": "Raccourcis Vim"
   },
   "plus": {
     "edited": "Modifié",

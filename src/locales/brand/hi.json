@@ -44,7 +44,29 @@
     "autoSave": "नए दस्तावेज़ और बिना सहेजे बदलाव सत्रों के बीच बनाए रखें",
     "reopenFiles": "शुरू होने पर खुली फ़ाइलें फिर से खोलें",
     "alwaysShowTabs": "टैब बार हमेशा दिखाएँ",
-    "vimNavigation": "Vim-शैली कीबोर्ड नेविगेशन"
+    "vimNavigation": "Vim-शैली कीबोर्ड नेविगेशन",
+    "shortcutSections": {
+      "vim": "Vim नेविगेशन"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "नीचे स्क्रॉल करें",
+      "vimScrollUp": "ऊपर स्क्रॉल करें",
+      "vimTop": "शीर्ष पर जाएँ",
+      "vimBottom": "अंत में जाएँ",
+      "vimHalfDown": "आधा पेज नीचे",
+      "vimHalfUp": "आधा पेज ऊपर",
+      "vimNextTab": "अगला टैब",
+      "vimPrevTab": "पिछला टैब",
+      "vimFocusSidebar": "बाएँ फ़ोकस (साइडबार)",
+      "vimFocusPreview": "दाएँ फ़ोकस (पूर्वावलोकन)",
+      "vimSearch": "खोज पर फ़ोकस करें",
+      "vimHelp": "Vim शॉर्टकट दिखाएँ",
+      "vimSearchNext": "अगला मिलान (खोज में)",
+      "vimSearchPrev": "पिछला मिलान (खोज में)",
+      "vimOutlineCollapse": "आउटलाइन संक्षिप्त करें (साइडबार में)",
+      "vimOutlineExpand": "आउटलाइन विस्तृत करें (साइडबार में)"
+    },
+    "vimHelpTitle": "Vim शॉर्टकट"
   },
   "plus": {
     "edited": "संपादित",

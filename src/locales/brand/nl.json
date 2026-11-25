@@ -44,7 +44,29 @@
     "autoSave": "Nieuwe documenten en niet-opgeslagen wijzigingen tussen sessies bewaren",
     "reopenFiles": "Geopende bestanden opnieuw openen bij het starten",
     "alwaysShowTabs": "Toon altijd de tabbladbalk",
-    "vimNavigation": "Vim-stijl toetsenbordnavigatie"
+    "vimNavigation": "Vim-stijl toetsenbordnavigatie",
+    "shortcutSections": {
+      "vim": "Vim-navigatie"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "Omlaag scrollen",
+      "vimScrollUp": "Omhoog scrollen",
+      "vimTop": "Naar begin",
+      "vimBottom": "Naar einde",
+      "vimHalfDown": "Halve pagina omlaag",
+      "vimHalfUp": "Halve pagina omhoog",
+      "vimNextTab": "Volgend tabblad",
+      "vimPrevTab": "Vorig tabblad",
+      "vimFocusSidebar": "Focus naar links (zijbalk)",
+      "vimFocusPreview": "Focus naar rechts (voorbeeld)",
+      "vimSearch": "Zoeken focussen",
+      "vimHelp": "Vim-sneltoetsen tonen",
+      "vimSearchNext": "Volgende treffer (in zoeken)",
+      "vimSearchPrev": "Vorige treffer (in zoeken)",
+      "vimOutlineCollapse": "Overzicht invouwen (in zijbalk)",
+      "vimOutlineExpand": "Overzicht uitvouwen (in zijbalk)"
+    },
+    "vimHelpTitle": "Vim-sneltoetsen"
   },
   "plus": {
     "edited": "Gewijzigd",

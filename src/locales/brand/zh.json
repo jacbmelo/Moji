@@ -44,7 +44,29 @@
     "autoSave": "在会话之间保留新文档和未保存的更改",
     "reopenFiles": "启动时重新打开已打开的文件",
     "alwaysShowTabs": "始终显示标签页栏",
-    "vimNavigation": "Vim 风格键盘导航"
+    "vimNavigation": "Vim 风格键盘导航",
+    "shortcutSections": {
+      "vim": "Vim 导航"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "向下滚动",
+      "vimScrollUp": "向上滚动",
+      "vimTop": "跳到顶部",
+      "vimBottom": "跳到底部",
+      "vimHalfDown": "向下半页",
+      "vimHalfUp": "向上半页",
+      "vimNextTab": "下一个标签页",
+      "vimPrevTab": "上一个标签页",
+      "vimFocusSidebar": "向左聚焦（侧边栏）",
+      "vimFocusPreview": "向右聚焦（预览）",
+      "vimSearch": "聚焦搜索",
+      "vimHelp": "显示 Vim 快捷键",
+      "vimSearchNext": "下一个匹配（搜索中）",
+      "vimSearchPrev": "上一个匹配（搜索中）",
+      "vimOutlineCollapse": "折叠大纲（侧边栏中）",
+      "vimOutlineExpand": "展开大纲（侧边栏中）"
+    },
+    "vimHelpTitle": "Vim 快捷键"
   },
   "plus": {
     "edited": "已编辑",

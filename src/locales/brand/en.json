@@ -44,7 +44,29 @@
     "autoSave": "Keep new documents and unsaved changes between sessions",
     "reopenFiles": "Reopen open files on startup",
     "alwaysShowTabs": "Always show the tab bar",
-    "vimNavigation": "Vim-style keyboard navigation"
+    "vimNavigation": "Vim-style keyboard navigation",
+    "shortcutSections": {
+      "vim": "Vim navigation"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "Scroll down",
+      "vimScrollUp": "Scroll up",
+      "vimTop": "Go to top",
+      "vimBottom": "Go to bottom",
+      "vimHalfDown": "Half page down",
+      "vimHalfUp": "Half page up",
+      "vimNextTab": "Next tab",
+      "vimPrevTab": "Previous tab",
+      "vimFocusSidebar": "Focus left (sidebar)",
+      "vimFocusPreview": "Focus right (preview)",
+      "vimSearch": "Focus search",
+      "vimHelp": "Show Vim shortcuts",
+      "vimSearchNext": "Next match (in search)",
+      "vimSearchPrev": "Previous match (in search)",
+      "vimOutlineCollapse": "Collapse outline (in sidebar)",
+      "vimOutlineExpand": "Expand outline (in sidebar)"
+    },
+    "vimHelpTitle": "Vim shortcuts"
   },
   "plus": {
     "edited": "Edited",

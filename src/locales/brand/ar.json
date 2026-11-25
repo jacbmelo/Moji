@@ -44,7 +44,29 @@
     "autoSave": "الاحتفاظ بالمستندات الجديدة والتغييرات غير المحفوظة بين الجلسات",
     "reopenFiles": "إعادة فتح الملفات المفتوحة عند بدء التشغيل",
     "alwaysShowTabs": "إظهار شريط علامات التبويب دائمًا",
-    "vimNavigation": "تنقل بلوحة المفاتيح بأسلوب Vim"
+    "vimNavigation": "تنقل بلوحة المفاتيح بأسلوب Vim",
+    "shortcutSections": {
+      "vim": "تنقل Vim"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "التمرير لأسفل",
+      "vimScrollUp": "التمرير لأعلى",
+      "vimTop": "الانتقال إلى الأعلى",
+      "vimBottom": "الانتقال إلى الأسفل",
+      "vimHalfDown": "نصف صفحة لأسفل",
+      "vimHalfUp": "نصف صفحة لأعلى",
+      "vimNextTab": "التبويب التالي",
+      "vimPrevTab": "التبويب السابق",
+      "vimFocusSidebar": "التركيز لليسار (الشريط الجانبي)",
+      "vimFocusPreview": "التركيز لليمين (المعاينة)",
+      "vimSearch": "التركيز على البحث",
+      "vimHelp": "عرض اختصارات Vim",
+      "vimSearchNext": "التطابق التالي (في البحث)",
+      "vimSearchPrev": "التطابق السابق (في البحث)",
+      "vimOutlineCollapse": "طي المخطط (في الشريط الجانبي)",
+      "vimOutlineExpand": "توسيع المخطط (في الشريط الجانبي)"
+    },
+    "vimHelpTitle": "اختصارات Vim"
   },
   "plus": {
     "edited": "مُعدَّل",
