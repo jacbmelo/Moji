@@ -30,9 +30,11 @@ export function plusOutlineKeyDown(event: KeyboardEvent<HTMLElement>): void {
 
   switch (event.key) {
     case 'ArrowDown':
+    case 'j':
       next = labels[index + 1] ?? null
       break
     case 'ArrowUp':
+    case 'k':
       next = labels[index - 1] ?? null
       break
     case 'Home':
@@ -42,10 +44,12 @@ export function plusOutlineKeyDown(event: KeyboardEvent<HTMLElement>): void {
       next = labels[labels.length - 1] ?? null
       break
     case 'ArrowRight':
+    case 'l':
       if (toggle && !expanded) toggle.click()
       else if (expanded) next = labels[index + 1] ?? null
       break
     case 'ArrowLeft':
+    case 'h':
       if (toggle && expanded) toggle.click()
       else next = parentLabel(current)
       break

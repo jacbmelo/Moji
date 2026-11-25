@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "Token 數：~{{count}}",
-    "tokenEstimate": "估算值：約每 4 個字元計 1 個 token。實際數量取決於模型與語言。"
+    "tokenEstimate": "估算值：約每 4 個字元計 1 個 token。實際數量取決於模型與語言。",
+    "vim": "VIM",
+    "vimNavigation": "Vim 鍵盤導覽已開啟"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,30 @@
   "settingsDialog": {
     "autoSave": "在工作階段之間保留新文件和未儲存的變更",
     "reopenFiles": "啟動時重新開啟已開啟的檔案",
-    "alwaysShowTabs": "永遠顯示標籤頁列"
+    "alwaysShowTabs": "永遠顯示標籤頁列",
+    "vimNavigation": "Vim 風格鍵盤導覽",
+    "shortcutSections": {
+      "vim": "Vim 導覽"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "向下捲動",
+      "vimScrollUp": "向上捲動",
+      "vimTop": "移至頂端",
+      "vimBottom": "移至底端",
+      "vimHalfDown": "向下半頁",
+      "vimHalfUp": "向上半頁",
+      "vimNextTab": "下一個分頁",
+      "vimPrevTab": "上一個分頁",
+      "vimFocusSidebar": "向左聚焦（側邊欄）",
+      "vimFocusPreview": "向右聚焦（預覽）",
+      "vimSearch": "聚焦搜尋",
+      "vimHelp": "顯示 Vim 快捷鍵",
+      "vimSearchNext": "下一個符合（搜尋中）",
+      "vimSearchPrev": "上一個符合（搜尋中）",
+      "vimOutlineCollapse": "收合大綱（側邊欄中）",
+      "vimOutlineExpand": "展開大綱（側邊欄中）"
+    },
+    "vimHelpTitle": "Vim 快捷鍵"
   },
   "plus": {
     "edited": "已編輯",

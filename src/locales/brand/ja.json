@@ -5,7 +5,9 @@
   "statusbar": {
     "brand": "Moji+ v{{version}}",
     "tokenCount": "トークン: ~{{count}}",
-    "tokenEstimate": "推定値: 1 トークンあたり約 4 文字。実際の数はモデルと言語によって異なります。"
+    "tokenEstimate": "推定値: 1 トークンあたり約 4 文字。実際の数はモデルと言語によって異なります。",
+    "vim": "VIM",
+    "vimNavigation": "Vimキーボードナビゲーションが有効です"
   },
   "welcome": {
     "title": "Moji+ v{{version}}",
@@ -41,7 +43,30 @@
   "settingsDialog": {
     "autoSave": "新規ドキュメントと未保存の変更をセッション間で保持",
     "reopenFiles": "起動時に開いていたファイルを再度開く",
-    "alwaysShowTabs": "タブバーを常に表示"
+    "alwaysShowTabs": "タブバーを常に表示",
+    "vimNavigation": "Vimスタイルのキーボードナビゲーション",
+    "shortcutSections": {
+      "vim": "Vimナビゲーション"
+    },
+    "shortcutActions": {
+      "vimScrollDown": "下にスクロール",
+      "vimScrollUp": "上にスクロール",
+      "vimTop": "先頭へ移動",
+      "vimBottom": "末尾へ移動",
+      "vimHalfDown": "半ページ下へ",
+      "vimHalfUp": "半ページ上へ",
+      "vimNextTab": "次のタブ",
+      "vimPrevTab": "前のタブ",
+      "vimFocusSidebar": "左にフォーカス（サイドバー）",
+      "vimFocusPreview": "右にフォーカス（プレビュー）",
+      "vimSearch": "検索にフォーカス",
+      "vimHelp": "Vimショートカットを表示",
+      "vimSearchNext": "次の一致（検索中）",
+      "vimSearchPrev": "前の一致（検索中）",
+      "vimOutlineCollapse": "アウトラインを折りたたむ（サイドバー内）",
+      "vimOutlineExpand": "アウトラインを展開する（サイドバー内）"
+    },
+    "vimHelpTitle": "Vimショートカット"
   },
   "plus": {
     "edited": "編集済み",
